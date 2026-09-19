@@ -35,7 +35,7 @@ Shooting starts when all of these are true:
 - [x] `python3 -m stage_ready` INSPECT and VERIFY compute their numbers with **cv2 5.x in this repo** — `stage_ready/vision`, `measure`, 2026-09-19 (step 2a; over the archive's workdirs, not yet a fresh upload)
 - [ ] a **meaningful component runs on AWS** and the run can be shown doing it
 - [ ] a **public URL** serves the demo, from a clean machine, with media that plays
-- [ ] a judge can `git clone` and reach a working demo from the README alone
+- [x] a judge can `git clone` and reach a working demo from the README alone — verified from a fresh clone + the judge bundle, 2026-09-19 (step 1); the bundle's private download is still to be set up at submission
 - [ ] the **evaluation table** exists: N clips, gate precision/recall, silently-wrong deliveries
 - [ ] the **architecture diagram** is drawn and matches the code
 - [ ] no claim in `README.md` or the UI is ahead of what is measured
@@ -63,7 +63,7 @@ ranges. Grid and provenance: `~/mts/work/midtown_ethel_chadwick_v2/separation.lo
 `ethel_chadwick_v2_v3.mp4` (1237 frames, audio MD5 = source). The climax stands; the line is
 "as far as the strategy is allowed to go, and it clears by 0.02×".
 
-### 1. A repository a judge can clone — **git + pins done 2026-09-19; LICENSE and media open**
+### 1. A repository a judge can clone — **DONE 2026-09-19** (git, MIT, pins; media = judge bundle, `python3 -m stage_ready bundle`; the private download of the bundle is a submission-time task)
 
 **Why:** `stage-ready/` is not a git repository at all, and `demo/clips/*/stills/` — the media the
 demo plays — is git-ignored and symlinked into `~/mts`. A judge who clones today gets stand-ins
@@ -75,7 +75,7 @@ project — it must pin OpenCV 5.
 **Accept:** clone into a clean directory on another machine, follow the README, get a demo with
 video playing and 17/17 tests passing.
 
-### 2. OpenCV 5 doing the seeing, inside this repo — **2a DONE 2026-09-19; 2b open**
+### 2. OpenCV 5 doing the seeing, inside this repo — **2a DONE 2026-09-19; 2b open** (also: Sandy moved to v4 — risk 6 decided: reshoot exit)
 
 **Why:** the rule is OpenCV 5 for substantive analysis, and technical execution (30%) is explicitly
 "depth of the OpenCV 5 implementation". Today the repo contains no `cv2`; the 21 OpenCV scripts live
@@ -201,7 +201,7 @@ small delta and we already work in measurements. Skip it the moment it competes 
 | the loop running on a real recording | step 2 (OpenCV 5 computing it live) |
 | Ethel's failed gate changing the agent's next action | **step 0**, then step 3 (Bedrock deciding) |
 | the delivered output with its numbers | step 0 |
-| the other exit — a reshoot request | nothing — `&budget=0` works today |
+| the other exit — a reshoot request | nothing — Sandy's path is one (since 2026-09-19); `&budget=0` shows Ethel's |
 | "a second destination is a second JSON file" | step 7 |
 | architecture: OpenCV 5 + AWS | steps 2, 3, diagram |
 | results and limitations | steps 5, 6 |
@@ -237,8 +237,10 @@ small delta and we already work in measurements. Skip it the moment it competes 
    flattered by the cut crown pinning the head top to the picture edge. Options: (a) keep v3 and say
    it is not reproducible; (b) move Sandy to v4 → his path ends in a reshoot request (the profile has
    no strategy for head spread; the guidance should name *distance*, not the tripod); (c) re-examine
-   the head-spread gate for crown-completed pictures. Decide before the script is written — it
-   changes the Sandy beat and the "three paths" table.
+   the head-spread gate for crown-completed pictures. **Decided 2026-09-19: (b).** Sandy's fixtures,
+   video and still are v4; his path ends in a reshoot request that leads with the cause; the loop's
+   reshoot request now puts the agent's cited causes first. The video beat: the fix holds, the
+   render fails on a gate the fix cannot address, the agent asks for the capture change.
 
 ## Explicitly out of scope until after the video
 

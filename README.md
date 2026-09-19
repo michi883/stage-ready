@@ -364,23 +364,27 @@ stage_ready/measure.py              INSPECT / VERIFY records computed from a wor
 stage_ready/server.py               static UI, /api/recognize, SSE run stream, byte-range media
 web/                                the workspace
 demo/clips/{sandy,ethel,zach}/      cached fixtures, keyed the way a live cache would be; clip.json → archive names the files
-tests/test_demo.py                  18 tests: the three paths, determinism, recognition, the guardrails, no projected fixture
+tests/test_demo.py                  19 tests: the three exits, determinism, recognition, the guardrails, no projected fixture
 tests/test_vision.py                4 tests: OpenCV 5 reproduces the archived numbers (skipped without OpenCV 5 + the archive)
+stage_ready/bundle.py               the judge bundle: build from the archive, install into a clone, verify
 ```
 
 ```bash
 python3 -m stage_ready run              # the same three runs, as text
 python3 -m stage_ready trace ethel      # one run, as JSON lines
-python3 -m unittest discover -s tests   # 18 tests, standard library
+python3 -m unittest discover -s tests   # 19 tests, standard library
 
 python3 -m venv .venv && .venv/bin/pip install -e '.[live]'    # OpenCV 5 + numpy, pinned
 .venv/bin/python -m stage_ready measure                        # every fixture number, recomputed with OpenCV 5
 .venv/bin/python -m stage_ready run ethel --live               # measured INSPECT, then stops at DECIDE (Bedrock not wired)
-.venv/bin/python -m unittest discover -s tests                 # 22 tests
+.venv/bin/python -m unittest discover -s tests                 # 23 tests
 ```
 
 `measure` and `--live` read the Red Curtain archive's workdirs — `--archive <dir>` or
-`$STAGE_READY_ARCHIVE`, default `~/mts`; without it they say so and the demo is unaffected.
+`$STAGE_READY_ARCHIVE`, default `~/mts`, or the judge bundle ([Real stills and videos](#real-stills-and-videos));
+without one they say so and the demo is unaffected. Python 3.12 is what the fixtures were measured
+with (`.python-version`); any ≥ 3.11 runs, with the one decoder caveat noted under
+[What is measured](#what-is-measured).
 
 URL levers: `&clip=ethel` (put a sample on the bench at once), `&autorun=1` (press Make Stage Ready
 as soon as a recording is on the bench), `&instant=1` (no pacing), `&step=1` (Space / → advances
@@ -406,7 +410,25 @@ moment before and after; the linked videos are these same archive files:
 | Ethel Chadwick | `ethel_chadwick_v2.mp4` frame 900 | attempt 1: `ethel_chadwick_v2_v1.mp4` frame 900; attempt 2: `ethel_chadwick_v2_v3.mp4` frame 900 — the separation-targeted render, measured 1.52× (`ethel_chadwick_v2_v2.mp4` is the intermediate shadow-lift-only render, 1.37×) |
 | Zach Sain | `zach_sain_v2.mov` (480 × 412, 180° display matrix — the browser honours it; `stills/source.mp4` is a stream-copied remux, registered under its own hash) | `zach_sain_v2_v2.mp4` — the archived crown-completion render |
 
-The stills directory is git-ignored (performer footage).
+The stills directory is git-ignored (performer footage). **Judges get it as a bundle.** The
+performers agreed to judges seeing their recordings, not to a public repository, so the footage
+and the measured intermediates ship as a private download built by
+`python3 -m stage_ready bundle --out <dir>` (1.1 GB: the demo's stills and videos, the archived
+sources and deliveries, and every workdir file `measure` reads — whole where a measurement reads
+every frame, sampled by the measurements' own `sample_indices` where it reads a spread — with a
+`MANIFEST.json` of sizes and SHA-256s). In a clone:
+
+```bash
+python3 -m stage_ready bundle --install <bundle-dir>     # links the media into demo/clips/*/stills
+python3 -m stage_ready serve                             # the workspace now plays the real videos
+export STAGE_READY_ARCHIVE=<bundle-dir>                  # and measure / --live read the bundle
+.venv/bin/python -m stage_ready measure                  # 0 disagreements, same as against ~/mts
+python3 -m stage_ready bundle --verify <bundle-dir>      # every manifest entry present, hashes equal
+```
+
+Verified 2026-09-19 from a fresh `git clone` on this machine: demo tests pass with the standard
+library alone, the bundle installs, the videos serve with byte ranges, and the full suite (23 tests)
+passes with OpenCV 5 against the bundle.
 
 ### Performers and numbers
 
