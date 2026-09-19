@@ -6,6 +6,11 @@
     python -m stage_ready measure [sandy ethel zach] [--archive ~/mts] [--json]
                                     compute INSPECT and VERIFY with OpenCV 5 over the archived
                                     workdirs and print every number next to its demo fixture
+    python -m stage_ready bundle --out <dir> [--archive ~/mts] [--dry-run] [clips…]
+                                    build the judge bundle: the demo's media and the files
+                                    `measure` reads, in the archive's layout, with a manifest
+    python -m stage_ready bundle --install <dir> | --verify <dir>
+                                    in a clone: link a bundle's media into demo/clips; check one
 """
 from __future__ import annotations
 
@@ -157,6 +162,35 @@ def _measure(ids: list[str], archive: str | None, as_json: bool) -> int:
     return 0
 
 
+def _bundle(a) -> int:
+    from pathlib import Path
+    from . import bundle as B
+    from .measure import archive_root
+
+    if a.install:
+        for line in B.install(Path(a.install).expanduser().resolve()):
+            print("  " + line)
+        print(f"media linked. For live measurement: export STAGE_READY_ARCHIVE={Path(a.install).expanduser().resolve()}")
+        return 0
+    if a.verify:
+        problems = B.verify(Path(a.verify).expanduser().resolve())
+        print("\n".join(problems) if problems else "bundle complete: every manifest entry present with its hash")
+        return 1 if problems else 0
+    if not a.out:
+        print("bundle: --out <dir> (or --install / --verify)"); return 2
+    r = B.build(Path(a.out).expanduser().resolve(), archive_root(a.archive), a.clips or None, dry_run=a.dry_run)
+    if a.dry_run:
+        by_top: dict[str, int] = {}
+        for it in r["items"]:
+            by_top[it.split("/")[0] if "/" in it else "(root)"] = by_top.get(it.split("/")[0] if "/" in it else "(root)", 0) + 1
+        for k, v in sorted(by_top.items()):
+            print(f"  {v:6d}  {k}/")
+        print(f"{r['files']} files, {r['bytes'] / 1e9:.2f} GB (dry run)")
+    else:
+        print(f"{r['files']} files, {r['bytes'] / 1e9:.2f} GB -> {r['out']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="stage_ready")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -164,10 +198,14 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("run"); r.add_argument("clips", nargs="*"); r.add_argument("--live", action="store_true")
     t = sub.add_parser("trace"); t.add_argument("clips", nargs="*"); t.add_argument("--live", action="store_true")
     m = sub.add_parser("measure"); m.add_argument("clips", nargs="*"); m.add_argument("--archive", default=None); m.add_argument("--json", action="store_true")
+    b = sub.add_parser("bundle"); b.add_argument("clips", nargs="*"); b.add_argument("--out", default=None); b.add_argument("--archive", default=None)
+    b.add_argument("--dry-run", action="store_true"); b.add_argument("--install", default=None); b.add_argument("--verify", default=None)
     a = ap.parse_args(argv)
 
     if a.cmd == "measure":
         return _measure(a.clips, a.archive, a.json)
+    if a.cmd == "bundle":
+        return _bundle(a)
 
     if a.cmd == "serve":
         from .server import serve

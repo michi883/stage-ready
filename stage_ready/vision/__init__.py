@@ -42,6 +42,23 @@ def require_cv2():
     return cv2
 
 
+def sample_indices(n: int, k: int) -> list[int]:
+    """The frames a k-frame measurement over n frames reads: k evenly spaced, 0-based, the
+    archive's `np.linspace(0, n-1, k).astype(int)` — shared so a judge bundle can carry exactly
+    these frames and measure the same number."""
+    import numpy as np
+    if n <= 0:
+        return []
+    return sorted({int(i) for i in np.linspace(0, n - 1, min(k, n)).astype(int)})
+
+
+def frame_number(path: str) -> int | None:
+    """`f_0053.png`, `c_0053.png` → 53 (1-based, as the archive names frames)."""
+    import re
+    m = re.search(r"_(\d+)\.[A-Za-z]+$", str(path))
+    return int(m.group(1)) if m else None
+
+
 from .band import Band, detect_band                       # noqa: E402
 from .pose import PoseQC, pose_qc, read_pose              # noqa: E402
 from .matte import MatteQC, crown_cut, matte_extent       # noqa: E402
@@ -49,6 +66,6 @@ from .silhouette import Separation, separation            # noqa: E402
 from .track import HeadHeight, head_height                # noqa: E402
 from .media import Probe, audio_md5, frame_count, probe   # noqa: E402
 
-__all__ = ["require_cv2", "OpenCVMissing",
+__all__ = ["require_cv2", "OpenCVMissing", "sample_indices", "frame_number",
            "Band", "detect_band", "PoseQC", "pose_qc", "read_pose", "MatteQC", "matte_extent", "crown_cut",
            "Separation", "separation", "HeadHeight", "head_height", "Probe", "probe", "frame_count", "audio_md5"]

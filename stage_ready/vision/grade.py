@@ -48,17 +48,21 @@ def grade_qc(band_dir: str, matte_dir: str, pose: list[dict], face_target: float
     cv2 = require_cv2()
     import numpy as np
 
+    from . import frame_number, sample_indices
+
     BT709 = np.array([0.0722, 0.7152, 0.2126])
-    bands = sorted(glob.glob(os.path.join(band_dir, "*.jpg")) + glob.glob(os.path.join(band_dir, "*.png")))
+    bands = {frame_number(f): f for f in glob.glob(os.path.join(band_dir, "*.jpg")) + glob.glob(os.path.join(band_dir, "*.png"))}
     mattes = sorted(glob.glob(os.path.join(matte_dir, "*.png")))
-    n = min(len(bands), len(mattes), len(pose))
-    if n == 0:
+    n = min(len(mattes), len(pose))                     # the matte and pose are complete; the source frames may be sampled
+    if n == 0 or not bands:
         raise ValueError("grade_qc: nothing to measure")
-    idx = np.unique(np.linspace(0, n - 1, min(nsamp, n)).astype(int))
+    idx = sample_indices(n, nsamp)
 
     face_lum, dL, dR = [], [], []
     for i in idx:
-        im = cv2.imread(bands[i])
+        if bands.get(i + 1) is None:
+            continue
+        im = cv2.imread(bands[i + 1])
         mt = cv2.imread(mattes[i], cv2.IMREAD_GRAYSCALE)
         if im is None or mt is None:
             continue

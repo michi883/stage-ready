@@ -37,10 +37,14 @@ class Separation:
 
 
 def _frames_from_dir(comp_dir, idx, cv2):
-    comps = sorted(glob.glob(os.path.join(comp_dir, "*.png")))
+    # Paired by the frame number in the file name, not by position: a judge bundle carries only
+    # the sampled frames, and it must measure the same number the full directory does.
+    from . import frame_number
+    by_n = {frame_number(f): f for f in glob.glob(os.path.join(comp_dir, "*.png"))}
     for i in idx:
-        if i < len(comps):
-            yield i, cv2.imread(comps[i])
+        f = by_n.get(int(i) + 1)
+        if f is not None:
+            yield i, cv2.imread(f)
 
 
 def _frames_from_video(path, idx, cv2):
@@ -64,16 +68,14 @@ def separation(composite: str, matte_dir: str, nsamp: int = 24) -> Separation:
     cv2 = require_cv2()
     import numpy as np
 
+    from . import sample_indices
+
     BT709 = np.array([0.0722, 0.7152, 0.2126])          # BGR, as OpenCV loads
     mattes = sorted(glob.glob(os.path.join(matte_dir, "*.png")))
-    if os.path.isdir(composite):
-        n_comp = len(glob.glob(os.path.join(composite, "*.png")))
-        n = min(n_comp, len(mattes))
-    else:
-        n = len(mattes)
+    n = len(mattes)                                     # the warped matte is complete; the composite may be sampled
     if n == 0:
         raise ValueError("separation: nothing to measure")
-    idx = np.linspace(0, n - 1, min(nsamp, n)).astype(int)
+    idx = sample_indices(n, nsamp)
     frames = _frames_from_dir(composite, idx, cv2) if os.path.isdir(composite) else _frames_from_video(composite, idx, cv2)
 
     k = np.ones((9, 9), np.uint8)
