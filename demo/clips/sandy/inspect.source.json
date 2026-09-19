@@ -1,5 +1,5 @@
 {
-  "provenance": "archive: sandy_hackett_v2 — MIDTOWN_RED_CURTAIN_PIPELINE.md §4 §5 §14; track.log; pose.csv re-measured 2026-09-10; crown figure from matte_qc re-run 2026-09-10",
+  "provenance": "archive: sandy_hackett_v2 (workdir of the v4 run) — MIDTOWN_RED_CURTAIN_PIPELINE.md §4 §5 §15; pose_qc.py, the dry solve (track_frame.py at the 0.334 floor), matte_qc and auto_grade re-run 2026-09-19 and reproduced with OpenCV 5 in-repo: python3 -m stage_ready measure sandy",
   "duration_ms": 21000,
   "facts": { "picture": "1620×1080 at +150+0 inside 1920×1080", "fps": 25, "frames": 1436, "duration_s": 57.4 },
   "findings": [
@@ -16,9 +16,9 @@
       "confidence": 0.95, "frames": "2 frames off-subject, both marginal on size",
       "detail": "Apple Vision also reads a figure in the reflection in the glass door; apparent-size scoring keeps the performer on 99.9 % of frames.", "tool": "pose_qc.py" },
     { "id": "subject_size", "label": "Subject size on canvas", "status": "fail",
-      "value": { "p50": 0.51, "p95": 0.64, "reach": 0.63 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
+      "value": { "p50": 0.501, "p95": 0.622, "reach": 0.624 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
       "confidence": 1.0, "frames": "92 % of the take, after the walk-in",
-      "detail": "At head_target 0.334 the shoulders would reach 63 % of the canvas width (p50 51 %, p95 64 %) against the 55 % cap — a head filling the stage.", "tool": "track_frame.py (dry solve)" },
+      "detail": "At head_target 0.334 the shoulders would reach 62 % of the canvas width (p50 50 %, p95 62 %) against the 55 % cap — a head filling the stage.", "tool": "track_frame.py (dry solve)" },
     { "id": "distance_steady", "label": "Distance steady", "status": "warn",
       "value": 1.75, "unit": "apparent size p95 / p5", "threshold": { "op": "<=", "value": 1.35 },
       "confidence": 1.0, "frames": "walk-in at 4.5 s",
@@ -30,10 +30,10 @@
     { "id": "face_exposure", "label": "Face exposure", "status": "pass",
       "value": 1.059, "unit": "exposure gain toward the 0.46 target", "threshold": { "target": 0.46, "clamp": [0.8, 1.25] },
       "confidence": 1.0, "frames": "median over the take",
-      "detail": "Face at 0.444 — a well-exposed recording; the grade lifts it ×1.06, well inside the clamp.", "tool": "auto_grade.py" },
+      "detail": "Face at 0.448 — a well-exposed recording; the grade lifts it ×1.06, well inside the clamp.", "tool": "auto_grade.py" },
     { "id": "key_direction", "label": "Key direction", "status": "info",
-      "value": 0.94, "unit": "silhouette L / R luma ratio", "threshold": { "flat_below": 1.08 },
+      "value": 0.90, "unit": "silhouette L / R luma ratio", "threshold": { "flat_below": 1.08 },
       "confidence": 1.0, "frames": "median over the take",
-      "detail": "0.94× — effectively flat-lit; the stage convention (key left, rim left) stands.", "tool": "auto_grade.py" }
+      "detail": "Silhouette L 0.114 / R 0.103 (×0.90) — key from the left; the stage's key and rim follow it (keydx −1, rimdx −6).", "tool": "auto_grade.py" }
   ]
 }

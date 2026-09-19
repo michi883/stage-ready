@@ -409,7 +409,7 @@ function flow(ev) {
           else { setStep("inspect", "working", "Inspecting…"); narrate("Measuring the source: picture area, pose, subject size, steadiness, headroom, exposure."); }
           break;
         case "decide":
-          if (L.lastVerify === "fail") { newAttempt(); $("#flow").classList.add("retrying"); L.retrySub = `retry ${ev.budget.reprocesses_used + 1} of ${ev.budget.retry_budget}`; setStep("decide", "working", "Deciding…", { sub: L.retrySub }); narrate("Verification failed — the agent is choosing what to try next.", "retry"); }
+          if (L.lastVerify === "fail") { newAttempt(); $("#flow").classList.add("retrying"); L.budget = ev.budget; L.retrySub = `retry ${ev.budget.reprocesses_used + 1} of ${ev.budget.retry_budget}`; setStep("decide", "working", "Deciding…", { sub: L.retrySub }); narrate("Verification failed — the agent is choosing what to try next.", "retry"); }
           else if (L.lastVerify === "pass") { setOutput("working", "Delivering…"); narrate("Every gate passed — the agent is confirming delivery."); }
           else if (L.fixed) { setStep("decide", "working", null, { keep: true }); narrate("The fix held — the agent is deciding how to process."); }
           else { setStep("decide", "working", "Deciding…"); narrate("The agent is reading the findings against the profile…"); }
@@ -444,7 +444,12 @@ function flow(ev) {
       const d = ev.decision;
       const quote = firstSentence(d.reasoning);
       if (d.action === "deliver") { setOutput("working", "Delivering…"); narrate(esc(quote), "quote"); break; }
-      if (d.action === "reshoot") { setStep("decide", "failed", "Ask for a reshoot"); $("#flow .retry").classList.add("blocked"); $("#flow .retry .lbl").textContent = "no retry left"; story("Ask for a reshoot", "fail"); narrate(esc(quote), "quote fail"); break; }
+      if (d.action === "reshoot") {
+        // Why the arc is blocked is a fact, not a phrase: the budget is spent, or nothing in the profile addresses this defect.
+        const spent = L.budget && L.budget.reprocesses_used >= L.budget.retry_budget;
+        setStep("decide", "failed", "Ask for a reshoot"); $("#flow .retry").classList.add("blocked"); $("#flow .retry .lbl").textContent = spent ? "no retry left" : "no strategy for this";
+        story("Ask for a reshoot", "fail"); narrate(esc(quote), "quote fail"); break;
+      }
       if (d.action === "process" && L.fixed) { setStep("decide", "done", null, { keep: true }); narrate(esc(quote), "quote"); break; }   // "Reframe" stands; the work shows it
       const phrase = choosePhrase(d);
       setStep("decide", "done", phrase, L.lastVerify === "fail" ? { sub: L.retrySub } : {});

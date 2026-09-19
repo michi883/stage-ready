@@ -1,5 +1,5 @@
 {
-  "provenance": "archive: sandy_hackett_v2 — detect_band 1620×1080+150+0 (§2); track.log: 63 % at 0.334 → head_target 0.421; shoulder span 51/64 % → 44/55 % (§5)",
+  "provenance": "archive: sandy_hackett_v2 (v4 run) — detect_band 1620×1080+150+0 (§2); track.log: 62 % at 0.334 → head_target 0.413; shoulder span 50/62 % → 44/55 % (§5); reproduced with OpenCV 5 in-repo (vision.detect_band, vision.track.dry_solve)",
   "artifact": "fixed",
   "duration_ms": 22000,
   "stages": [
@@ -7,14 +7,14 @@
       "summary": "crop=1620:1080:150:0 — the 150 dead columns on each side are gone; the picture bottom is now the frame bottom.",
       "params": { "crop": [1620, 1080, 150, 0] } },
     { "id": "size_cap", "label": "Size-capped reframe solve", "tool": "track_frame.py (SIZE_CAP 0.55, HEAD_TARGET_MAX 0.55)", "duration_ms": 20000,
-      "summary": "Performer reaches 63 % of canvas width at head_target 0.334 (cap 55 %) — holding their size by moving the head down to 0.421 of frame height. One value for the whole clip; one-sided.",
-      "params": { "head_target_floor": 0.334, "head_target": 0.421, "head_target_max": 0.55, "size_cap": 0.55 } }
+      "summary": "Performer reaches 62 % of canvas width at head_target 0.334 (cap 55 %) — holding their size by moving the head down to 0.413 of frame height. One value for the whole clip; one-sided.",
+      "params": { "head_target_floor": 0.334, "head_target": 0.413, "head_target_max": 0.55, "size_cap": 0.55 } }
   ],
   "changes": {
     "picture": { "before": "1620×1080 at +150+0 in a 1920×1080 file", "after": "1620×1080, the whole picture" },
-    "head_target": { "before": 0.334, "after": 0.421 },
-    "shoulder_span_p50": { "before": 0.51, "after": 0.439 },
-    "shoulder_span_p95": { "before": 0.64, "after": 0.55 },
+    "head_target": { "before": 0.334, "after": 0.413 },
+    "shoulder_span_p50": { "before": 0.501, "after": 0.442 },
+    "shoulder_span_p95": { "before": 0.622, "after": 0.548 },
     "pixels_invented": 0
   }
 }

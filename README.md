@@ -155,29 +155,40 @@ The three sample recordings are the show's current lineup, in billing order. Eac
 exhibit exactly one thing, and each takes a different path through the same loop with the same
 profile and no per-recording settings:
 
-| | **Sandy Hackett** — misframed, complete | **Ethel Chadwick** — wearing the stage | **Zach Sain** — already suitable |
+| | **Sandy Hackett** — misframed, and walked in | **Ethel Chadwick** — wearing the stage | **Zach Sain** — already suitable |
 |---|---|---|---|
 | What came in | a 3:2 picture pillarboxed inside 16:9, 25 fps; walks into a close-up 4.5 s in | recorded to spec — in a red trouser suit, for a red curtain | to spec: one subject, steady, framed to the rule |
-| Inspect finds | picture area smaller than the file; shoulder span over the 55 % cap | nothing outside the profile (one low-confidence note: wardrobe close to the plate) | nothing outside the profile |
+| Inspect finds | picture area smaller than the file; shoulder span over the 55 % cap; a warning — apparent size changes 1.75× across the take | nothing outside the profile (one low-confidence note: wardrobe close to the plate) | nothing outside the profile |
 | Agent decides | **fix**: crop to the measured picture, size-capped reframe → re-inspect → process | process | process |
-| Verify | pass — separation 1.79×, head height held to 1.2 % | **fail** — separation 1.13× against 1.5×; every other gate passes | pass — separation 2.96× |
-| Agent decides | deliver | **change strategy**: separation-targeted composite, matte and tracking reused → reprocess | deliver |
+| Verify | **fail** — head height moves 2.9 % of the output (2 % allowed) and drifts 5.3 px (4 allowed); matte 98 %, separation 1.72×, frames and audio pass | **fail** — separation 1.13× against 1.5×; every other gate passes | pass — separation 2.96× |
+| Agent decides | **reshoot**: no allowed strategy moves where he stood; the cause is the walk-in INSPECT warned about → *be at your final distance before the take starts* | **change strategy**: separation-targeted composite, matte and tracking reused → reprocess | deliver |
 | Verify | — | pass — 1.52×, with the grade at its bounds | — |
-| On screen | Framing needs adjustment → Reframe → Verified ✓ | Already suitable → Standard process → **Fails ✗** ⟲ Try safer processing → Reprocess → Verified ✓ | Already suitable → Standard process → Verified ✓ |
+| On screen | Framing needs adjustment → Reframe → **Fails ✗** → Ask for a reshoot | Already suitable → Standard process → **Fails ✗** ⟲ Try safer processing → Reprocess → Verified ✓ | Already suitable → Standard process → Verified ✓ |
+
+Three recordings, the three exits: a reshoot request with the number and the capture change behind
+it, a delivery earned on the second attempt, and a delivery on the first.
 
 **Watch Ethel's.** The Verify cell turns red, the first output is stamped ✗ and thrown behind, a
 retry arc draws back to Decide, the agent explains why in one sentence and changes strategy, and
 the second attempt earns the ✓ — by 0.02×, with every knob of the strategy at its bound. In the Red
 Curtain script that failure was a warning in a log; in the profile it is a gate, and the gate
 changed the agent's next action. Had the second strategy not cleared it inside those bounds, the
-exit would have been the reshoot request — `&budget=0` shows that path.
+exit would have been the reshoot request — `&budget=0` shows that path for her.
+
+**And watch Sandy's.** The fix does exactly what it promises — the padding is cropped, the size cap
+holds his shoulders at 55 % — and the render still fails, on a gate the fix could never address:
+with his crown completed from his own frames, the head the solve is holding is a real crown that
+walks toward the lens. The agent does not retry a grade change against a framing defect; it names
+the cause INSPECT already warned about and asks for the one thing that fixes it, at capture. The
+same gate passed on the archive's earlier render, when the cut crown pinned the head top to the
+picture edge — which is the argument for measuring the delivery, not the log.
 
 **The payoff**, in the session view:
 
 ```
-3 inconsistent raw recordings  ─▶  3 different decision paths  ─▶  3 consistent Red Curtain outputs
-   padded / red-on-red / to spec       1 fix / 1 retry / 1 step       same head height, same size,
-                                                                       same look, each with its number
+3 inconsistent raw recordings  ─▶  3 different decision paths  ─▶  2 consistent Red Curtain outputs + 1 reshoot request
+   padded+walk-in / red-on-red / to spec   1 fix→fail / 1 retry / 1 step   same head height, same size, same look,
+                                                                          each with its number — or the number and the capture change
 ```
 
 **Trace** (per recording) opens the full record — every finding, every decision with its reasoning
@@ -200,8 +211,9 @@ Judges should know exactly what they are looking at:
 - **Every number is measured.** The last projected one — Ethel's second attempt — was measured on
   2026-09-19: the separation-targeted grade clears the gate at **1.52×**, and only with every knob
   at its bound. The earlier projection (1.58× at softer settings) measured 1.43× and was wrong; the
-  fixture's `provenance` says so. A fixture that were projected would say so and the UI would tag
-  it *projected*; none is, and a test keeps it that way.
+  fixture's `provenance` says so. Sandy's run is the archive's v4 render, and it fails — see
+  [What is measured](#what-is-measured). A fixture that were projected would say so and the UI
+  would tag it *projected*; none is, and a test keeps it that way.
 - **INSPECT and VERIFY run live, with OpenCV 5, in this repo.** `stage_ready/vision/` ports the
   Red Curtain measurements (picture area, pose QC, the dry framing solve, crown, exposure and key,
   matte extent, separation, head spread and drift, frame count, audio MD5), and
@@ -317,9 +329,9 @@ measurements. What is left is the ground truth for one number and the live wirin
 | 1 | **Profile + inspect.** The profile as a data file; inspection emits findings against it | done — the profile is data; INSPECT is measured live with OpenCV 5 (`stage_ready/vision`, 2026-09-19) |
 | 2 | **Process + verify.** Processing toward the profile, verification against its gates, the report | verification measured live with OpenCV 5 (2026-09-19); processing live pending |
 | 3 | **Agent loop.** An agent choosing inspect / fix / process / verify / stop, every decision traced, the loop's guardrails around it | loop and guardrails live in `loop.py` (tested); the Bedrock agent pending |
-| 4 | **Reframe fixer.** Crop to the measured picture area + size-capped reframe, re-inspected | done in the demo (Sandy); live pending |
+| 4 | **Reframe fixer.** Crop to the measured picture area + size-capped reframe, re-inspected | done in the demo (Sandy — the fix holds, and the render still fails on a gate the fix cannot address); live pending |
 | 5 | **Verification-driven retry.** The separation gate fails, the agent switches strategy, reprocesses, passes | done in the demo (Ethel); the pass is measured (milestone 0) |
-| 6 | **The other exit.** A spent retry budget ends in a reshoot request with capture guidance | done (`&budget=0`) |
+| 6 | **The other exit.** A failed verification with no allowed strategy left ends in a reshoot request that leads with the cause | done (Sandy; `&budget=0` shows the spent-budget variant on Ethel) |
 | 7 | **The screen.** One recording at a time, the session view, Trace and Details | done |
 | 8 | **OpenCV 5 DNN segmentation / QC.** `SubjectSegmenter`, measured against the samples | planned — the first live OpenCV 5 capability |
 | 9 | **Live wiring.** OpenCV inspection and verification on AWS compute, the matte cache on S3 by source hash, Bedrock for the agent | inspection and verification run live from a workdir; Bedrock, S3 and the processors pending — a hybrid (archived matte, live agent) is the next step |
@@ -390,7 +402,7 @@ moment before and after; the linked videos are these same archive files:
 
 | sample | source frame | delivered frame |
 |---|---|---|
-| Sandy Hackett | `sandy_hackett_v2.mp4` frame 716 — chosen from the 24 % of frames where the crown is inside the picture, after the walk-in | `sandy_hackett_v2_red_v3_full.mp4` frame 716 |
+| Sandy Hackett | `sandy_hackett_v2.mp4` frame 716 — chosen from the 24 % of frames where the crown is inside the picture, after the walk-in | `sandy_hackett_v2_red_v4.mp4` frame 716 — the crown-completion render, the run the workdir holds (fails head height; the still is the render the reshoot request is about) |
 | Ethel Chadwick | `ethel_chadwick_v2.mp4` frame 900 | attempt 1: `ethel_chadwick_v2_v1.mp4` frame 900; attempt 2: `ethel_chadwick_v2_v3.mp4` frame 900 — the separation-targeted render, measured 1.52× (`ethel_chadwick_v2_v2.mp4` is the intermediate shadow-lift-only render, 1.37×) |
 | Zach Sain | `zach_sain_v2.mov` (480 × 412, 180° display matrix — the browser honours it; `stills/source.mp4` is a stream-copied remux, registered under its own hash) | `zach_sain_v2_v2.mp4` — the archived crown-completion render |
 
@@ -400,7 +412,8 @@ The stills directory is git-ignored (performer footage).
 
 The visible demo is the lineup of [midtownshow.com/2040](https://midtownshow.com/2040) — Sandy
 Hackett, Ethel Chadwick, Zach Sain — because those are the recordings we have the right to show.
-Sandy's and Ethel's measurements are their own archived runs, and their paths follow from them.
+Sandy's and Ethel's measurements are their own archived runs (`sandy_hackett_v2_red_v4`,
+`ethel_chadwick_v2_v3`), and their paths follow from them.
 
 **Zach's is not.** His archived run (`work/midtown_zach_sain_v2`) is a 480 × 412 picture with the
 crown cut on 78 % of frames, a face held at the exposure clamp, and a black shirt separating from
@@ -435,11 +448,11 @@ head spread 1.3 % / 0.7 %, matte extent, frame counts, audio). Four fixture entr
 from the re-run, none changing a status: Ethel's key direction (×0.80, from the left — not
 flat-lit), her head drift (3.1 px, measured; the fixture had carried an unmeasured 1.5), Sandy's
 steadiness (1.75×, as `pose_qc.py` reports it), and face exposure recorded as the gain the grade
-applies in all three clips. **One disagreement is open and written down here rather than papered
-over:** Sandy's fixture and the video the demo plays are the archive's v3 run
-(`sandy_hackett_v2_red_v3_full.mp4`, head spread 1.2 %), but his workdir now holds the v4 run — the
-crown completion of 2026-09-11 — whose solve measures head spread **2.9 %** and drift **5.3 px**,
-both over the gates. The v3 numbers were flattered by the defect the completion fixes: with his
-crown cut off on 76 % of frames the head top was pinned to the picture edge and could not move.
-Measured honestly, Sandy's recording fails the framing gates for the same reason it warned on
-steadiness — he walks into a close-up — and that is a script decision, not a fixture edit.
+applies in all three clips. **One disagreement changed the demo:** Sandy's fixture had carried the
+archive's v3 run (`sandy_hackett_v2_red_v3_full.mp4`, head spread 1.2 %, delivered), but his workdir
+holds the v4 run — the crown completion of 2026-09-11 — whose solve measures head spread **2.9 %**
+and drift **5.3 px**, both over the gates, and v3 cannot be regenerated. The v3 pass was flattered
+by the defect the completion fixes: with his crown cut off on 76 % of frames the head top was pinned
+to the picture edge and could not move. So Sandy's fixture, video and still are now v4, measured,
+and his path ends in a reshoot request — for the reason INSPECT warned about, the walk-in. The
+demo lost a "consistent output" and gained the exit the product exists to make honest.

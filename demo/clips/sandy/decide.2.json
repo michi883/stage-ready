@@ -1,7 +1,7 @@
 {
   "action": "process",
   "strategy": "process.standard",
-  "reasoning": "The fix held and created nothing new: the picture area now fills its frame and the shoulders sit at 44 % of the canvas with the p95 held at the cap, at a head height of 0.421 for the whole clip. Nothing outside the profile remains. The two warnings — the walk-in and the crown cut on 76 % of frames — are recorded-content limits, not defects a fixer may touch; the crown treatment handles the edge honestly. Process with the standard strategy.",
+  "reasoning": "The fix held and created nothing new: the picture area now fills its frame and the shoulders sit at 44 % of the canvas with the p95 held at the cap, at a head height of 0.413 for the whole clip. Nothing outside the profile remains. The two warnings — the walk-in and the crown cut on 76 % of frames — are recorded-content limits, not defects a fixer may touch; the crown completion restores the cut rows from his own uncut frames, and the walk-in is measured on the finished framing. Process with the standard strategy.",
   "cites": ["picture_area", "subject_size", "distance_steady", "headroom"],
   "confidence": 0.93,
   "model": "cached",

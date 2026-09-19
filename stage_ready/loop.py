@@ -80,18 +80,33 @@ def _guard(state: RunState, d: Decision) -> str | None:
     return None
 
 
-def _reshoot_request(state: RunState) -> dict[str, Any]:
-    """The other exit: the defect, the number behind it, the capture change."""
-    items = []
+def _reshoot_request(state: RunState, decision: Decision | None = None) -> dict[str, Any]:
+    """The other exit: the defect, the number behind it, the capture change.
+
+    Order matters, because the first item is the headline. A gate names what failed, not why:
+    Sandy's head height fails on the canvas because he walked into a close-up, and the guidance
+    for that is "be at your final distance", not the gate's "lock the camera off". So the findings
+    the agent cites as the cause come first — a warning it names is a diagnosis — then the gates
+    that failed, then any finding still outside the profile."""
+    items: list[dict[str, Any]] = []
+
+    def add(x, cause=False):
+        if any(i["id"] == x.id for i in items):
+            return
+        items.append({"id": x.id, "label": x.label, "value": x.value, "threshold": x.threshold, "unit": x.unit,
+                      "detail": x.detail, "guidance": state.profile.guidance(x.id), "cause": cause})
+
+    for c in (decision.cites if decision else []):
+        for f in state.findings:
+            if f.id == c and f.status in ("fail", "warn"):
+                add(f, cause=True)
     v = state.last_verify
     if v is not None:
         for g in v.failing:
-            items.append({"id": g.id, "label": g.label, "value": g.value, "threshold": g.threshold,
-                          "unit": g.unit, "detail": g.detail, "guidance": state.profile.guidance(g.id)})
+            add(g)
     for f in state.findings:
-        if f.status == "fail" and all(i["id"] != f.id for i in items):
-            items.append({"id": f.id, "label": f.label, "value": f.value, "threshold": f.threshold,
-                          "unit": f.unit, "detail": f.detail, "guidance": state.profile.guidance(f.id)})
+        if f.status == "fail":
+            add(f)
     return {"items": items, "attempts": len(state.attempts), "budget": state.budget()}
 
 
@@ -197,7 +212,7 @@ def run(clip: Clip, profile: Profile, backend: Backend) -> Iterator[dict[str, An
         elif d.action == "reshoot":
             state.path.append("reshoot")
             yield _ev("phase", cid, phase="reshoot")
-            yield _ev("run.end", cid, outcome="reshoot", reshoot=_reshoot_request(state),
+            yield _ev("run.end", cid, outcome="reshoot", reshoot=_reshoot_request(state, d),
                       path=list(state.path), attempts=[{"n": a.n, "strategy": a.strategy,
                       "passed": a.verify.passed if a.verify else None} for a in state.attempts])
             return

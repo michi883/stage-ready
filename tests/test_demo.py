@@ -18,17 +18,18 @@ def trace(clip_id, backend=None):
 
 
 class DemoPaths(unittest.TestCase):
-    EXPECTED = {   # the Midtown Show lineup, in billing order
-        "sandy": ["inspect", "fix", "inspect", "process", "verify ✓", "deliver"],
-        "ethel": ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"],
-        "zach": ["inspect", "process", "verify ✓", "deliver"],
+    EXPECTED = {   # the Midtown Show lineup, in billing order — the three exits
+        "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),
+        "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),
+        "zach": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),
     }
+    DELIVERED = ("ethel", "zach")
 
     def test_three_paths(self):
-        for cid, path in self.EXPECTED.items():
+        for cid, (outcome, path) in self.EXPECTED.items():
             end = trace(cid)[-1]
             self.assertEqual(end["type"], "run.end", cid)
-            self.assertEqual(end["outcome"], "delivered", cid)
+            self.assertEqual(end["outcome"], outcome, cid)
             self.assertEqual(end["path"], path, cid)
 
     def test_deterministic(self):
@@ -60,10 +61,22 @@ class DemoPaths(unittest.TestCase):
         after = [e for e in evs if e["type"] == "inspect.result" and e["result"]["target"] == "fixed"][0]
         self.assertEqual(after["resolved"], ["picture_area", "subject_size"])
         self.assertEqual(after["new_defects"], [])
-        self.assertEqual(evs[-1]["delivery"]["fixes"], ["fix.reframe"])
+        self.assertEqual([e["result"]["strategy"] for e in evs if e["type"] == "fix.result"], ["fix.reframe"])
+
+    def test_sandy_reshoot_names_the_cause_first(self):
+        # The gates that fail are head height; the cause is the walk-in INSPECT warned about, and
+        # the request leads with it, so the guidance is "be at your final distance", not "tripod".
+        end = trace("sandy")[-1]
+        v = [e for e in trace("sandy") if e["type"] == "verify.result"][-1]
+        self.assertEqual([g["id"] for g in v["result"]["failing"]], ["head_spread", "head_drift"])
+        items = end["reshoot"]["items"]
+        self.assertEqual([i["id"] for i in items], ["distance_steady", "head_spread", "head_drift"])
+        self.assertTrue(items[0]["cause"])
+        self.assertIn("final distance", items[0]["guidance"])
+        self.assertEqual(end["reshoot"]["budget"], {"reprocesses_used": 0, "retry_budget": 2})
 
     def test_outputs_agree_on_the_profile(self):
-        for cid in CLIPS:
+        for cid in self.DELIVERED:
             m = trace(cid)[-1]["delivery"]["measurements"]
             self.assertGreaterEqual(m["separation"], 1.5)
             self.assertLessEqual(m["head_spread"], 0.02)

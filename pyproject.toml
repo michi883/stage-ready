@@ -3,6 +3,8 @@ name = "stage-ready"
 version = "0.2.0"
 description = "An agentic video-quality loop for self-recorded content. OpenCV 5 does the seeing; an agent does the deciding."
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = []          # demo mode is standard library only
 
 [project.optional-dependencies]

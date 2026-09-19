@@ -40,7 +40,7 @@
       "attempt_1": {
         "video": "sandy_hackett_v2_red_v4.mp4",
         "composite": "comp",
-        "note": "the workdir holds the v4 run (crown completion, 2026-09-11). The fixture and the video the demo plays are v3 (2026-09-08), whose solve is no longer on disk — measure reports v4."
+        "note": "the v4 run (crown completion, 2026-09-11) — the run the workdir holds and the fixture measures; v3 (2026-09-08, the earlier fixture) is no longer reproducible."
       }
     }
   },

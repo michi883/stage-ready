@@ -1,5 +1,5 @@
 {
-  "provenance": "archive: sandy_hackett_v2 after the cap — track.log (head_target 0.421); shoulder span re-measured from pose.csv + affine.csv 2026-09-10 (smoothed p95 held at the cap by construction; raw frames peak 55.3 %)",
+  "provenance": "archive: sandy_hackett_v2 after the cap (v4 run) — track.log (62 % at 0.334 → head_target 0.413); shoulder span from the size-capped dry solve, re-run 2026-09-19 and reproduced with OpenCV 5 in-repo: python3 -m stage_ready measure sandy",
   "duration_ms": 9000,
   "facts": { "picture": "1620×1080 (cropped)", "fps": 25, "frames": 1436, "duration_s": 57.4 },
   "findings": [
@@ -14,9 +14,9 @@
       "value": 0.999, "unit": "fraction of frames", "threshold": { "op": ">=", "value": 0.95 },
       "confidence": 0.95, "frames": "2 frames off-subject", "detail": "Unchanged: 99.9 %.", "tool": "pose_qc.py" },
     { "id": "subject_size", "label": "Subject size on canvas", "status": "pass",
-      "value": { "p50": 0.439, "p95": 0.55 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
+      "value": { "p50": 0.442, "p95": 0.548 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
       "confidence": 1.0, "frames": "all frames",
-      "detail": "At head_target 0.421 the shoulders span 44 % of the canvas (p95 held at the 55 % cap). Same head height for the whole clip.", "tool": "track_frame.py" },
+      "detail": "At head_target 0.413 the shoulders span 44 % of the canvas (p95 held at the 55 % cap). Same head height for the whole clip.", "tool": "track_frame.py" },
     { "id": "distance_steady", "label": "Distance steady", "status": "warn",
       "value": 1.75, "unit": "apparent size p95 / p5", "threshold": { "op": "<=", "value": 1.35 },
       "confidence": 1.0, "frames": "walk-in at 4.5 s",
@@ -29,7 +29,7 @@
       "value": 1.059, "unit": "exposure gain toward the 0.46 target", "threshold": { "target": 0.46, "clamp": [0.8, 1.25] },
       "confidence": 1.0, "frames": "median over the take", "detail": "Unchanged: 0.444.", "tool": "auto_grade.py" },
     { "id": "key_direction", "label": "Key direction", "status": "info",
-      "value": 0.94, "unit": "silhouette L / R luma ratio", "threshold": { "flat_below": 1.08 },
-      "confidence": 1.0, "frames": "median over the take", "detail": "Unchanged: flat-lit, convention stands.", "tool": "auto_grade.py" }
+      "value": 0.90, "unit": "silhouette R / L luma ratio", "threshold": { "flat_below": 1.08 },
+      "confidence": 1.0, "frames": "median over the take", "detail": "Unchanged: key from the left (×0.90), the stage's key and rim follow it.", "tool": "auto_grade.py" }
   ]
 }
