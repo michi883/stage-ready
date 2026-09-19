@@ -1,0 +1,8 @@
+{
+  "action": "deliver",
+  "reasoning": "Every gate passes: the matte holds 98 % of the second opinion's head width, separation 1.79× against 1.5, head height held to 1.2 % of output height, 1436 frames and the audio bit-identical. One fix, one attempt. The report carries the two capture notes — be at your final distance before the take, and give the hair 12 % headroom — as reshoot guidance for next time, not as defects in this delivery.",
+  "cites": ["matte_extent", "separation", "head_spread", "frame_count", "audio_md5"],
+  "confidence": 0.95,
+  "model": "cached",
+  "duration_ms": 2000
+}

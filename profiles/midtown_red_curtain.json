@@ -1,0 +1,249 @@
+{
+  "id": "midtown_red_curtain",
+  "name": "Midtown Show — Red Curtain",
+  "description": "First Target Output Profile. A performer on the Midtown Show red-curtain stage: 9:16 canvas, one fixed plate, tracked framing, the Red Curtain grade. Every number here was measured on the archived clips (MIDTOWN_RED_CURTAIN_PIPELINE.md).",
+  "canvas": {
+    "w": 1080,
+    "h": 1920
+  },
+  "encode": {
+    "codec": "h264",
+    "crf": 20,
+    "faststart": true,
+    "audio": "copy"
+  },
+  "background": {
+    "type": "still",
+    "plate": "midtown_red_curtain.png",
+    "plate_size": [
+      1536,
+      2752
+    ]
+  },
+  "framing": {
+    "head_target": 0.334,
+    "head_target_max": 0.55,
+    "size_cap": 0.55,
+    "stab_sec": 1.25,
+    "scale_tol": 0.25,
+    "note": "head_target is a floor: the solve may push the head down to hold the size cap, never up."
+  },
+  "look": {
+    "id": "red_curtain_grade",
+    "params": "shrink=0.8 feather=1.2 fgsat=1.00 fgcon=1.06 fggamma=1.02 warmr=1.02 warmg=1.00 warmb=0.96 shadr=0.018 shadg=0.004 shadb=0.004 keyfall=0.08 rimamt=0.28 rimr=1.00 rimg=0.42 rimb=0.38 rimdy=-14 rimblur=15 lwamt=0.50 lwwidth=9 bgblur=0 bloom=0.05 vignette=0.10 bgexp=1.00",
+    "measured_per_clip": [
+      "keydx",
+      "rimdx",
+      "fgexp"
+    ],
+    "face_target": 0.46,
+    "fgexp_clamp": [
+      0.8,
+      1.25
+    ]
+  },
+  "inspection": {
+    "picture_area": {
+      "id": "picture_area",
+      "label": "Picture area",
+      "rule": "the recorded picture must fill the file; padding is cropped before framing"
+    },
+    "pose_coverage": {
+      "id": "pose_coverage",
+      "label": "Pose coverage",
+      "op": ">=",
+      "value": 0.6
+    },
+    "one_subject": {
+      "id": "one_subject",
+      "label": "One subject",
+      "op": ">=",
+      "value": 0.95
+    },
+    "subject_size": {
+      "id": "subject_size",
+      "label": "Subject size on canvas",
+      "op": "<=",
+      "value": 0.55,
+      "unit": "shoulder span / canvas width, p95"
+    },
+    "distance_steady": {
+      "id": "distance_steady",
+      "label": "Distance steady",
+      "op": "<=",
+      "value": 1.35,
+      "severity": "warn",
+      "unit": "apparent size p95/p5"
+    },
+    "face_exposure": {
+      "id": "face_exposure",
+      "label": "Face exposure",
+      "target": 0.46,
+      "severity": "warn"
+    },
+    "wardrobe_vs_plate": {
+      "id": "wardrobe_vs_plate",
+      "label": "Wardrobe vs plate",
+      "severity": "info",
+      "note": "pre-composite predictor; does not discriminate (archive: 1.44x on a failing clip, 1.38x on a passing one)"
+    },
+    "headroom": {
+      "id": "headroom",
+      "label": "Headroom",
+      "recommended": [
+        0.05,
+        0.12
+      ],
+      "severity": "info",
+      "unit": "fraction of picture height above the crown"
+    },
+    "key_direction": {
+      "id": "key_direction",
+      "label": "Key direction",
+      "severity": "info",
+      "unit": "silhouette L/R luma ratio",
+      "note": "measured, then matched by the grade; below 1.08 the room is flat-lit"
+    }
+  },
+  "gates": [
+    {
+      "id": "pose_coverage",
+      "label": "Pose on frames",
+      "op": ">=",
+      "value": 0.6,
+      "unit": "fraction of frames"
+    },
+    {
+      "id": "one_subject",
+      "label": "One subject",
+      "op": ">=",
+      "value": 0.95,
+      "unit": "fraction of frames"
+    },
+    {
+      "id": "matte_extent",
+      "label": "Matte extent vs second opinion",
+      "op": ">=",
+      "value": 0.9,
+      "unit": "head width ratio, median"
+    },
+    {
+      "id": "separation",
+      "label": "Subject vs background luminance",
+      "op": ">=",
+      "value": 1.5,
+      "unit": "edge luma ratio"
+    },
+    {
+      "id": "head_spread",
+      "label": "Head height spread",
+      "op": "<=",
+      "value": 0.02,
+      "unit": "fraction of output height"
+    },
+    {
+      "id": "head_drift",
+      "label": "Head drift (slower than 2 s)",
+      "op": "<=",
+      "value": 4.0,
+      "unit": "px"
+    },
+    {
+      "id": "frame_count",
+      "label": "Frame count = source",
+      "op": "==",
+      "value": "source"
+    },
+    {
+      "id": "audio_md5",
+      "label": "Audio MD5 = source",
+      "op": "==",
+      "value": "source"
+    }
+  ],
+  "strategies": [
+    {
+      "id": "fix.reframe",
+      "kind": "fix",
+      "label": "Crop to picture area + size-capped reframe",
+      "addresses": [
+        "picture_area",
+        "subject_size"
+      ],
+      "cost": "cheap",
+      "one_sided": true,
+      "tools": [
+        "detect_band.py",
+        "track_frame.py (SIZE_CAP, HEAD_TARGET_MAX)"
+      ],
+      "bounds": {
+        "head_target_max": 0.55,
+        "scale_tol": 0.25
+      }
+    },
+    {
+      "id": "process.standard",
+      "kind": "process",
+      "label": "Standard Red Curtain composite",
+      "addresses": [],
+      "cost": "expensive",
+      "stages": [
+        "seed",
+        "matte",
+        "track",
+        "crown",
+        "warp",
+        "grade",
+        "composite",
+        "encode"
+      ],
+      "cacheable": [
+        "matte"
+      ]
+    },
+    {
+      "id": "process.separation_targeted",
+      "kind": "process",
+      "label": "Separation-targeted composite",
+      "addresses": [
+        "separation"
+      ],
+      "cost": "moderate",
+      "reuses": [
+        "seed",
+        "matte",
+        "track",
+        "warp"
+      ],
+      "stages": [
+        "grade",
+        "composite",
+        "encode"
+      ],
+      "bounds": {
+        "rimamt_max": 0.45,
+        "lwamt_max": 0.7,
+        "shadow_lift_max": 0.04,
+        "fgexp_clamp": [
+          0.8,
+          1.25
+        ]
+      },
+      "note": "Stronger rim and light wrap, a bounded shadow lift. Changes the edge, never the performer's pixels."
+    }
+  ],
+  "retry_budget": 2,
+  "reshoot_guidance": {
+    "picture_area": "Export without padding: send the recorded picture, not a letterboxed or pillarboxed file.",
+    "subject_size": "Stand 2–3 m from the camera and frame head to mid-thigh. A close-up cannot be zoomed out of.",
+    "distance_steady": "Be at your final distance before the take starts. Do not walk toward or away from the camera.",
+    "pose_coverage": "Be fully in frame, standing, for the whole take.",
+    "one_subject": "Nobody else in shot — no mirrors, screens, glass or person-shaped things behind you.",
+    "matte_extent": "Give your hair 12 % headroom and stand 1 m off a plain wall.",
+    "separation": "Don't wear the stage. The curtain is deep red: no red, maroon, burgundy or hot pink. Mid-tone neutrals, blue, green or a pattern separate by about 3x.",
+    "face_exposure": "One large soft light in front of you at eye level; the face must be clearly lit.",
+    "head_spread": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation.",
+    "head_drift": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation."
+  },
+  "source": "RECORDING_REQUIREMENTS.md, MIDTOWN_RED_CURTAIN_PIPELINE.md"
+}

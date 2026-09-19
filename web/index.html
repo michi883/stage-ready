@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stage Ready</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="mark">Stage Ready</span>
+      <span class="tag">Raw recording in · verified output out</span>
+    </div>
+    <div class="profile">
+      <label for="profile">Target Output Profile</label>
+      <select id="profile"><option value="midtown_red_curtain" selected>Midtown Show · Red Curtain</option></select>
+    </div>
+    <div class="controls">
+      <span id="mode" class="badge"></span>
+      <button id="processed-nav" class="ghost" hidden>Processed (0)</button>
+      <button id="details-btn" class="ghost">Details</button>
+    </div>
+  </header>
+
+  <!-- 1. Intake: one recording in. -->
+  <main id="intake" class="view intake">
+    <div id="drop" class="drop">
+      <input id="file" type="file" accept="video/*,.mp4,.mov" hidden>
+      <div class="drop-in">
+        <span class="drop-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/><path d="M12 4v11"/><path d="M7.5 8.5 12 4l4.5 4.5"/></svg></span>
+        <h1>Drop a recording</h1>
+        <p class="lead">One video at a time. It comes back ready for <b id="drop-profile">Midtown Show · Red Curtain</b> — measured, corrected where that is honest, and verified — or with a reshoot request.</p>
+        <button id="choose" class="primary big">Choose a file</button>
+        <p class="alt"><button id="samples-toggle" class="linkish">or try a sample recording</button></p>
+        <div id="samples" class="samples" hidden></div>
+      </div>
+      <div id="drop-status" class="drop-status" hidden></div>
+    </div>
+  </main>
+
+  <!-- 2. The workspace: the source, the flow, the output. -->
+  <main id="bench" class="view bench" hidden>
+    <div id="media" class="media">
+      <figure class="src">
+        <div id="src-frame" class="frame"></div>
+        <figcaption>
+          <span class="cap-line"><b id="src-label"></b><span id="src-name"></span><span id="src-meta"></span></span>
+          <span class="cap-line sub"><span id="src-performer"></span><span id="src-how" class="chip" hidden></span></span>
+        </figcaption>
+      </figure>
+      <div id="between" class="between">
+        <span class="between-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
+        <span class="between-lbl">Red Curtain</span>
+      </div>
+      <figure class="outfig">
+        <div id="out" class="thumb out"><div class="frame placeholder"><span>output</span></div><span class="cap"></span></div>
+        <figcaption id="out-cap"></figcaption>
+      </figure>
+    </div>
+
+    <div id="flow" class="flow">
+      <div class="retry"><span class="arc"></span><span class="head"></span><span class="lbl">retry</span></div>
+    </div>
+    <p id="narrator" class="narrator"></p>
+
+    <div id="actions" class="actions">
+      <button id="make" class="primary big">Make Stage Ready</button>
+      <button id="stop" class="ghost" hidden>■ Stop</button>
+      <button id="add" class="primary big" hidden>Add another recording</button>
+      <button id="view-processed" class="big" hidden>View processed recordings (1)</button>
+      <button id="trace-btn" class="ghost">Trace</button>
+      <button id="change" class="ghost">Change file</button>
+    </div>
+  </main>
+
+  <!-- 3. The session: every processed recording, source over output. -->
+  <section id="processed" class="view processed" hidden>
+    <div class="processed-head">
+      <h1 id="processed-title" class="headline"></h1>
+      <p class="tagline">Different inputs. One output standard.</p>
+    </div>
+    <div id="processed-cards" class="pcards"></div>
+    <div class="processed-foot">
+      <span class="muted">Same profile · same loop · no per-recording settings · every output verified by measurement</span>
+      <span class="spacer"></span>
+      <button id="processed-back" class="ghost">Back</button>
+      <button id="processed-add" class="primary">Add another recording</button>
+      <button id="clear-session" class="ghost small">Clear session</button>
+    </div>
+  </section>
+
+  <!-- Everything dense lives here, closed by default: the numbers, and one full trace per recording. -->
+  <div id="backdrop" class="backdrop" hidden></div>
+  <aside id="drawer" class="drawer" hidden>
+    <div class="drawer-h">
+      <div class="drawer-title"><b id="drawer-title"></b><span id="drawer-sub"></span></div>
+      <div id="drawer-tabs" class="tabs"></div>
+      <button id="drawer-close" class="ghost">Close</button>
+    </div>
+    <div class="drawer-b">
+      <section id="details" class="dsec" hidden>
+        <div class="dfacts">
+          <span id="profile-facts" class="facts"></span>
+        </div>
+        <h3>Consistent by measurement</h3>
+        <table id="payoff-table"><thead></thead><tbody></tbody></table>
+        <p id="payoff-empty" class="muted">Make a recording Stage Ready — the delivered numbers appear here.</p>
+        <h3>How the demo stays honest</h3>
+        <ul class="honest">
+          <li>Every measurement is replayed from the archived fixtures under <code>demo/clips/</code> — no model calls, no OpenCV, no AWS.</li>
+          <li>An upload is recognised by its SHA-256 — the same key the live matte cache uses — and never leaves the browser.</li>
+          <li>The loop enforces what the agent may not skip: every process is verified, every fix re-inspected, delivery refused unless the latest verification passed.</li>
+          <li>Every number is measured — Ethel's second attempt, the last projected one, was measured on 2026-09-19 (1.52×). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is.</li>
+          <li>OpenCV 5 DNN subject segmentation / QC is the first live capability to wire — <span class="chip planned">planned</span>, not running here.</li>
+        </ul>
+        <details id="provenance"><summary>Where the numbers come from</summary><ul></ul></details>
+      </section>
+      <div id="traces"></div>
+    </div>
+  </aside>
+
+  <div id="notice" class="notice" hidden></div>
+  <script src="/app.js"></script>
+</body>
+</html>

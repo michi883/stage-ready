@@ -1,0 +1,9 @@
+{
+  "action": "process",
+  "strategy": "process.separation_targeted",
+  "reasoning": "Verification failed on exactly one gate, and it is the one no pre-composite measure could see: luminance separation at the silhouette edge is 1.13× against 1.5. In colour the composite reads well; in luminance the jacket merges into the curtain and only the face, collar and hands carry the outline — which is what a small screen, a heavy re-encode or a greyscale thumbnail shows. Every other gate passes, so the matte and the tracking are sound and are reused. The profile allows one strategy that addresses this finding: the separation-targeted composite — a stronger rim and light wrap and a bounded shadow lift, which change the edge and the dark end and never the performer's pixels. Retry budget: 0 of 2 used. If this cannot clear the gate inside its bounds, the exit is a reshoot request: wear something that contrasts with a red stage.",
+  "cites": ["separation", "matte_extent", "head_spread"],
+  "confidence": 0.8,
+  "model": "cached",
+  "duration_ms": 3600
+}

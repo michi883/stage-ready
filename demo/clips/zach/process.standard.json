@@ -1,0 +1,27 @@
+{
+  "provenance": "archive: brian_shirley_v2 — first run ≈16 min, repeat 2 min 37 s (§10); track.log reproduced 2026-09-10; params.txt",
+  "artifact": "attempt_1",
+  "duration_ms": 157000,
+  "stages": [
+    { "id": "seed", "label": "Seed mask", "tool": "PersonMatte + pick_seed.py + clean_seed.py", "duration_ms": 1000,
+      "summary": "Apple Vision seed on frame 1 — a single component; clean_seed is a no-op." },
+    { "id": "matte", "label": "Video matte", "tool": "MatAnyone 2 (local MPS)", "duration_ms": 780000, "cached": true,
+      "summary": "1285 mattes — cache hit, keyed on the source SHA-256 and the seed SHA-256. ≈13 min if regenerated." },
+    { "id": "track", "label": "Tracked reframe solve", "tool": "track_frame.py", "duration_ms": 19000,
+      "summary": "head_target 0.334 — the floor, unchanged; scale 1.275..1.289 (median 1.279); drift slower than 1.25 s removed.",
+      "params": { "head_target": 0.334, "scale_min": 1.275, "scale_max": 1.289, "scale_median": 1.279 } },
+    { "id": "crown", "label": "Crown treatment", "tool": "soften_crown.py", "duration_ms": 3000,
+      "summary": "The crown leaves the picture on 0 % of frames — nothing to dissolve." },
+    { "id": "warp", "label": "Reframe to canvas", "tool": "warp.py", "duration_ms": 19000,
+      "summary": "1080×1920, one resample, the same transform for frames and matte." },
+    { "id": "grade", "label": "Measured grade", "tool": "auto_grade.py", "duration_ms": 1000,
+      "summary": "keydx=+1 rimdx=+6 fgexp=1.250 — clamped; the face asked for ×1.55.",
+      "params": { "keydx": 1, "rimdx": 6, "fgexp": 1.25, "fgexp_wanted": 1.55 } },
+    { "id": "composite", "label": "Composite", "tool": "Composite", "duration_ms": 120000,
+      "summary": "1285 frames on the Red Curtain plate — light wrap 0.50, rim 0.28, shadow floor 0.018." },
+    { "id": "encode", "label": "Encode", "tool": "ffmpeg", "duration_ms": 17000,
+      "summary": "H.264 CRF 20, faststart, the source audio stream copied untouched." }
+  ],
+  "params": { "look": "red_curtain_grade", "keydx": 1, "rimdx": 6, "fgexp": 1.25, "rimamt": 0.28, "lwamt": 0.50, "shadow_lift": 0.0 },
+  "output": { "canvas": [1080, 1920], "frames": 1285, "fps": 30, "head_target": 0.334, "scale_median": 1.279, "shoulder_span_p50": 0.346 }
+}

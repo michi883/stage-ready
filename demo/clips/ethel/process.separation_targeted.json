@@ -1,0 +1,25 @@
+{
+  "provenance": "archive: ethel_chadwick_v2_v3 — separation-targeted composite measured 2026-09-19 on the cached matte and tracking (work/midtown_ethel_chadwick_v2: params_sep.txt, comp_sep/, separation.log); the grid over the strategy's bounds is in separation.log. The archived shadow lift alone (+0.030, ethel_chadwick_v2_v2) measured 1.37×; the fixture's earlier projection (rim 0.40, wrap 0.65, lift 0.030 → 1.58×) measured 1.43× and was wrong.",
+  "artifact": "attempt_2",
+  "duration_ms": 131000,
+  "stages": [
+    { "id": "seed", "label": "Seed mask", "tool": "PersonMatte + pick_seed.py + clean_seed.py", "duration_ms": 0, "reused": true,
+      "summary": "Reused from attempt 1 — the seed is not what failed." },
+    { "id": "matte", "label": "Video matte", "tool": "MatAnyone 2 (local MPS)", "duration_ms": 0, "reused": true, "cached": true,
+      "summary": "Reused from attempt 1 — the matte holds 100 % of the second opinion; nothing to redo." },
+    { "id": "track", "label": "Tracked reframe solve", "tool": "track_frame.py", "duration_ms": 0, "reused": true,
+      "summary": "Reused — head_target 0.334, scale median 1.354; framing passed every gate." },
+    { "id": "warp", "label": "Reframe to canvas", "tool": "warp.py", "duration_ms": 0, "reused": true,
+      "summary": "Reused — the same 1080×1920 frames and matte." },
+    { "id": "grade", "label": "Separation-targeted grade", "tool": "Composite params (bounded override)", "duration_ms": 1000,
+      "summary": "rim 0.28 → 0.45 (the bound), light wrap 0.50 → 0.70 (the bound), shadow lift +0.040 (the bound); fgexp 0.860 unchanged. The curtain is untouched. Measured on the way there: the lift is the lever (+0.005 ≈ +0.035×), the wrap adds ≈ 0.055× over its range, the rim ≈ 0.025× — the gate clears only with all three at their bounds.",
+      "params": { "rimamt": 0.45, "lwamt": 0.70, "shadow_lift": 0.04, "shadr": 0.058, "shadg": 0.044, "shadb": 0.044, "fgexp": 0.86, "keydx": -1, "rimdx": -6 } },
+    { "id": "composite", "label": "Composite", "tool": "Composite", "duration_ms": 115000,
+      "summary": "1237 frames re-composited with the separation-targeted grade." },
+    { "id": "encode", "label": "Encode", "tool": "ffmpeg", "duration_ms": 15000,
+      "summary": "H.264 CRF 20, faststart, source audio copied." }
+  ],
+  "params": { "look": "red_curtain_grade + separation override", "keydx": -1, "rimdx": -6, "fgexp": 0.86, "rimamt": 0.45, "lwamt": 0.70, "shadow_lift": 0.04,
+              "bounds": { "rimamt_max": 0.45, "lwamt_max": 0.70, "shadow_lift_max": 0.04 } },
+  "output": { "canvas": [1080, 1920], "frames": 1237, "fps": 30, "head_target": 0.334, "scale_median": 1.354, "shoulder_span_p50": 0.338 }
+}

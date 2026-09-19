@@ -1,0 +1,8 @@
+{
+  "action": "deliver",
+  "reasoning": "Attempt 2 clears the gate attempt 1 failed — separation 1.52× against 1.5 — with the grade at its bounds (rim 0.45, wrap 0.70, lift 0.040: as far as the strategy is allowed to go, and it clears by 0.02×), and nothing else moved: the matte and tracking were reused, head height still 1.3 %, 1237 frames and the audio identical. One retry of two used, and the strategy has nowhere further to go, so the second retry would not be spent on this gate. Deliver, and carry the capture guidance in the report: don't wear the stage — the margin is thin because the wardrobe is.",
+  "cites": ["separation", "matte_extent", "head_spread", "frame_count", "audio_md5"],
+  "confidence": 0.9,
+  "model": "cached",
+  "duration_ms": 2200
+}

@@ -1,0 +1,9 @@
+{
+  "action": "fix",
+  "strategy": "fix.reframe",
+  "reasoning": "Two findings outside the profile, both about framing and both fixable one-sidedly without inventing a pixel. The picture is 1620×1080 pillarboxed inside a 1920×1080 file, and at the profile's head_target the performer would reach 63 % of the canvas width against the 55 % cap. The allowed fix addresses exactly these two: crop to the measured picture area, and let the size-capped solve push the head down the canvas until the shoulders fit — it can only ever make a performer smaller. The 1.69× walk-in is not something a reframe can undo — perspective is a property of where the lens was — so it stays a warning for the report. Fix first, re-inspect, then process.",
+  "cites": ["picture_area", "subject_size", "distance_steady"],
+  "confidence": 0.92,
+  "model": "cached",
+  "duration_ms": 3100
+}

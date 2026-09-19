@@ -1,0 +1,28 @@
+{
+  "provenance": "archive: sandy_hackett_v2_red_v3 — seed_pick.log (frame 265), track.log, params.txt; first run 15 min 13 s, repeat 2 min 46 s (§10)",
+  "artifact": "attempt_1",
+  "duration_ms": 166000,
+  "stages": [
+    { "id": "seed", "label": "Seed mask", "tool": "PersonMatte + pick_seed.py + clean_seed.py", "duration_ms": 4000,
+      "summary": "Vision on 17 candidate frames; seed from frame 265 (crown whole, widest head 366 px, least outlying). 38 components → 1: the reflection in the glass door is dropped." },
+    { "id": "matte", "label": "Video matte", "tool": "MatAnyone 2 (local MPS)", "duration_ms": 750000, "cached": true,
+      "summary": "1436 mattes propagated both ways from frame 265 — cache hit, keyed on source SHA-256 + seed SHA-256. ≈12.5 min if regenerated." },
+    { "id": "track", "label": "Tracked reframe solve", "tool": "track_frame.py", "duration_ms": 20000,
+      "summary": "head_target 0.421 (pushed from the 0.334 floor by the size cap); scale 1.030..1.278 (median 1.032); cut off at the frame bottom on 95 % of frames.",
+      "params": { "head_target": 0.421, "scale_min": 1.03, "scale_max": 1.278, "scale_median": 1.032 } },
+    { "id": "crown", "label": "Crown treatment", "tool": "soften_crown.py", "duration_ms": 6000,
+      "summary": "Crown cut on 76 % of frames — alpha ramped out over the last 70 px, modulated by the hair's own strands. Nothing invented.",
+      "params": { "ramp_px": 70, "texture": 0.7 } },
+    { "id": "warp", "label": "Reframe to canvas", "tool": "warp.py", "duration_ms": 21000,
+      "summary": "1080×1920 from the cropped 1620×1080 picture; one resample." },
+    { "id": "grade", "label": "Measured grade", "tool": "auto_grade.py", "duration_ms": 1000,
+      "summary": "keydx=-1 rimdx=-6 fgexp=1.059 — flat-lit room, stage convention.",
+      "params": { "keydx": -1, "rimdx": -6, "fgexp": 1.059 } },
+    { "id": "composite", "label": "Composite", "tool": "Composite", "duration_ms": 130000,
+      "summary": "1436 frames on the Red Curtain plate — light wrap 0.50, rim 0.28, shrink 0.8 so the hair's soft edge survives." },
+    { "id": "encode", "label": "Encode", "tool": "ffmpeg", "duration_ms": 19000,
+      "summary": "H.264 CRF 20 at 25 fps, faststart, source audio copied." }
+  ],
+  "params": { "look": "red_curtain_grade", "keydx": -1, "rimdx": -6, "fgexp": 1.059, "rimamt": 0.28, "lwamt": 0.50, "shadow_lift": 0.0 },
+  "output": { "canvas": [1080, 1920], "frames": 1436, "fps": 25, "head_target": 0.421, "scale_median": 1.032, "shoulder_span_p50": 0.439 }
+}

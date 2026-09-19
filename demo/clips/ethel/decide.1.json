@@ -1,0 +1,9 @@
+{
+  "action": "process",
+  "strategy": "process.standard",
+  "reasoning": "Nothing outside the profile — the cleanest source so far by every measure the inspection has: pose and one subject on 100 %, shoulders at 35 % of the canvas, steady to 1.09×, crown whole on every frame. One note at low confidence: the wardrobe is close to the plate in hue and luma. The predictor that says so does not discriminate — it scores a known-good clip almost the same — so it is not grounds for a fix, and no fixer changes what was worn. The honest move is to process with the standard strategy and let the one gate that can see this, measured on the finished composite, decide.",
+  "cites": ["subject_size", "one_subject", "distance_steady", "wardrobe_vs_plate"],
+  "confidence": 0.85,
+  "model": "cached",
+  "duration_ms": 2900
+}

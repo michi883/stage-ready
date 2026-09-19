@@ -1,0 +1,60 @@
+{
+  "id": "sandy",
+  "name": "Sandy Hackett",
+  "order": 1,
+  "brief": "Misframed, complete — the picture is padded inside the frame and the performer walks in too close.",
+  "source": {
+    "width": 1920,
+    "height": 1080,
+    "picture": "1620×1080 at +150+0 (pillarboxed)",
+    "fps": 25,
+    "duration_s": 57.4,
+    "frames": 1436,
+    "room": "kitchen, glass door",
+    "wardrobe": "dark t-shirt, shorts",
+    "framing": "walks into a close-up 4.5 s in",
+    "audio": "48 kHz AAC"
+  },
+  "fixture": "sandy_hackett_v2 (Red Curtain archive)",
+  "stills": {
+    "source": "source.jpg",
+    "attempt_1": "attempt_1.jpg"
+  },
+  "videos": {
+    "source": "source.mp4",
+    "attempt_1": "attempt_1.mp4"
+  },
+  "recognize": {
+    "sha256": "119f5e2b90b12ccb844302e39335b05ebc63139688c90e07ee983380e49b50cb",
+    "names": [
+      "sandy_hackett_v2.mp4",
+      "sandy_hackett.mp4",
+      "sandy.mp4"
+    ],
+    "note": "SHA-256 of the archived source — the key the matte cache uses (work/midtown_sandy_hackett_v2/source.key)"
+  },
+  "archive": {
+    "workdir": "work/midtown_sandy_hackett_v2",
+    "source": "sandy_hackett_v2.mp4",
+    "artifacts": {
+      "attempt_1": {
+        "video": "sandy_hackett_v2_red_v4.mp4",
+        "composite": "comp",
+        "note": "the workdir holds the v4 run (crown completion, 2026-09-11). The fixture and the video the demo plays are v3 (2026-09-08), whose solve is no longer on disk — measure reports v4."
+      }
+    }
+  },
+  "visual": {
+    "pillars": 0.078,
+    "head_y": -0.04,
+    "shoulder_span": 0.282,
+    "subject_height": 0.43,
+    "wardrobe": "#3b4048",
+    "wardrobe_luma": 0.22,
+    "skin": "#d4a98a",
+    "hair": "#6b5a4a",
+    "room": "#cfd6d8",
+    "room_accent": "#eef3f5",
+    "key_side": "flat"
+  }
+}

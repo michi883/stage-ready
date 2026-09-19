@@ -1,0 +1,65 @@
+{
+  "id": "ethel",
+  "name": "Ethel Chadwick",
+  "order": 2,
+  "brief": "Wearing the stage — recorded to spec, in a red suit, for a red curtain.",
+  "source": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "duration_s": 41.2,
+    "frames": 1237,
+    "room": "living room",
+    "wardrobe": "red trouser suit",
+    "framing": "head to thigh",
+    "audio": "48 kHz AAC"
+  },
+  "fixture": "ethel_chadwick_v2 (Red Curtain archive)",
+  "stills": {
+    "source": "source.jpg",
+    "attempt_1": "attempt_1.jpg",
+    "attempt_2": "attempt_2.jpg"
+  },
+  "videos": {
+    "source": "source.mp4",
+    "attempt_1": "attempt_1.mp4",
+    "attempt_2": "attempt_2.mp4"
+  },
+  "recognize": {
+    "sha256": "e1b0c8308d21145d6dfd8dc5c45889e4fa93e252b91cb280f2b18cf640d5780b",
+    "names": [
+      "ethel_chadwick_v2.mp4",
+      "ethel_chadwick.mp4",
+      "ethel.mp4"
+    ],
+    "note": "SHA-256 of the archived source — the key the matte cache uses (work/midtown_ethel_chadwick_v2/source.key)"
+  },
+  "archive": {
+    "workdir": "work/midtown_ethel_chadwick_v2",
+    "source": "ethel_chadwick_v2.mp4",
+    "artifacts": {
+      "attempt_1": {
+        "video": "ethel_chadwick_v2_v1.mp4",
+        "note": "the standard grade. Its composite frames were overwritten by the shadow-lift render (comp/ is ethel_chadwick_v2_v2, 1.37×), so separation is measured from the delivered file."
+      },
+      "attempt_2": {
+        "video": "ethel_chadwick_v2_v3.mp4",
+        "composite": "comp_sep",
+        "note": "the separation-targeted grade at its bounds, measured 2026-09-19 (separation.log)."
+      }
+    }
+  },
+  "visual": {
+    "pillars": 0.0,
+    "head_y": 0.08,
+    "shoulder_span": 0.141,
+    "subject_height": 0.25,
+    "wardrobe": "#8c1d1f",
+    "wardrobe_luma": 0.138,
+    "skin": "#c99b7d",
+    "hair": "#1f1a18",
+    "room": "#d3cabc",
+    "room_accent": "#e9e2d6",
+    "key_side": "flat"
+  }
+}

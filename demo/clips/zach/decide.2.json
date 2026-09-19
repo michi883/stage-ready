@@ -1,0 +1,8 @@
+{
+  "action": "deliver",
+  "reasoning": "Every gate passes on the first attempt: separation 2.96× against 1.5, head height held to 0.7 % of output height, matte 100 % of the second opinion, 1285 frames and the audio bit-identical to the source. Zero fixes, one attempt. The under-lit face is carried into the report as capture guidance, not as a defect in the delivery.",
+  "cites": ["separation", "head_spread", "matte_extent", "frame_count", "audio_md5"],
+  "confidence": 0.98,
+  "model": "cached",
+  "duration_ms": 1800
+}
