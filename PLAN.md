@@ -31,8 +31,8 @@ measurement. Both are P0 below.
 
 Shooting starts when all of these are true:
 
-- [ ] Ethel's second attempt is a **measured** number, or the demo's climax has been re-scripted
-- [ ] `python3 -m stage_ready` INSPECT and VERIFY compute their numbers with **cv2 5.x in this repo**
+- [x] Ethel's second attempt is a **measured** number — 1.52× at the strategy's bounds, 2026-09-19 (step 0)
+- [x] `python3 -m stage_ready` INSPECT and VERIFY compute their numbers with **cv2 5.x in this repo** — `stage_ready/vision`, `measure`, 2026-09-19 (step 2a; over the archive's workdirs, not yet a fresh upload)
 - [ ] a **meaningful component runs on AWS** and the run can be shown doing it
 - [ ] a **public URL** serves the demo, from a clean machine, with media that plays
 - [ ] a judge can `git clone` and reach a working demo from the README alone
@@ -44,7 +44,7 @@ Shooting starts when all of these are true:
 
 ## P0 — blocking (eligibility, not points)
 
-### 0. Ground truth for Ethel — README milestone 0
+### 0. Ground truth for Ethel — README milestone 0 — **DONE 2026-09-19**
 
 **Why:** Ethel's retry is the payoff of the whole demo and 1.58× is projected. The archived shadow
 lift alone measured 1.13× → 1.37×.
@@ -56,8 +56,14 @@ what is projected" has nothing left in the projected column.
 **Decision point:** if the gate cannot be cleared inside the strategy's bounds → the demo's climax
 becomes the reshoot exit (`&budget=0`), or Ethel's defect is re-cast as the matte-extent failure and
 the strategy change is a re-seed. Either way the video script changes, so this lands **first**.
+**Outcome:** it clears — at the bounds and only there. Rim 0.45, wrap 0.70, lift +0.040 → **1.52×**
+(0.188 / 0.123); the projected settings (0.40 / 0.65 / 0.030) measured 1.43× and would have failed.
+The lift is the lever (+0.005 ≈ +0.035×); the wrap and rim add ≈ 0.055× and ≈ 0.025× over their
+ranges. Grid and provenance: `~/mts/work/midtown_ethel_chadwick_v2/separation.log`; render
+`ethel_chadwick_v2_v3.mp4` (1237 frames, audio MD5 = source). The climax stands; the line is
+"as far as the strategy is allowed to go, and it clears by 0.02×".
 
-### 1. A repository a judge can clone
+### 1. A repository a judge can clone — **git + pins done 2026-09-19; LICENSE and media open**
 
 **Why:** `stage-ready/` is not a git repository at all, and `demo/clips/*/stills/` — the media the
 demo plays — is git-ignored and symlinked into `~/mts`. A judge who clones today gets stand-ins
@@ -69,7 +75,7 @@ project — it must pin OpenCV 5.
 **Accept:** clone into a clean directory on another machine, follow the README, get a demo with
 video playing and 17/17 tests passing.
 
-### 2. OpenCV 5 doing the seeing, inside this repo
+### 2. OpenCV 5 doing the seeing, inside this repo — **2a DONE 2026-09-19; 2b open**
 
 **Why:** the rule is OpenCV 5 for substantive analysis, and technical execution (30%) is explicitly
 "depth of the OpenCV 5 implementation". Today the repo contains no `cv2`; the 21 OpenCV scripts live
@@ -88,6 +94,8 @@ in `~/mts` on 5.0.0 and are not part of the submission.
 within tolerance — including the three `SubjectSegmenter` uses (seed, `matte_extent`, `separation`).
 Any disagreement with the archived second opinion is written down before the claim changes from
 *planned* to *live*. Where a recomputed number differs, the fixture is updated, not the number.
+**2a outcome:** `python3 -m stage_ready measure` — Ethel and the reference clip reproduce on every
+finding and gate; four fixture entries corrected (no status changed); Sandy's disagreement is risk 6.
 
 ### 3. A meaningful component on AWS
 
@@ -222,6 +230,15 @@ small delta and we already work in measurements. Skip it the moment it competes 
    case where it does. Not acceptable to leave untested.
 5. **AWS scope creep.** Meaningful beats impressive. S3 + one compute job + Bedrock, working and
    observable, scores better than a half-finished platform.
+6. **Sandy's pass is a different run from the one on disk** (found by step 2a, 2026-09-19). The
+   fixture and the video the demo plays are the archive's v3 (head spread 1.2 %); the workdir holds
+   v4 — the crown completion — which measures head spread **2.9 %** and drift **5.3 px**, both over
+   the gates, and the v3 solve cannot be regenerated (the ramp tools are gone). The v3 pass was
+   flattered by the cut crown pinning the head top to the picture edge. Options: (a) keep v3 and say
+   it is not reproducible; (b) move Sandy to v4 → his path ends in a reshoot request (the profile has
+   no strategy for head spread; the guidance should name *distance*, not the tripod); (c) re-examine
+   the head-spread gate for crown-completed pictures. Decide before the script is written — it
+   changes the Sandy beat and the "three paths" table.
 
 ## Explicitly out of scope until after the video
 
