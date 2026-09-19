@@ -15,8 +15,10 @@ and still the curtain right behind them. BT.709 luma, median per frame, mean ove
 frames, ratio of the brighter side to the darker.
 
 Port of the archive's `tools/silhouette_qc.py`. The composite can be a directory of frames or
-the delivered video itself — the delivery is what a viewer sees, and decoding it with OpenCV
-keeps the measurement on the file that ships.
+the delivered video itself. The frames are the measurement of record: a number read from an
+H.264 file moves by about 1 % with the decoder OpenCV was built against (AVFoundation and FFmpeg
+disagree in the last bit of every pixel), so a video-sourced result names its decoder and is
+compared with that tolerance.
 """
 from __future__ import annotations
 
@@ -34,6 +36,7 @@ class Separation:
     ratio: float                  # max / min of the two
     frames: int                   # frames that contributed
     source: str                   # what was measured: the directory or the video file
+    decoder: str = ""             # the OpenCV video backend, when measured from a file ("" for frames)
 
 
 def _frames_from_dir(comp_dir, idx, cv2):
@@ -52,6 +55,7 @@ def _frames_from_video(path, idx, cv2):
     # nearest keyframe in too many containers to trust for a measurement.
     want = set(int(i) for i in idx)
     cap = cv2.VideoCapture(str(path))
+    yield -1, cap.getBackendName() if cap.isOpened() else ""
     n = 0
     last = max(want) if want else -1
     while n <= last:
@@ -80,7 +84,11 @@ def separation(composite: str, matte_dir: str, nsamp: int = 24) -> Separation:
 
     k = np.ones((9, 9), np.uint8)
     inner_l, outer_l = [], []
+    decoder = ""
     for i, c in frames:
+        if i < 0:                                       # the video reader announces its backend first
+            decoder = str(c)
+            continue
         a = cv2.imread(mattes[i], cv2.IMREAD_GRAYSCALE)
         if a is None or c is None:
             continue
@@ -99,4 +107,4 @@ def separation(composite: str, matte_dir: str, nsamp: int = 24) -> Separation:
 
     i_m, o_m = float(np.mean(inner_l)), float(np.mean(outer_l))
     ratio = max(i_m, o_m) / max(1e-6, min(i_m, o_m))
-    return Separation(inside=i_m, outside=o_m, ratio=ratio, frames=len(inner_l), source=str(composite))
+    return Separation(inside=i_m, outside=o_m, ratio=ratio, frames=len(inner_l), source=str(composite), decoder=decoder)

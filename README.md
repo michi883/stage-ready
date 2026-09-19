@@ -444,7 +444,11 @@ tag it, and `test_no_number_is_ahead_of_its_measurement` would fail.
 **Recomputed with OpenCV 5, in this repo, 2026-09-19.** `python3 -m stage_ready measure` runs
 `stage_ready/vision` over the archived workdirs and prints every finding and gate beside its
 fixture. Ethel and the reference clip agree on every number (separation 1.13× / 1.52× / 2.96×,
-head spread 1.3 % / 0.7 %, matte extent, frame counts, audio). Four fixture entries were corrected
+head spread 1.3 % / 0.7 %, matte extent, frame counts, audio). One caveat is the decoder's, not
+the measurement's: a separation read from a delivered H.264 file (only Ethel's attempt 1, whose
+composite frames were overwritten) moves about 1 % with the video backend OpenCV was built
+against — 1.13× through AVFoundation, 1.12× through FFmpeg — so the frames are the record and the
+result names its decoder. Four fixture entries were corrected
 from the re-run, none changing a status: Ethel's key direction (×0.80, from the left — not
 flat-lit), her head drift (3.1 px, measured; the fixture had carried an unmeasured 1.5), Sandy's
 steadiness (1.75×, as `pose_qc.py` reports it), and face exposure recorded as the gain the grade

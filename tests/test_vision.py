@@ -80,11 +80,15 @@ class ReproducesTheArchive(unittest.TestCase):
             self.assertEqual(fx[gid].status, g[gid].status, gid)
 
     def test_attempt_1_fails_separation_from_the_delivered_file(self):
-        # attempt 1's composite frames are gone (overwritten by the shadow-lift render); the
-        # delivered H.264 file measures the same 1.13x the archive recorded from the frames.
+        # attempt 1's composite frames are gone (overwritten by the shadow-lift render), so this
+        # one is read from the delivered H.264 file: 1.13x with OpenCV's AVFoundation backend,
+        # 1.12x with its FFmpeg backend — the archive recorded 1.13x from the frames. Either way
+        # it fails the gate by a wide margin; the tolerance is the decoder's, not the gate's.
         v = self.m.verify(self.clip, "attempt_1", self.profile)
         self.assertEqual([g.id for g in v.failing], ["separation"])
-        self.assertEqual({x.id: x for x in v.gates}["separation"].value, 1.13)
+        g = {x.id: x for x in v.gates}["separation"]
+        self.assertAlmostEqual(g.value, 1.13, delta=0.015, msg=g.detail)
+        self.assertIn("decoded by", g.detail)
 
 
 if __name__ == "__main__":

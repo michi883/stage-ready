@@ -252,7 +252,9 @@ class ArchiveMeasurer:
             elif gid == "separation":
                 gates.append(gate(gid, "pass" if sep.ratio >= g["value"] else "fail", round(sep.ratio, 2),
                                   f"Edge luma {sep.inside:.3f} inside / {sep.outside:.3f} outside — separation {sep.ratio:.2f}× "
-                                  f"over {sep.frames} frames of {measured_on.name}.", "vision.separation (OpenCV 5)"))
+                                  f"over {sep.frames} frames of {measured_on.name}"
+                                  + (f", decoded by {sep.decoder} (a file-sourced number moves ~1 % with the decoder; the frames are the record)." if sep.decoder else "."),
+                                  "vision.separation (OpenCV 5)"))
             elif gid == "head_spread":
                 gates.append(gate(gid, "pass" if hh.spread <= g["value"] else "fail", round(hh.spread, 3),
                                   f"{hh.source_spread * 100:.1f} % of source → {hh.spread * 100:.1f} % of output.", "vision.head_height (OpenCV 5)"))
