@@ -52,11 +52,12 @@ def _first_mtime(p: Path) -> float:
     return p.stat().st_mtime if p.exists() else 0.0
 
 
-def process_record(wd: Path, root: Path, video: str | None, profile: Profile, artifact: str = "attempt_1") -> dict[str, Any]:
-    """`process.standard.json` from the workdir's logs and timeline."""
+def process_record(wd: Path, root: Path, video: str | None, profile: Profile, artifact: str = "attempt_1", n_frames: int | None = None) -> dict[str, Any]:
+    """`process.standard.json` from the workdir's logs and timeline. `n_frames` stands in for the
+    matte count when the workdir holds only the logs (the S3 cache path)."""
     text = lambda f: (wd / f).read_text() if (wd / f).exists() else ""
     seed_log, track_log, crown_log, params = text("seed_pick.log"), text("track.log"), text("crown.log"), text("params.txt").strip()
-    n = len([f for f in os.listdir(wd / "matte") if f.endswith(".png")]) if (wd / "matte").is_dir() else 0
+    n = len([f for f in os.listdir(wd / "matte") if f.endswith(".png")]) if (wd / "matte").is_dir() else (n_frames or 0)
     seed_frame = text("seed_frame.txt").strip()
     m = re.search(r"pick_seed: frame (\d+) of (\d+) candidates \(head (\d+) px, coverage ([\d.]+)%, ([^,]+), edges touched (\d+), threshold >(\d+)\)", seed_log)
     seed_summary = (f"Vision on {m.group(2)} candidate frames; seed from frame {m.group(1)} ({m.group(5)}, head {m.group(3)} px, coverage {m.group(4)} %)."
@@ -89,7 +90,7 @@ def process_record(wd: Path, root: Path, video: str | None, profile: Profile, ar
     t_pose = _mtime(wd / "pose.csv"); t_seed = _mtime(wd / "seed_mask.png")
     t_matte = _mtime(wd / "matte.key") or _mtime(wd / "matte"); t_crown = _mtime(wd / "crown.log") or t_matte
     t_track = _mtime(wd / "affine.csv"); t_warp = max(_mtime(wd / "fg"), _mtime(wd / "mt")); t_grade = _mtime(wd / "params.txt")
-    t_comp = _mtime(wd / "comp"); t_enc = _mtime(root / video) if video else t_comp
+    t_comp = _mtime(wd / "comp"); t_enc = _mtime(root / video) if video and (root / video).exists() else t_comp
     dur = lambda a, b: max(0, int(round((b - a) * 1000)))
     stages = [
         {"id": "seed", "label": "Seed mask", "tool": "PersonMatte + pick_seed.py + clean_seed.py", "duration_ms": dur(t_pose, t_seed), "summary": seed_summary},

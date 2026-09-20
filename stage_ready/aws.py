@@ -407,12 +407,17 @@ class AWS:
 
     # ---- the run's record ----------------------------------------------------------------------
     def flush_trace(self) -> dict[str, str]:
-        RUNS_DIR.mkdir(parents=True, exist_ok=True)
-        local = RUNS_DIR / f"{self.trace.run_id}.jsonl"
-        local.write_text(self.trace.dumps())
-        out = {"local": str(local)}
-        if self.trace.sha:
+        out: dict[str, str] = {}
+        if self.trace.sha:                                  # the bucket first: it is the record that outlives the machine
             key = run_key(self.trace.sha, self.trace.run_id)
             self.s3().put_object(Bucket=self.bucket, Key=key, Body=self.trace.dumps().encode(), ContentType="application/x-ndjson")
             out["s3"] = f"s3://{self.bucket}/{key}"
+        runs_dir = Path(os.environ.get("STAGE_READY_RUNS_DIR", RUNS_DIR))
+        try:
+            runs_dir.mkdir(parents=True, exist_ok=True)
+            local = runs_dir / f"{self.trace.run_id}.jsonl"
+            local.write_text(self.trace.dumps())
+            out["local"] = str(local)
+        except OSError:                                     # a read-only code directory (Lambda): the bucket has it
+            pass
         return out

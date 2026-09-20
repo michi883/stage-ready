@@ -93,7 +93,8 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
     def _demo(self, q) -> bool:
-        return q.get("demo", ["0"])[0] in ("1", "true", "yes")
+        # No query means the demo: the cached, deterministic replay. `?demo=0` is the live hybrid.
+        return q.get("demo", ["1"])[0] in ("1", "true", "yes")
 
     # ---- routes -------------------------------------------------------------------------
     def do_GET(self):
@@ -153,23 +154,49 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Accel-Buffering", "no")
         self.send_header("Connection", "close")
         self.end_headers()
+        # The loop runs in its own thread and its events come through a queue, so the stream can
+        # send a keepalive comment every few seconds while a live stage (a two-minute Lambda
+        # verification) produces nothing — proxies and CDNs close an idle response otherwise.
+        import queue
+        import threading
+        q_: "queue.Queue[tuple[str, object]]" = queue.Queue()
+
+        def produce():
+            try:
+                for ev in run(clip, profile, backend):
+                    q_.put(("event", ev))
+                if hasattr(backend, "flush"):            # the live run's observability record: request ids, latencies, decisions
+                    fl = backend.flush()
+                    if fl:
+                        q_.put(("event", {"type": "trace", "clip": clip_id, **fl}))
+            except (FixtureMissing, NotImplementedError, RuntimeError) as e:
+                q_.put(("event", {"type": "error", "clip": clip_id, "message": str(e)}))
+            except Exception as e:  # noqa: BLE001 — the stream must end, with the reason
+                q_.put(("event", {"type": "error", "clip": clip_id, "message": f"{type(e).__name__}: {e}"}))
+            q_.put(("end", None))
+
+        threading.Thread(target=produce, daemon=True).start()
         try:
-            for ev in run(clip, profile, backend):
-                self.wfile.write(f"data: {json.dumps(ev, ensure_ascii=False)}\n\n".encode())
+            while True:
+                try:
+                    kind, ev = q_.get(timeout=10)
+                except queue.Empty:
+                    self.wfile.write(b": keepalive\n\n"); self.wfile.flush()
+                    continue
+                if kind == "end":
+                    self.wfile.write(b"event: end\ndata: {}\n\n")
+                    break
+                self.wfile.write(f"data: {json.dumps(ev, ensure_ascii=False, default=str)}\n\n".encode())
                 self.wfile.flush()
-            if hasattr(backend, "flush"):                # the live run's observability record: request ids, latencies, decisions
-                fl = backend.flush()
-                if fl:
-                    self.wfile.write(f"data: {json.dumps({'type': 'trace', 'clip': clip_id, **fl}, ensure_ascii=False, default=str)}\n\n".encode())
-            self.wfile.write(b"event: end\ndata: {}\n\n")
-        except (FixtureMissing, NotImplementedError, RuntimeError) as e:
-            err = json.dumps({"type": "error", "clip": clip_id, "message": str(e)}, ensure_ascii=False)
-            self.wfile.write(f"data: {err}\n\nevent: end\ndata: {{}}\n\n".encode())
         except (BrokenPipeError, ConnectionResetError):
             pass
-        self.wfile.flush()
+        try:
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
 
 def serve(host: str = "127.0.0.1", port: int = 8765) -> int:

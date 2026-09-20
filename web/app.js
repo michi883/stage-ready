@@ -11,7 +11,7 @@
    demo/clips/<id>/stills/ replaces the stand-in for that artifact. */
 
 const qs = new URLSearchParams(location.search);
-const DEMO = qs.get("demo") === "1";
+const DEMO = qs.get("demo") !== "0";                  // no query = the demo (cached, deterministic); ?demo=0 = the live AWS hybrid
 const INSTANT = qs.get("instant") === "1";
 const PICK = qs.get("clip");                        // ?clip=sandy puts a sample recording on the bench at once
 const BUDGET = qs.get("budget");                    // ?budget=0 shows the other exit: a reshoot request
@@ -848,14 +848,14 @@ async function boot() {
   if (INSTANT) document.body.classList.add("instant");
   const mode = $("#mode");
   if (!DEMO) {
-    mode.textContent = "live · not wired"; mode.classList.add("live");
+    mode.innerHTML = `live · AWS<span class="more"> · OpenCV 5 on Lambda, Claude on Bedrock</span>`; mode.classList.add("live");
+    mode.title = "INSPECT and VERIFY run on AWS Lambda (OpenCV 5, the U²-Net second opinion); DECIDE on Amazon Bedrock; the render is a cache hit by source hash. 4–6 minutes per recording.";
     const n = $("#notice"); n.hidden = false;
-    n.innerHTML = `<b>Live mode is not wired yet.</b><br>Open <code>?demo=1</code> — every measurement is replayed from the cached archive fixtures, deterministically, with no model calls.<br><br><a href="/?demo=1" style="color:var(--decide)">Open the demo →</a>`;
-    $("#intake").hidden = true;
-    return;
+    n.innerHTML = `<b>Live mode.</b> Measurements run on AWS Lambda with OpenCV 5 and the agent decides on Amazon Bedrock — <b>4–6 minutes per recording</b>, streamed as it happens. The three sample recordings are known sources (their mattes are cached by hash); an unknown upload is told so. <a href="/?demo=1" style="color:var(--decide)">The cached demo →</a> replays the same measured runs instantly.`;
+  } else {
+    mode.innerHTML = `demo · cached<span class="more"> · replays measured runs · no live model calls</span>`; mode.classList.add("demo");
+    mode.title = "Every measurement and decision is replayed from demo/clips/<id>/*.json — the archived, measured runs; deterministic, no OpenCV, no AWS at demo time. ?demo=0 runs the live AWS hybrid.";
   }
-  mode.innerHTML = `demo · cached<span class="more"> · no live model calls</span>`; mode.classList.add("demo");
-  mode.title = "Every measurement and decision is replayed from demo/clips/<id>/*.json — deterministic, no OpenCV, no AWS.";
   PROFILE = await (await fetch("/api/profile")).json();
   const f = PROFILE;
   $("#profile-facts").textContent = `${f.name} · ${f.canvas.w}×${f.canvas.h} · head ${f.framing.head_target} · size cap ${pct(f.framing.size_cap)} · ${f.gates.length} gates · retry budget ${BUDGET != null ? `${BUDGET} (overridden)` : f.retry_budget}`;

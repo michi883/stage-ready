@@ -34,7 +34,7 @@ Shooting starts when all of these are true:
 - [x] Ethel's second attempt is a **measured** number — 1.52× at the strategy's bounds, 2026-09-19 (step 0)
 - [x] `python3 -m stage_ready` INSPECT and VERIFY compute their numbers with **cv2 5.x in this repo** — `stage_ready/vision`, `measure`, 2026-09-19 (step 2a; over the archive's workdirs, not yet a fresh upload)
 - [x] a **meaningful component runs on AWS** and the run can be shown doing it — Lambda INSPECT/VERIFY + Bedrock DECIDE on Ethel, 2026-09-19 (step 3)
-- [ ] a **public URL** serves the demo, from a clean machine, with media that plays
+- [x] a **public URL** serves the demo, from a clean machine, with media that plays — https://d4nh99blf9f5j.cloudfront.net/, verified 2026-09-20 (step 4)
 - [x] a judge can `git clone` and reach a working demo from the README alone — verified from a fresh clone + the judge bundle, 2026-09-19 (step 1); the bundle's private download is still to be set up at submission
 - [ ] the **evaluation table** exists: N clips, gate precision/recall, silently-wrong deliveries
 - [ ] the **architecture diagram** is drawn and matches the code
@@ -122,7 +122,7 @@ INSPECT + 2× VERIFY over `work/<sha>/` on `stage-ready-videos`; Bedrock Convers
 not enabled for the account) decided process → separation-targeted → deliver; the render a cache hit
 on the laptop; delivered on the measured 1.52×. Trace in `runs/<sha>/<run_id>/trace.jsonl`.
 
-### 4. A working endpoint
+### 4. A working endpoint — **DONE 2026-09-20**: https://d4nh99blf9f5j.cloudfront.net/ (CloudFront + private S3 + the API Lambda; demo by default, `?demo=0` live)
 
 **Why:** required deliverable; also the fallback if a live screen-share goes wrong.
 **Do:** deploy `stage_ready/server.py` (stdlib, so almost anything hosts it) with the demo fixtures

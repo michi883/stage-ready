@@ -222,10 +222,16 @@ class LiveBackend:
 
     # ---- PROCESS: the laptop, cached by source hash ----------------------------------------
     def process(self, clip, strategy, profile, state):
+        import os
         from pathlib import Path
         from ..measure import archive_root
         from ..process_local import process_separation_targeted, process_standard
         archive = archive_root(self._archive)
+        # No archive on this machine (the public endpoint's API Lambda): the render is a cache hit
+        # from S3 for a source the bucket holds, and an honest refusal otherwise.
+        if not self.local and (os.environ.get("STAGE_READY_PROCESS") == "s3" or not archive.is_dir()):
+            from ..process_s3 import process_from_s3
+            return process_from_s3(self.aws(), clip, strategy, profile)
         if strategy == "process.standard":
             pr = process_standard(archive, clip, profile)
         elif strategy == "process.separation_targeted":

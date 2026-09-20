@@ -6,6 +6,9 @@
                                     identity (STS) and bucket status; upload a clip's workdir, source and
                                     deliveries under sources/work/artifacts/<sha256>/; publish the OpenCV 5
                                     layer and the measurement Lambda. Default credential chain only.
+    python -m stage_ready aws web-deploy | web-publish | web-invalidate
+                                    the public endpoint: CloudFront + private S3 (UI, media) + the API
+                                    Lambda; web-publish re-uploads the static files and invalidates
     python -m stage_ready trace [sandy ethel zach]           print a run's events as JSON lines
     python -m stage_ready measure [sandy ethel zach] [--archive ~/mts] [--json] [--opinion dnn]
                                     compute INSPECT and VERIFY with OpenCV 5 over the archived
@@ -238,6 +241,22 @@ def _aws(a) -> int:
             print(f"  {cid}: sha {r['sha256'][:12]}… uploaded {r['uploaded']}, skipped {r['skipped']} (same size), {r['bytes'] / 1e6:.0f} MB")
         print(f"  model: s3://{BUCKET}/{aws.sync_model()}")
         return 0
+    if a.what in ("web-deploy", "web-publish", "web-invalidate"):
+        from .deploy_web import _state, deploy, invalidate, publish_static
+        if a.what == "web-publish":
+            r = publish_static(aws); print(f"  static + media: uploaded {r['uploaded']}, skipped {r['skipped']}")
+            st = _state()
+            if st.get("distribution_id"):
+                print(f"  invalidation {invalidate(aws, st['distribution_id'])} on {st['domain']}")
+            return 0
+        if a.what == "web-invalidate":
+            st = _state(); print(f"  invalidation {invalidate(aws, st['distribution_id'])} on {st['domain']}"); return 0
+        r = deploy(aws)
+        print(f"  static + media: uploaded {r['static']['uploaded']}, skipped {r['static']['skipped']}")
+        print(f"  api lambda: {r['function']} · {r['function_url']}")
+        print(f"  cloudfront: {r['distribution_id']} · {r.get('status', '')}")
+        print(f"  URL: {r['url']}")
+        return 0
     if a.what == "deploy":
         print(f"  bucket: {aws.ensure_bucket()}")
         role = aws.ensure_role(); print(f"  role: {role}")
@@ -265,7 +284,7 @@ def main(argv: list[str] | None = None) -> int:
     b = sub.add_parser("bundle"); b.add_argument("clips", nargs="*"); b.add_argument("--out", default=None); b.add_argument("--archive", default=None)
     b.add_argument("--dry-run", action="store_true"); b.add_argument("--install", default=None); b.add_argument("--verify", default=None)
     r_ = sub.add_parser("record"); r_.add_argument("clip"); r_.add_argument("--archive", default=None); r_.add_argument("--fixed", action="store_true"); r_.add_argument("--out", default=None)
-    aw = sub.add_parser("aws"); aw.add_argument("what", choices=["status", "sync", "deploy"]); aw.add_argument("clips", nargs="*"); aw.add_argument("--layer", default=None); aw.add_argument("--archive", default=None)
+    aw = sub.add_parser("aws"); aw.add_argument("what", choices=["status", "sync", "deploy", "web-deploy", "web-publish", "web-invalidate"]); aw.add_argument("clips", nargs="*"); aw.add_argument("--layer", default=None); aw.add_argument("--archive", default=None)
     ae = sub.add_parser("agent-eval"); ae.add_argument("--model", default=None); ae.add_argument("--repeat", type=int, default=1); ae.add_argument("--clips", nargs="*"); ae.add_argument("--json", action="store_true")
     mo = sub.add_parser("models"); mo.add_argument("what", nargs="?", default="list", choices=["list", "fetch"]); mo.add_argument("name", nargs="?", default=None)
     sc = sub.add_parser("segcheck"); sc.add_argument("clips", nargs="*"); sc.add_argument("--archive", default=None); sc.add_argument("--no-crop", action="store_true"); sc.add_argument("--json", action="store_true"); sc.add_argument("--model", default=None)

@@ -132,9 +132,14 @@ that followed.
 
 ## See it in two minutes
 
+**Public endpoint: <https://d4nh99blf9f5j.cloudfront.net/>** — no sign-in, the cached demo by
+default (every run replayed from the measured fixtures, instantly; the badge in the header says
+*demo · cached*). `?demo=0` on the same URL is the live AWS hybrid: OpenCV 5 on Lambda, the agent
+on Bedrock, 4–6 minutes per recording, streamed as it happens. Or locally:
+
 ```bash
 python3 -m stage_ready serve            # standard library only, no installs
-open "http://127.0.0.1:8765/?demo=1"
+open "http://127.0.0.1:8765/"           # the demo; ?demo=0 is live (needs AWS access)
 ```
 
 A workspace, one recording at a time:
@@ -294,6 +299,39 @@ the one failing gate → re-composite at the bounds, a cache hit → VERIFY: **p
 (the U²-Net opinion at 2.7 s/frame is most of it), Bedrock 17 s. Cost: ≈ $0.01 of Lambda and
 ≈ $0.06 of Bedrock at list prices. `python3 -m stage_ready aws status | sync <clip> | deploy`
 operate it; `STAGE_READY_LIVE_LOCAL=1` runs the same backend on the laptop's measurer without AWS.
+
+### The public endpoint
+
+`https://d4nh99blf9f5j.cloudfront.net/` — one CloudFront distribution (`EF0GHJDKHLD4G`), two origins,
+nothing on any laptop (`stage_ready/deploy_web.py`, `python3 -m stage_ready aws web-deploy`):
+
+| path | origin | how |
+|---|---|---|
+| `/`, `/app.js`, `/style.css`, `/stills/<clip>/<file>` | the bucket, prefix `public/` | an origin access control signs CloudFront's requests; the bucket stays private (a direct S3 GET is 403); byte ranges pass through, so the videos seek and loop |
+| `/api/*` (profile, clips, recognize, the SSE run) | Lambda `stage-ready-web` | `stage_ready.server` unchanged, behind the Lambda Web Adapter on a Function URL in response-stream mode; the URL is IAM-only and a second origin access control signs for it, so the API is reachable only through the endpoint. Caching disabled on this path |
+
+The API Lambda carries the code, the profile and the demo fixtures (never the stills). In
+`?demo=0` it invokes the measurement Lambda and Bedrock under its own role and takes the render as
+an S3 cache hit for a source the bucket holds (`process_s3.py`); the SSE stream sends a keepalive
+every ten seconds so a two-minute verification survives CloudFront's idle limit. Verified from
+outside the development machine on 2026-09-20: the page loads without authentication, all three
+samples run, the videos play with range requests, Trace / Details and the session view work, no
+local path appears anywhere in the shipped files or the rendered page, and a full live run of Zach
+(`?demo=0`) streamed through the endpoint to its reshoot request.
+
+**Reproduce the deployment** (from a clone, with AWS access on the default credential chain):
+`pip install -e '.[live,aws]'`, `python3 -m stage_ready aws sync sandy ethel zach` (the workdirs
+and media under their hashes), `aws deploy --layer <dir>` (the OpenCV 5 layer and the
+measurement Lambda; the layer directory is `python/` holding the unpacked
+`opencv-python-headless==5.0.0.93` and `numpy==2.4.6` wheels for `manylinux_2_28_aarch64` /
+Python 3.12 — `pip download --only-binary=:all: --platform manylinux_2_28_aarch64
+--python-version 3.12` — plus `bin/ffmpeg`, a static arm64 build, for the audio hash), then
+`aws web-deploy` (static files, media, the API Lambda, CloudFront; prints
+the URL). `aws web-publish` re-uploads the UI and invalidates the cache after a change.
+
+**Hosting cost, approximately:** S3 ≈ 1.1 GB of workdirs and media ≈ $0.03/month; CloudFront and
+both Lambdas sit inside the free tiers at judge traffic (a demo run is one 200 ms invocation; a
+live run ≈ $0.07 as above). Under $1/month at rest.
 
 **Which model decides, measured.** `python3 -m stage_ready agent-eval --model <id>` replays the nine
 trusted DECIDE states (three per performer, the exact prompt the live backend sends, nothing
