@@ -61,9 +61,9 @@
     }
   },
   "demo_lineup": {
-    "sandy": "sandy_hackett_v2_demo.mp4 (derived: see derived.sandy_demo) — pending the pipeline run",
+    "sandy": "sandy_hackett_v2.mp4, untouched (fix → caught → reshoot); the derived excerpt sandy_hackett_v2_demo.mp4 failed the head gates and is evaluation corpus (demo/eval/corpus/sandy_excerpts)",
     "ethel": "archived recording, unchanged",
-    "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — pending the pipeline run"
+    "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass"
   },
   "evaluation_corpus": {
     "sandy_hackett_v2.mp4": "untouched — walks into a close-up; live result 2026-09-20: fix holds, verify fails head spread 2.9 % / drift 5.3 px → reshoot",

@@ -1,5 +1,5 @@
 {
- "note": "Sandy: two contiguous excerpts of the untouched recording, derived by trimming only (demo/derive.sh) and run through the real pipeline 2026-09-20, to test whether a stable section could pass the head-height gates after the reframe fix. Neither did; Sandy's polished-demo input stays the untouched recording (fix holds → verify fails → reshoot).",
+ "note": "Sandy: every candidate for a polished-demo input, measured with the real pipeline and Stage Ready's own measurer. 2026-09-20 (morning): two contiguous excerpts of the untouched recording, trimmed only, to test whether a stable section passes the head-height gates after the reframe fix — neither did. 2026-09-20 (afternoon, reviewer's controlled-demo rule): the search for a CLEAN BASE — a Sandy source that passes verification on its own, to be deliberately degraded with one repairable framing defect — over all three real Sandy recordings. None passes. Sandy's polished-demo input stays the untouched recording (fix holds → verify fails → reshoot).",
  "candidates": [
   {
    "time_range": "00:00:04 → 00:00:34 (30 s)",
@@ -72,5 +72,117 @@
   }
  ],
  "why": "His crown leaves the picture on 81–86 % of frames in every stable section, so the head-top anchor the solve holds is a completed crown, rebuilt from reference frames; its switches move the anchor more than the performer does. Under the 21-s run's own solve, even the steadiest 10 s reads a 2.28 % canvas spread against the 2 % gate. Trimming cannot change that, and stabilising, synthesising or re-anchoring is not allowed.",
- "kept": "the untouched sandy_hackett_v2.mp4 in both the polished demo (as the fix → caught → reshoot recording) and the evaluation corpus"
+ "kept": "the untouched sandy_hackett_v2.mp4 in both the polished demo (as the fix → caught → reshoot recording) and the evaluation corpus",
+ "clean_base_search_2026_09_20": {
+  "rule": "find the cleanest legitimate Sandy source/intermediate that passes verification on its own; verify it first; only then inject one repairable defect. Allowed: alternate take, trim, remux, fps. Not allowed: synthesised pixels, crown reconstruction, stabilisation, appearance changes, threshold changes.",
+  "sources": {
+   "sandy_hackett_v1.mov": {
+    "sha256": "429003aca1e9bd875c66a9bf54996ecd26dec3275beb2e6ff01b76a969cc8681",
+    "recorded": "2026-09-07, seated close-up, office",
+    "geometry": "1620×1080 30 fps 1571 frames",
+    "result": "pipeline refuses at stage 3: Apple Vision body pose on 6 % of frames (BodyTrack survey over the whole take, work/midtown_sandy_hackett_v1_full/pose.csv) — under the 60 % gate; the crown is at the top edge on most frames as well. Not processable."
+   },
+   "sandy_hackett_v2.mp4": {
+    "sha256": "119f5e2b90b12ccb844302e39335b05ebc63139688c90e07ee983380e49b50cb",
+    "result": "the demo's untouched recording: pose 100 %, crown cut on 76 % of frames → completed crown → head_spread 2.9 % / drift 5.3 px → reshoot; excerpts 2.3 % / 2.4 % (candidates above). Its intermediates (band_ext, fg, comp) carry the pipeline's completed crown, so they are not a permitted base."
+   },
+   "sandy_hackett_0910.mov": {
+    "sha256": "bb376dcd6511ba7f44d92d83766ef79e747bff3229b82abe9e23fe5353d1869e",
+    "recorded": "2026-09-10, standing chest-up at a kitchen counter, black turtleneck, arms mostly out of frame; walks in 0–3.5 s; both arms raised out of frame at 27.2–28.3 s",
+    "geometry": "1620×1080 30 fps 1512 frames",
+    "survey": "BodyTrack over the whole take (work/midtown_sandy_hackett_0910_full/pose.csv): pose on 58 % of frames — Apple Vision loses the chest-up framing whenever his arms are out of the picture (identical-looking frames alternate found/not found in ~1 s bursts). Best windows: 15-s 70 % (15.5–30.5 s, includes the arm raise); 20–30-s 64 %. Crown inside the picture on every frame (DNN scout, every 15th frame: mask top 62–133 px of 1080 in the settled stretches)."
+   }
+  },
+  "candidates": [
+   {
+    "window": "00:00:05 → 00:00:27 (22 s)",
+    "output": "sandy_hackett_0910_base_5_27.mp4",
+    "sha256": "336804b296269359edc2c079f5e20f244e80516c0ee5614fb396abea9a8bc04b",
+    "command": "ffmpeg -v error -y -ss 5 -t 22 -i sandy_hackett_0910.mov -vf setpts=PTS-STARTPTS -af asetpts=PTS-STARTPTS -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart sandy_hackett_0910_base_5_27.mp4",
+    "result": "pipeline refuses at stage 3: pose on 57 % of 660 frames (< 60 %). workdir work/midtown_sandy_hackett_0910_base_5_27"
+   },
+   {
+    "window": "00:00:15 → 00:00:25 (10 s) — the best-covered stretch without the arm raise",
+    "output": "sandy_hackett_0910_base.mp4",
+    "sha256": "67848b2b0f20a898749e61761595bc685a3c512fddf1efe10aea9982096a9c1e",
+    "command": "ffmpeg -v error -y -ss 15 -t 10 -i sandy_hackett_0910.mov -vf setpts=PTS-STARTPTS -af asetpts=PTS-STARTPTS -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart sandy_hackett_0910_base.mp4",
+    "pipeline": "184 s → sandy_hackett_0910_base_red_v1.mp4, workdir work/midtown_sandy_hackett_0910_base",
+    "inspect": {
+     "failing": [
+      "subject_size"
+     ],
+     "subject_size_p95": 0.756,
+     "pose_coverage": 0.74,
+     "one_subject": 0.987,
+     "distance_steady": 1.21,
+     "crown_cut_frames": 0.0,
+     "face_exposure": "over-lit: face luma 0.729 asked ×0.36, held ×0.80 (warn)"
+    },
+    "fix_reframe": {
+     "picture": "already the whole picture",
+     "head_target": [
+      0.334,
+      0.513
+     ],
+     "shoulder_span_p95": [
+      0.756,
+      0.553
+     ]
+    },
+    "verify": {
+     "failing": [
+      "head_spread"
+     ],
+     "head_spread": 0.024,
+     "head_drift_px": 1.8,
+     "separation": 1.63,
+     "matte_extent": 1.008,
+     "frames": 300,
+     "audio_md5": "equal"
+    }
+   },
+   {
+    "window": "00:00:35 → 00:00:45 (10 s) — the other 74 %-covered stretch",
+    "output": "sandy_hackett_0910_base35.mp4",
+    "sha256": "fc53601b4a991cb25ece48e16c53bddcbbf262dc2feb67c1a6d9f98ab1d0cc5d",
+    "command": "ffmpeg -v error -y -ss 35 -t 10 -i sandy_hackett_0910.mov -vf setpts=PTS-STARTPTS -af asetpts=PTS-STARTPTS -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart sandy_hackett_0910_base35.mp4",
+    "pipeline": "183 s → sandy_hackett_0910_base35_red_v1.mp4, workdir work/midtown_sandy_hackett_0910_base35",
+    "inspect": {
+     "failing": [
+      "subject_size"
+     ],
+     "subject_size_p95": 0.783,
+     "pose_coverage": 0.74,
+     "one_subject": 1.0,
+     "distance_steady": 1.23,
+     "crown_cut_frames": 0.0,
+     "face_exposure": "over-lit: face luma 0.722 asked ×0.37, held ×0.80 (warn)"
+    },
+    "fix_reframe": {
+     "picture": "already the whole picture",
+     "head_target": [
+      0.334,
+      0.539
+     ],
+     "shoulder_span_p95": [
+      0.783,
+      0.543
+     ]
+    },
+    "verify": {
+     "failing": [
+      "head_spread"
+     ],
+     "head_spread": 0.023,
+     "head_drift_px": 3.4,
+     "separation": 1.89,
+     "matte_extent": 1.015,
+     "frames": 300,
+     "audio_md5": "equal"
+    }
+   }
+  ],
+  "why": "Three real recordings, three different honest failures. v1: Apple Vision does not find a seated close-up (6 %). v2: the crown is cut, and a completed crown jitters. 0910: the crown is inside and the matte is clean, but (a) the chest-up framing with the arms out of frame leaves the pose on 58 % of frames — only two 10-s windows reach 74 %; (b) it is a close-up (shoulders 76–78 % of the canvas at the head target; the size cap pushes the head to 0.51–0.54) and over-lit (×0.36 wanted, held at ×0.80); and (c) with a real crown and a good matte, his head still moves 5.6 % of the source height while he talks — 2.3–2.4 % of the canvas after the solve, against the 2 % gate. That last one is his performance, not a framing defect: trimming, remuxing and frame-rate changes cannot touch it, and stabilising him is not allowed. No Sandy base passes verification on its own, so there is nothing to degrade.",
+  "kept": "the untouched sandy_hackett_v2.mp4 stays the polished demo's Sandy (fix → caught → reshoot) and is the evaluation corpus's natural failure case; the 0910 and v1 takes and the three 0910 windows join the corpus as measured (archive files listed above; not in the repo, not on S3)."
+ }
 }

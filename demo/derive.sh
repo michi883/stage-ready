@@ -86,7 +86,8 @@ d["evaluation_corpus"] = {"sandy_hackett_v2.mp4": "untouched — walks into a cl
                           "zach_sain_v2.mov": "untouched — black shirt on the red wall; live result 2026-09-20: separation 1.00× → 1.45× at the bounds → reshoot",
                           "ethel_chadwick_v2.mp4": "untouched — the demo's Ethel is this recording",
                           "michi_sample_v1.mp4": "derived — the near-threshold pass (1.51×)"}
-d["demo_lineup"] = {"sandy": "sandy_hackett_v2_demo.mp4 (derived: see derived.sandy_demo) — pending the pipeline run", "ethel": "archived recording, unchanged", "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — pending the pipeline run"}
+d["demo_lineup"] = {"sandy": "sandy_hackett_v2.mp4, untouched (fix → caught → reshoot); the derived excerpt sandy_hackett_v2_demo.mp4 failed the head gates and is evaluation corpus (demo/eval/corpus/sandy_excerpts)",
+                    "ethel": "archived recording, unchanged", "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass"}
 json.dump(d, open(out, "w"), indent=2, ensure_ascii=False); open(out, "a").write("\n")
 print(f"{dst}: {dsha[:16]}…  from {src}: {ssha[:16]}…")
 EOF
