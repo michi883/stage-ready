@@ -4,3 +4,4 @@ __pycache__/
 *.egg-info/
 demo/clips/*/stills/
 models/*.onnx
+.stage_ready/

@@ -227,15 +227,17 @@ Judges should know exactly what they are looking at:
   [What is measured](#what-is-measured). Zach's retry is 1.45× — short by 0.05×, and the loop stops.
   A fixture that were projected would say so and the UI would tag it *projected*; none is, and a
   test keeps it that way.
-- **INSPECT and VERIFY run live, with OpenCV 5, in this repo.** `stage_ready/vision/` ports the
-  Red Curtain measurements (picture area, pose QC, the dry framing solve, crown, exposure and key,
+- **INSPECT and VERIFY run live, with OpenCV 5, on AWS.** `stage_ready/vision/` ports the Red
+  Curtain measurements (picture area, pose QC, the dry framing solve, crown, exposure and key,
   matte extent, separation, head spread and drift, frame count, audio MD5), and
   `python3 -m stage_ready measure` recomputes every fixture number from the archived files and
-  prints the two side by side — Ethel's and the reference clip's agree to the digit
-  ([What is measured](#what-is-measured)). `--live` / `?demo=0` runs a measured INSPECT and stops
-  at DECIDE: the agent (Bedrock), the fixers and the processors are still the shape of the real
-  thing and raise `LiveNotWired`. A live run needs the archive's workdirs (`$STAGE_READY_ARCHIVE`,
-  default `~/mts`) — producing a workdir for a fresh upload is milestone 9.
+  prints the two side by side — the three clips agree ([What is measured](#what-is-measured)).
+  `--live` / `?demo=0` is the **hybrid**: INSPECT and VERIFY on an AWS Lambda over the workdir
+  mirrored from S3 by source hash, DECIDE on Amazon Bedrock, the rendering on the laptop and
+  cached by source hash ([The live hybrid on AWS](#the-live-hybrid-on-aws)). Ethel completed a
+  real run on 2026-09-19: three Bedrock decisions, two AWS verifications, delivered on the 1.52×
+  pass. The fixer (Sandy's reframe) is still `LiveNotWired`; producing a workdir for a fresh
+  upload is milestone 9.
 - **OpenCV 5 DNN segmentation is live for the seed and the matte's second opinion**, measured
   against the archive's Apple Vision opinions on all three clips (`segcheck`); not used for the
   separation edge, where it measured up to 0.14× off — see [Why OpenCV 5](#why-opencv-5).
@@ -257,21 +259,44 @@ Judges should know exactly what they are looking at:
 | **Reporter** | decision trace, delivery report with its numbers, reshoot guidance in capture terms | Trace / Details in `web/` |
 | **Server** | static UI, `/api/recognize`, the run as server-sent events, byte-range media | `stage_ready/server.py` |
 
-**Minimal AWS shape:** Amazon S3 for sources, intermediates and deliveries (the matte cached by
-source SHA-256); AWS compute for OpenCV inspection, verification and fixer jobs; Amazon Bedrock for
-the agent (Converse API, tool schema = `models.Decision`). AWS access goes through boto3's default
-credential chain; nothing in this repo reads, prints or stores a credential.
+### The live hybrid on AWS
+
+The minimal shape, built and run on 2026-09-19 (`stage_ready/aws.py`, `stage_ready/lambda_handler.py`):
+
+| | where | what |
+|---|---|---|
+| **S3** `stage-ready-videos` (us-east-1, public access blocked) | AWS | every prefix is the source's SHA-256 — the matte cache's key: `sources/<sha>/source.<ext>` · `work/<sha>/…` (the workdir in the archive's own layout: pose, matte, mt, seed, the sampled band and composite frames, logs, params) · `artifacts/<sha>/<attempt>.mp4` · `measurements/<sha>/{inspect,verify}.*.json` · `runs/<sha>/<run_id>/trace.jsonl` · `models/u2net_human_seg.onnx` |
+| **INSPECT, VERIFY** — Lambda `stage-ready-measure` | AWS | Python 3.12 on arm64, 3 GB, on the `stage-ready-opencv5` layer (opencv-python-headless 5.0.0.93, numpy 2.4.6, a static ffmpeg). Mirrors `work/<sha>/` to `/tmp`, fetches the U²-Net weights, runs `ArchiveMeasurer` exactly as on the laptop — the DNN as the `matte_extent` second opinion — and writes the record to `measurements/<sha>/`. |
+| **DECIDE** — Bedrock Converse | AWS | one tool, `decide`, whose input schema is `models.DECISION_TOOL_SCHEMA`; the prompt carries the profile (gates, strategies with what they address and their bounds, retry budget, reshoot guidance), the current findings, the latest verification, the attempts so far, prior decisions and the budget. `global.anthropic.claude-sonnet-4-6` (Opus 5 and Sonnet 5 are listed for the account but not enabled). The loop's guards in `loop.py` still refuse what the profile does not allow. |
+| **PROCESS** | laptop | `BodyTrack` (Apple Vision), MatAnyone (MPS) and `Composite` (CoreImage) are macOS. Attempt 1 is a cache hit on the source hash — the archived run; attempt 2 reuses the matte and tracking and re-composites at the strategy's bounds if that render is not already on disk. The delivery goes to `artifacts/<sha>/`. |
+| **FIX** | — | not wired (Sandy's reframe): `LiveNotWired`. |
+
+AWS access goes through boto3's default credential chain; nothing in this repo reads, prints, logs
+or stores a credential. What is logged is the run's **trace** — every request id, latency, OpenCV
+number and Bedrock decision (`.stage_ready/runs/<run_id>.jsonl` and `runs/<sha>/<run_id>/trace.jsonl`
+in the bucket; the server streams it as a final `trace` event). No performer media is logged.
+
+**Ethel's first live run** (`python3 -m stage_ready run ethel --live`, run id `20260919T220947-528236`):
+INSPECT on the Lambda (61 s, every finding the fixture has) → Bedrock: *process, standard* (6.8 s,
+3859/452 tokens) → the archived render, a cache hit → VERIFY on the Lambda: **fails separation at
+1.12×** (the delivered file, decoded by FFmpeg — the frames say 1.13×), matte extent 0.989 against
+the U²-Net opinion over 17 frames (131 s) → Bedrock: *process, separation-targeted* (6.9 s), citing
+the one failing gate → re-composite at the bounds, a cache hit → VERIFY: **passes at 1.52×**
+(123 s) → Bedrock: *deliver* (3.4 s). Latency 5 min 34 s end to end, of which the Lambda 315 s
+(the U²-Net opinion at 2.7 s/frame is most of it), Bedrock 17 s. Cost: ≈ $0.01 of Lambda and
+≈ $0.06 of Bedrock at list prices. `python3 -m stage_ready aws status | sync <clip> | deploy`
+operate it; `STAGE_READY_LIVE_LOCAL=1` runs the same backend on the laptop's measurer without AWS.
 
 `CachedBackend` answers each call from a file keyed on what a live run would cache on, so a hybrid
 — cached matte, live agent — is the same interface with a different mix behind it:
 
 | call | fixture | live equivalent |
 |---|---|---|
-| `recognize(sha256)` | `clip.json` → `recognize` | S3 HEAD by source SHA-256 — is the matte for this source already cached? |
+| `recognize(sha256)` | `clip.json` → `recognize` | **live:** S3 list under `sources/<sha256>/` — is this source known, its matte cached? |
 | `inspect(target)` | `inspect.<target>.json` | **live:** `vision.detect_band`, `BodyTrack` + `vision.pose_qc`, `vision.track.dry_solve`, `vision.crown_cut`, `vision.grade_qc` |
-| `decide(n)` | `decide.<n>.json` | Amazon Bedrock |
+| `decide(n)` | `decide.<n>.json` | **live:** Amazon Bedrock Converse, the `decide` tool (`aws.AWS.decide`) |
 | `fix(strategy)` | `fix.<strategy>.json` | `track_frame.py` with `SIZE_CAP`, crop to the measured band |
-| `process(strategy)` | `process.<strategy>.json` | seed → matte (≈12 min, cached by source SHA-256) → track → warp → grade → composite → encode |
+| `process(strategy)` | `process.<strategy>.json` | **live, laptop:** a cache hit on the source hash for the standard strategy; a re-composite at the bounds for the retry (`process_local.py`) |
 | `verify(artifact)` | `verify.<artifact>.json` | **live:** `vision.matte_extent`, `vision.separation`, `vision.head_height` (spread, drift), `vision.frame_count`, `vision.audio_md5` |
 
 ### Why OpenCV 5
@@ -363,7 +388,7 @@ measurements. What is left is the ground truth for one number and the live wirin
 | 6 | **The other exit.** A failed verification with no allowed strategy left ends in a reshoot request that leads with the cause | done (Sandy; `&budget=0` shows the spent-budget variant on Ethel) |
 | 7 | **The screen.** One recording at a time, the session view, Trace and Details | done |
 | 8 | **OpenCV 5 DNN segmentation / QC.** `SubjectSegmenter`, measured against the samples | live for the seed and the second opinion (U²-Net on `cv2.dnn`, 2026-09-19); the separation edge stays on the matte, by measurement |
-| 9 | **Live wiring.** OpenCV inspection and verification on AWS compute, the matte cache on S3 by source hash, Bedrock for the agent | inspection and verification run live from a workdir; Bedrock, S3 and the processors pending — a hybrid (archived matte, live agent) is the next step |
+| 9 | **Live wiring.** OpenCV inspection and verification on AWS compute, the matte cache on S3 by source hash, Bedrock for the agent | the hybrid ran on Ethel 2026-09-19: Lambda INSPECT/VERIFY, Bedrock DECIDE, S3 by source hash, the rendering on the laptop; the fixer and a fresh upload's workdir pending |
 
 **Risk, named once — and settled.** Ethel's pass depended on the second strategy clearing the gate
 within honest bounds; the archived shadow lift only partly closed it (1.13× → 1.37×). Milestone 0
@@ -392,6 +417,9 @@ stage_ready/vision/                 OpenCV 5 measurements: band, pose, track (dr
 stage_ready/vision/segment.py       SubjectSegmenter — OpenCV 5 DNN person segmentation (U²-Net / PP-HumanSeg), the seed and
                                     the matte's second opinion; segcheck.py measures it against the archive's Vision opinions
 stage_ready/measure.py              INSPECT / VERIFY records computed from a workdir's files with stage_ready.vision
+stage_ready/aws.py                  S3 by source hash, the measurement Lambda (deploy/invoke), Bedrock DECIDE, the run trace
+stage_ready/lambda_handler.py       the Lambda entry: mirror work/<sha>/ from S3, run ArchiveMeasurer, write measurements/
+stage_ready/process_local.py        the process stage on the laptop, cached by source hash; the retry at the bounds
 stage_ready/server.py               static UI, /api/recognize, SSE run stream, byte-range media
 web/                                the workspace
 demo/clips/{sandy,ethel,zach}/      cached fixtures, keyed the way a live cache would be; clip.json → archive names the files
@@ -412,6 +440,11 @@ python3 -m venv .venv && .venv/bin/pip install -e '.[live]'    # OpenCV 5 + nump
 .venv/bin/python -m stage_ready models fetch                   # the DNN segmenter's weights (176 MB, hash-checked)
 .venv/bin/python -m stage_ready segcheck                       # the DNN against the archive's Vision opinions
 .venv/bin/python -m stage_ready measure --opinion dnn          # matte_extent with the DNN as the second opinion
+.venv/bin/pip install -e '.[live,aws]'                         # + boto3
+.venv/bin/python -m stage_ready aws status                     # STS identity, bucket, function, which sources are on S3
+.venv/bin/python -m stage_ready aws sync ethel                 # the workdir, source and deliveries under sources/work/artifacts/<sha256>/
+.venv/bin/python -m stage_ready aws deploy --layer <dir>       # role, layer (OpenCV 5 + ffmpeg, arm64), function
+.venv/bin/python -m stage_ready run ethel --live               # the hybrid: Lambda measures, Bedrock decides, the laptop renders
 .venv/bin/python -m stage_ready run ethel --live               # measured INSPECT, then stops at DECIDE (Bedrock not wired)
 .venv/bin/python -m unittest discover -s tests                 # 25 tests
 ```

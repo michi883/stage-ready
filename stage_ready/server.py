@@ -159,8 +159,12 @@ class Handler(BaseHTTPRequestHandler):
             for ev in run(clip, profile, backend):
                 self.wfile.write(f"data: {json.dumps(ev, ensure_ascii=False)}\n\n".encode())
                 self.wfile.flush()
+            if hasattr(backend, "flush"):                # the live run's observability record: request ids, latencies, decisions
+                fl = backend.flush()
+                if fl:
+                    self.wfile.write(f"data: {json.dumps({'type': 'trace', 'clip': clip_id, **fl}, ensure_ascii=False, default=str)}\n\n".encode())
             self.wfile.write(b"event: end\ndata: {}\n\n")
-        except (FixtureMissing, NotImplementedError) as e:
+        except (FixtureMissing, NotImplementedError, RuntimeError) as e:
             err = json.dumps({"type": "error", "clip": clip_id, "message": str(e)}, ensure_ascii=False)
             self.wfile.write(f"data: {err}\n\nevent: end\ndata: {{}}\n\n".encode())
         except (BrokenPipeError, ConnectionResetError):

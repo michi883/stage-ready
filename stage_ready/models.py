@@ -148,6 +148,24 @@ class Clip:
                                                             # `stage_ready.measure` computes the numbers from
 
 
+# The agent's answer, as a tool schema: what Bedrock's Converse API is asked to fill in. It is
+# `Decision` minus the fields the loop sets itself (model, duration_ms, cached). `strategy` is a
+# free string here; the loop's guard checks it against the profile — the schema does not enforce
+# the allowed list so a wrong answer is recorded and refused, not silently coerced.
+DECISION_TOOL_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "action": {"type": "string", "enum": ["inspect", "fix", "process", "deliver", "reshoot"],
+                   "description": "inspect: look at the working picture again (cite what to focus on). fix: apply one allowed fixer (a kind 'fix' strategy). process: render an attempt with one allowed processor (a kind 'process' strategy). deliver: the latest verification passed and nothing else is warranted. reshoot: no allowed action can honestly satisfy the profile — ask for a new recording."},
+        "strategy": {"type": ["string", "null"], "description": "For fix or process: the id of one strategy from the profile's allowed list. Null otherwise."},
+        "reasoning": {"type": "string", "description": "One paragraph, in plain words, with the numbers in it: what the findings say, why this action and not the others, what the exit is if it fails. Cite finding and gate ids by name. Never state a number that is not in the findings."},
+        "cites": {"type": "array", "items": {"type": "string"}, "description": "The finding and gate ids this decision rests on."},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    },
+    "required": ["action", "reasoning", "cites", "confidence"],
+}
+
+
 def to_dict(obj: Any) -> Any:
     """Dataclasses → plain dicts, recursively, for JSON."""
     if hasattr(obj, "__dataclass_fields__"):

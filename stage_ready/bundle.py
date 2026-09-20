@@ -86,7 +86,10 @@ def plan(archive: Path, clip_ids: list[str] | None = None) -> list[tuple[Path, s
                     add(wd / d / name, f"{a['workdir']}/{d}/{name}")
         n = len([x for x in os.listdir(wd / "matte") if x.endswith(".png")]) if (wd / "matte").is_dir() else 0
         if (wd / "band").is_dir() and n:
+            # the frames grade_qc samples, plus the frames the second opinion is taken on (seed/)
             want = {i + 1 for i in sample_indices(n, BAND_SAMPLES)}
+            if (wd / "seed").is_dir():
+                want |= {frame_number(x) for x in os.listdir(wd / "seed") if frame_number(x)}
             for name in sorted(os.listdir(wd / "band")):
                 if frame_number(name) in want:
                     add(wd / "band" / name, f"{a['workdir']}/band/{name}")

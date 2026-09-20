@@ -34,7 +34,7 @@ from typing import Any
 from . import require_cv2
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-MODELS_DIR = ROOT / "models"
+MODELS_DIR = Path(os.environ.get("STAGE_READY_MODELS_DIR", ROOT / "models"))   # the Lambda uses /tmp/models
 
 # The models this seam has been measured with (`python3 -m stage_ready segcheck --model …`). Both
 # Apache-2.0, both plain ONNX that cv2.dnn.readNet loads; each entry says how the network wants its

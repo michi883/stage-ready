@@ -1,7 +1,11 @@
 """CLI.
 
     python -m stage_ready serve [--port 8765]        serve the UI and the API
-    python -m stage_ready run  [sandy ethel zach] [--live]   print a run's trace as text
+    python -m stage_ready run  [sandy ethel zach] [--live]   print a run's trace as text (--live: the AWS hybrid)
+    python -m stage_ready aws status | sync <clip…> | deploy [--layer DIR]
+                                    identity (STS) and bucket status; upload a clip's workdir, source and
+                                    deliveries under sources/work/artifacts/<sha256>/; publish the OpenCV 5
+                                    layer and the measurement Lambda. Default credential chain only.
     python -m stage_ready trace [sandy ethel zach]           print a run's events as JSON lines
     python -m stage_ready measure [sandy ethel zach] [--archive ~/mts] [--json] [--opinion dnn]
                                     compute INSPECT and VERIFY with OpenCV 5 over the archived
@@ -201,6 +205,53 @@ def _bundle(a) -> int:
     return 0
 
 
+def _aws(a) -> int:
+    from pathlib import Path
+    from .aws import AWS, BUCKET, FUNCTION, REGION
+    from .backends.cached import CachedBackend
+    from .measure import archive_root
+    aws = AWS()
+    if a.what == "status":
+        ident = aws.identity()
+        print(f"  region {REGION} · bucket {BUCKET}: {aws.bucket_status()} · identity: {ident['arn_type']} {ident['principal']} in account {ident['account']}")
+        try:
+            c = aws.lam().get_function_configuration(FunctionName=FUNCTION)
+            print(f"  lambda {FUNCTION}: {c['Runtime']} {c['Architectures'][0]} {c['MemorySize']} MB, timeout {c['Timeout']} s, layers {len(c.get('Layers', []))}, last modified {c['LastModified']}")
+        except Exception as e:  # noqa: BLE001
+            print(f"  lambda {FUNCTION}: not deployed ({type(e).__name__})")
+        demo = CachedBackend()
+        for c in demo.clips():
+            if c.archive.get("workdir"):
+                sha = c.recognize["sha256"] if isinstance(c.recognize["sha256"], str) else c.recognize["sha256"][0]
+                print(f"  {c.id:<6} {sha[:12]}… {'on S3' if aws.recognize(sha) else 'not on S3'}")
+        return 0
+    if a.what == "sync":
+        print(f"  bucket: {aws.ensure_bucket()}")
+        root = archive_root(a.archive)
+        demo = CachedBackend()
+        for cid in a.clips or [c.id for c in demo.clips() if c.archive.get('workdir')]:
+            c = demo.clip(cid)
+            r = aws.sync_clip(c, root, progress=lambda n, t: print(f"    … {n} files", flush=True))
+            print(f"  {cid}: sha {r['sha256'][:12]}… uploaded {r['uploaded']}, skipped {r['skipped']} (same size), {r['bytes'] / 1e6:.0f} MB")
+        print(f"  model: s3://{BUCKET}/{aws.sync_model()}")
+        return 0
+    if a.what == "deploy":
+        print(f"  bucket: {aws.ensure_bucket()}")
+        role = aws.ensure_role(); print(f"  role: {role}")
+        if a.layer:
+            layer = aws.deploy_layer(Path(a.layer)); print(f"  layer: {layer}")
+        else:
+            vs = aws.lam().list_layer_versions(LayerName="stage-ready-opencv5").get("LayerVersions", [])
+            if not vs:
+                print("  no layer published yet: pass --layer <dir with python/ and bin/>"); return 2
+            layer = vs[0]["LayerVersionArn"]; print(f"  layer (existing): {layer}")
+        fn = aws.deploy_function(layer, role); print(f"  function: {fn}")
+        for r in aws.trace.records:
+            print(f"    {r['service']} {r.get('op')} request {r.get('request_id')}")
+        return 0
+    return 2
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="stage_ready")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -211,10 +262,13 @@ def main(argv: list[str] | None = None) -> int:
     b = sub.add_parser("bundle"); b.add_argument("clips", nargs="*"); b.add_argument("--out", default=None); b.add_argument("--archive", default=None)
     b.add_argument("--dry-run", action="store_true"); b.add_argument("--install", default=None); b.add_argument("--verify", default=None)
     r_ = sub.add_parser("record"); r_.add_argument("clip"); r_.add_argument("--archive", default=None); r_.add_argument("--fixed", action="store_true"); r_.add_argument("--out", default=None)
+    aw = sub.add_parser("aws"); aw.add_argument("what", choices=["status", "sync", "deploy"]); aw.add_argument("clips", nargs="*"); aw.add_argument("--layer", default=None); aw.add_argument("--archive", default=None)
     mo = sub.add_parser("models"); mo.add_argument("what", nargs="?", default="list", choices=["list", "fetch"]); mo.add_argument("name", nargs="?", default=None)
     sc = sub.add_parser("segcheck"); sc.add_argument("clips", nargs="*"); sc.add_argument("--archive", default=None); sc.add_argument("--no-crop", action="store_true"); sc.add_argument("--json", action="store_true"); sc.add_argument("--model", default=None)
     a = ap.parse_args(argv)
 
+    if a.cmd == "aws":
+        return _aws(a)
     if a.cmd == "models":
         from .vision.segment import DEFAULT_MODEL, MODELS, MODELS_DIR, fetch, sha256_of
         if a.what == "fetch":
@@ -258,6 +312,12 @@ def main(argv: list[str] | None = None) -> int:
             ev = {"type": "error", "clip": cid, "message": str(e)}
             print(json.dumps(ev, ensure_ascii=False) if a.cmd == "trace" else f"  ✗ STOPPED — {e}")
             rc = 2
+        if a.live and hasattr(backend, "flush"):
+            fl = backend.flush()
+            if fl:
+                summ = fl.get("summary", {})
+                print(f"  ◦ trace {fl.get('local')}" + (f" · {fl.get('s3')}" if fl.get("s3") else ""))
+                print(f"    latency ms {summ.get('latency_ms')} · bedrock tokens {summ.get('bedrock_tokens')} · errors {len(summ.get('errors', []))}")
         print()
     return rc
 

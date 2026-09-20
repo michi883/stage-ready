@@ -150,15 +150,40 @@ class Recognition(unittest.TestCase):
         self.assertIsNone(get_backend(demo=True).recognize(sha256="00" * 32, name="holiday.mp4"))
         self.assertIsNone(get_backend(demo=True).recognize())
 
-    def test_live_recognize_is_refused_until_wired(self):
+    def test_live_local_mode_has_no_agent_and_no_lookup(self):
+        # STAGE_READY_LIVE_LOCAL=1: the laptop measures, nobody decides, nothing is looked up on S3.
         from stage_ready.backends.live import LiveBackend, LiveNotWired, SubjectSegmenter
         from stage_ready.vision import OpenCVMissing
         from stage_ready.vision.segment import ModelMissing
+        b = LiveBackend(local=True)
         with self.assertRaises(LiveNotWired):
-            LiveBackend().recognize(sha256="00" * 32)
-        # The DNN seam is live, and refuses plainly rather than guessing: no OpenCV 5, or no model file.
+            b.recognize(sha256="00" * 32)
+        with self.assertRaises(LiveNotWired):
+            b.decide(None, Profile.load(), None)
+        # The DNN seam refuses plainly rather than guessing: no OpenCV 5, or no model file.
         with self.assertRaises((OpenCVMissing, ModelMissing)):
             SubjectSegmenter(model="/nonexistent/model.onnx")
+
+    def test_s3_layout_is_keyed_by_source_hash(self):
+        # Every prefix is the source's SHA-256 — the matte cache's key — and the workdir keeps the archive's layout.
+        from stage_ready.aws import artifact_key, measurement_key, run_key, s3_archive_block, source_key, work_prefix
+        c = get_backend(demo=True).clip("ethel")
+        sha = c.recognize["sha256"]
+        blk = s3_archive_block(c.archive, sha)
+        self.assertEqual(blk["workdir"], f"work/{sha}")
+        self.assertEqual(blk["source"], f"sources/{sha}/source.mp4")
+        self.assertEqual(blk["artifacts"]["attempt_2"], {"video": f"artifacts/{sha}/attempt_2.mp4", "composite": "comp_sep"})
+        self.assertEqual((source_key(sha, ".mov"), work_prefix(sha), artifact_key(sha, "attempt_1")),
+                         (f"sources/{sha}/source.mov", f"work/{sha}", f"artifacts/{sha}/attempt_1.mp4"))
+        self.assertEqual(measurement_key(sha, "verify", "attempt_1"), f"measurements/{sha}/verify.attempt_1.json")
+        self.assertTrue(run_key(sha, "r1").startswith(f"runs/{sha}/"))
+
+    def test_decision_tool_schema_matches_the_record(self):
+        from stage_ready.models import DECISION_TOOL_SCHEMA, Decision
+        import dataclasses
+        fields = {f.name for f in dataclasses.fields(Decision)} - {"model", "duration_ms", "cached"}
+        self.assertEqual(set(DECISION_TOOL_SCHEMA["properties"]), fields)
+        self.assertEqual(DECISION_TOOL_SCHEMA["properties"]["action"]["enum"], ["inspect", "fix", "process", "deliver", "reshoot"])
 
 
 class Guardrails(unittest.TestCase):

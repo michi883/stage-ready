@@ -33,7 +33,7 @@ Shooting starts when all of these are true:
 
 - [x] Ethel's second attempt is a **measured** number — 1.52× at the strategy's bounds, 2026-09-19 (step 0)
 - [x] `python3 -m stage_ready` INSPECT and VERIFY compute their numbers with **cv2 5.x in this repo** — `stage_ready/vision`, `measure`, 2026-09-19 (step 2a; over the archive's workdirs, not yet a fresh upload)
-- [ ] a **meaningful component runs on AWS** and the run can be shown doing it
+- [x] a **meaningful component runs on AWS** and the run can be shown doing it — Lambda INSPECT/VERIFY + Bedrock DECIDE on Ethel, 2026-09-19 (step 3)
 - [ ] a **public URL** serves the demo, from a clean machine, with media that plays
 - [x] a judge can `git clone` and reach a working demo from the README alone — verified from a fresh clone + the judge bundle, 2026-09-19 (step 1); the bundle's private download is still to be set up at submission
 - [ ] the **evaluation table** exists: N clips, gate precision/recall, silently-wrong deliveries
@@ -103,7 +103,7 @@ DNN opinion within 2.3 % of Vision's on all three; the separation edge NOT repla
 on Zach's upscaled picture — the matte stays the edge). Still on the laptop: BodyTrack, MatAnyone,
 Composite.
 
-### 3. A meaningful component on AWS
+### 3. A meaningful component on AWS — **DONE 2026-09-19** (minimal hybrid; fixer and fresh-upload workdir pending)
 
 **Why:** required, and cloud delivery is 10% — "deployment quality, repeatability, observability,
 security, responsible-use practices".
@@ -117,6 +117,10 @@ Bedrock is the highest-value of the three: the agent is a JSON file today, and t
 award's top line is "substantive OpenCV 5 **and agent** integration."
 **Accept:** `?demo=0` completes a real run end to end on at least one clip; credentials still only
 via boto3's default chain, never read, printed or stored.
+**Outcome:** Ethel, run `20260919T220947-528236`: Lambda `stage-ready-measure` (arm64, OpenCV 5 layer)
+INSPECT + 2× VERIFY over `work/<sha>/` on `stage-ready-videos`; Bedrock Converse (Sonnet 4.6 — Opus 5
+not enabled for the account) decided process → separation-targeted → deliver; the render a cache hit
+on the laptop; delivered on the measured 1.52×. Trace in `runs/<sha>/<run_id>/trace.jsonl`.
 
 ### 4. A working endpoint
 
