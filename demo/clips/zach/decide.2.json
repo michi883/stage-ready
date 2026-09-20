@@ -1,0 +1,13 @@
+{
+  "action": "process",
+  "strategy": "process.separation_targeted",
+  "reasoning": "Verification failed on exactly one gate: luminance separation at the silhouette edge is 1.00× — inside 0.116, outside 0.116; the black shirt and the curtain are the same brightness, so in luminance there is no outline at all. Everything else passes, so the matte, the crown completion and the tracking are reused. The profile allows one strategy that addresses this finding — the separation-targeted composite: a stronger rim and light wrap and a bounded shadow lift, which change the edge and the dark end and never the performer's pixels. It moved a clip that started at 1.13× to 1.52×; this one starts lower. Retry budget: 0 of 2 used. If it cannot clear the gate inside its bounds, the exit is a reshoot request.",
+  "cites": [
+    "separation",
+    "matte_extent",
+    "head_spread"
+  ],
+  "confidence": 0.7,
+  "model": "cached",
+  "duration_ms": 3400
+}

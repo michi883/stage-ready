@@ -111,7 +111,7 @@
           <li>Every measurement is replayed from the archived fixtures under <code>demo/clips/</code> — no model calls, no OpenCV, no AWS at demo time. The same numbers are recomputed from the archived files with OpenCV 5 by <code>python3 -m stage_ready measure</code>.</li>
           <li>An upload is recognised by its SHA-256 — the same key the live matte cache uses — and never leaves the browser.</li>
           <li>The loop enforces what the agent may not skip: every process is verified, every fix re-inspected, delivery refused unless the latest verification passed.</li>
-          <li>Every number is measured, on the recording it belongs to — Ethel's second attempt (1.52×, measured 2026-09-19), Sandy's render (the archive's own, which fails), Michi's sample (derived from the original by trimming and frame-rate normalisation only, run through the pipeline, measured). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is, and none borrows another recording's numbers.</li>
+          <li>Every number is measured, on the recording it belongs to — Ethel's second attempt (1.52×, measured 2026-09-19), Sandy's render (the archive's own, which fails on head height), Zach's two attempts (1.00×, then 1.45× at the strategy's bounds — rendered and measured). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is, and none borrows another recording's numbers.</li>
           <li>OpenCV 5 DNN subject segmentation / QC is the first live capability to wire — <span class="chip planned">planned</span>, not running here.</li>
         </ul>
         <details id="provenance"><summary>Where the numbers come from</summary><ul></ul></details>

@@ -193,19 +193,18 @@ small delta and we already work in measurements. Skip it the moment it competes 
   section and no evaluation.
 - **Build, deploy and test instructions with pinned dependencies** — verified from a clean clone.
 
-## The demo lineup — settled 2026-09-19: ACCEPT → ADAPT → REFUSE
+## The demo lineup — settled 2026-09-19: Sandy, Ethel, Zach, on their own measured paths
 
-Measured with the live OpenCV 5 measurer over every archived recording (`demo-corpus`, memory):
-no archived recording gives "fix → verified", "direct → verified" existed only for Joel and Brian
-(footage not showable), and Zach's own recording fails separation at 1.00× (1.45× at the retry's
-bounds) — a passing control from Zach would mean changing his clothing, so he is out of the demo
-(`demo/derive.sh` records why). The lineup is now:
+Measured with the live OpenCV 5 measurer over every archived recording (`demo-corpus`, memory).
+The lineup is the show's, and each recording's path is the one its own numbers produce — three
+agent behaviours, not a forced triad. A fourth, derived recording (`michi_sample_v1`, a
+near-threshold pass at 1.51×) is kept in the evaluation corpus, not the demo (`demo/derive.sh`).
 
-| # | recording | path | verdict |
+| # | recording | path | behaviour |
 |---|---|---|---|
-| 1 | **Michi Yamamoto** — `michi_sample_v1.mp4`, derived from `michi.mp4` by trim (30–75 s) + 59.94→30 fps, audio copied (`demo/derived.json`); run through the pipeline 2026-09-19 (998 s), fixtures written from the measurement (`stage_ready record`) | inspect → process → verify ✓ → deliver; separation **1.51×** (0.092/0.139, the dark way — clears by 0.01×), matte 100 %, head spread 1.2 %, over-lit warning | **ACCEPT** |
-| 2 | **Ethel Chadwick** — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **ADAPT** |
-| 3 | **Sandy Hackett** — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot (cause first: distance) | **REFUSE** |
+| 1 | **Sandy Hackett** — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot (cause first: distance) | **fix what can be fixed, then catch what cannot** |
+| 2 | **Ethel Chadwick** — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **adapt and recover** |
+| 3 | **Zach Sain** — archived, untouched; attempt 2 rendered 2026-09-19 | inspect (warn: crown cut 78 %, over-lit) → process → verify ✗ **1.00×** → separation-targeted at bounds → verify ✗ **1.45×** → reshoot ("don't wear the stage"), one retry unused | **stop when further processing cannot honestly satisfy the profile** |
 
 ## Video beats → what each one needs
 

@@ -1,9 +1,9 @@
 {
-  "note": "Derived demo inputs. Originals untouched; Ethel and Sandy run on their originals (identity). Zach not derived: see demo/derive.sh.",
+  "note": "Derived inputs. The polished demo runs on the three archived recordings untouched (Sandy, Ethel, Zach); michi_sample_v1 is an evaluation-corpus input (a near-threshold pass, 1.51×), derived here and kept for the evaluation set, not in the demo lineup.",
   "ffmpeg": "ffmpeg version 8.1.2 Copyright (c) 2000-2026 the FFmpeg developers",
   "derived": {
     "michi": {
-      "role": "ACCEPT",
+      "role": "evaluation corpus (not in the demo)",
       "original": "michi.mp4",
       "original_sha256": "e9831409dbd651caf10179e4382e2daaad5da115aa62fa77e699a0bdb0084296",
       "output": "michi_sample_v1.mp4",
@@ -16,23 +16,11 @@
         "audio stream copied"
       ],
       "derived_on": "2026-09-19"
-    },
-    "ethel": {
-      "role": "ADAPT",
-      "original": "ethel_chadwick_v2.mp4",
-      "output": "ethel_chadwick_v2.mp4",
-      "edits": [],
-      "note": "identity — the archived recording, unchanged"
-    },
-    "sandy": {
-      "role": "REFUSE",
-      "original": "sandy_hackett_v2.mp4",
-      "output": "sandy_hackett_v2.mp4",
-      "edits": [],
-      "note": "identity — the archived recording, unchanged"
     }
   },
-  "not_derived": {
-    "zach": "zach_sain_v2.mov measures separation 1.00x (retry at the strategy's bounds: 1.45x): the black shirt is the curtain's luminance. A passing control would need different clothing, which is altering the performer. Stopped; reported."
+  "demo_lineup": {
+    "sandy": "archived recording, unchanged",
+    "ethel": "archived recording, unchanged",
+    "zach": "archived recording, unchanged — attempt 2 rendered 2026-09-19 at the strategy's bounds (1.45×)"
   }
 }

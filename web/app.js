@@ -62,6 +62,8 @@ function inspectPhrase(r) {
 const choosePhrase = d => d.action === "deliver" ? "Deliver" : d.action === "reshoot" ? "Ask for a reshoot" : d.action === "inspect" ? "Look closer"
                         : WORDS.choose[d.strategy] || stratLabel(d.strategy);
 const gatePhrase = v => { const g = v.failing[0]; return g ? (WORDS.gate[g.id] || g.label.toLowerCase()) : ""; };
+// the failed cell carries the number: "blends into the curtain · 1.45×" — on a retry the two rows tell the story by themselves
+const gateSub = v => { const g = v.failing[0]; if (!g) return ""; const n = typeof g.value === "number" ? ` · ${g.id === "separation" ? `${g.value.toFixed(2)}×` : g.id === "head_spread" ? pct(g.value) : `${g.value}${g.unit === "px" ? " px" : ""}`}` : ""; return `${gatePhrase(v)}${n}`; };
 
 const ICON = {
   inspect: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>`,
@@ -199,19 +201,24 @@ function newRun(clip, file) {
   return run;
 }
 const label = run => `Recording ${run.n}`;
-/* The three outcomes, one rule: ACCEPT — verified on the first pass, nothing changed; ADAPT — verified
-   after the loop changed something (a fix, or a different strategy after a failed gate); REFUSE — a
-   reshoot request. The same rule labels the bench, the session view and the Details table. */
+/* What the agent did, in two words, from the path it actually took — one rule for the bench, the
+   session view and the Details table. Green: verified with nothing changed or after a fix that held.
+   Amber: verified after a failed gate changed the strategy. Red: a reshoot request — and the words say
+   why: a fix that held before a gate caught what it could not touch, or a retry that was measured and
+   still fell short, so the loop stopped rather than deliver. */
 function verdict(ev) {
   if (!ev) return null;
   if (ev.outcome !== "delivered") {
-    const item = ev.reshoot.items[0];
-    return { key: "refuse", word: "REFUSE", line: `Reshoot requested — ${firstSentence(item ? item.guidance : "the retry budget is spent")}` };
+    const r = ev.reshoot, item = r.items[0];
+    const guidance = firstSentence(item ? item.guidance : "the retry budget is spent");
+    if (r.attempts > 1) return { key: "red", word: "TRIED · STOPPED", line: `Retried with the safer strategy, measured, still short of the gate — stopped rather than deliver. ${guidance}` };
+    if (r.attempts === 1 && ev.path.includes("fix")) return { key: "red", word: "FIXED · CAUGHT", line: `Fixed what could be fixed; a gate caught what could not. ${guidance}` };
+    return { key: "red", word: "STOPPED", line: `Reshoot requested — ${guidance}` };
   }
   const d = ev.delivery;
-  if (d.attempts === 1 && d.fixes.length === 0) return { key: "accept", word: "ACCEPT", line: "Verified on the first pass — nothing to change." };
-  const how = d.attempts > 1 ? "the first attempt failed a gate and the strategy changed" : "the framing was fixed and re-inspected";
-  return { key: "adapt", word: "ADAPT", line: `Verified after adapting — ${how}.` };
+  if (d.attempts > 1) return { key: "amber", word: "ADAPTED · RECOVERED", line: "The first attempt failed a gate; the strategy changed; the second attempt verified." };
+  if (d.fixes.length) return { key: "green", word: "FIXED · VERIFIED", line: "The framing was fixed, re-inspected, and the render verified." };
+  return { key: "green", word: "VERIFIED", line: "Verified on the first pass — nothing to change." };
 }
 const verdictBadge = (v, big = false) => v ? `<span class="verdict ${v.key}${big ? " big" : ""}">${v.word}</span>` : "";
 const doneRuns = () => RUNS.filter(r => r.end);
@@ -465,7 +472,7 @@ function flow(ev) {
       if (d.action === "reshoot") {
         // Why the arc is blocked is a fact, not a phrase: the budget is spent, or nothing in the profile addresses this defect.
         const spent = L.budget && L.budget.reprocesses_used >= L.budget.retry_budget;
-        setStep("decide", "failed", "Ask for a reshoot"); $("#flow .retry").classList.add("blocked"); $("#flow .retry .lbl").textContent = spent ? "no retry left" : "no strategy for this";
+        setStep("decide", "failed", "Ask for a reshoot"); $("#flow .retry").classList.add("blocked"); $("#flow .retry .lbl").textContent = spent ? "no retry left" : "nothing left to try";
         story("Ask for a reshoot", "fail"); narrate(esc(quote), "quote fail"); break;
       }
       if (d.action === "process" && L.fixed) { setStep("decide", "done", null, { keep: true }); narrate(esc(quote), "quote"); break; }   // "Reframe" stands; the work shows it
@@ -503,7 +510,7 @@ function flow(ev) {
         narrate(`Verified ✓ — ${r.gates.length} of ${r.gates.length} gates${m.separation ? `, separation <b>${m.separation.toFixed(2)}×</b>` : ""}${m.head_spread != null ? `, head height held to ${pct(m.head_spread)}` : ""}, frames and audio identical to the source.${projected(r) ? " <i>(separation projected — pending ground truth)</i>" : ""}`, "pass");
       } else {
         const g = r.failing[0];
-        setStep("verify", "failed", "Fails ✗", { sub: gatePhrase(r) });
+        setStep("verify", "failed", "Fails ✗", { sub: gateSub(r) });
         story(ev.attempt === 1 ? "First output fails ✗" : "Fails again ✗", "fail");
         narrate(`✗ Fails ${r.failing.length === 1 ? "one gate" : `${r.failing.length} gates`}: <b>${esc(g.label.toLowerCase())} ${esc(fmtVal(g))}</b> against ${esc(fmtThr(g.threshold, g.unit))}. ${esc(g.detail.split(/(?<=\.)\s/).slice(1).join(" ") || g.detail)} No capture-side check could see this — only the finished output.`, "fail");
       }
@@ -515,7 +522,7 @@ function flow(ev) {
       if (ev.outcome === "delivered") {
         const v = verdict(ev);
         setOutput("done", "Delivered ✓");
-        $(".cap", $("#out")).innerHTML = `${verdictBadge(v)} Delivered ✓`;
+        $(".cap", $("#out")).innerHTML = `Delivered ✓`;
         $("#bench").classList.add("done");
         const d = ev.delivery;
         narrateEnd(run, `${verdictBadge(v)} <b>Stage Ready.</b> ${d.attempts > 1 ? `Second attempt delivered — the first was measured, failed, and replaced.` : d.fixes.length ? `One fix, one attempt.` : `First attempt, no fixes.`} Verified against every gate in the profile.`, `pass ${v.key}`);
@@ -526,10 +533,10 @@ function flow(ev) {
         out.insertBefore(h("div", "attempt front", `<div class="frame reshoot"><b>Reshoot requested</b><span>${esc(firstSentence(item ? item.guidance : ""))}</span></div>`), $(".cap", out));
         $$(".attempt", out).forEach(a => { if (!a.classList.contains("front") || a.querySelector(".reshoot") == null) { a.classList.remove("front"); a.classList.add("behind"); } });
         setOutput("failed", "Not delivered ✗");
-        $(".cap", $("#out")).innerHTML = `${verdictBadge(verdict(ev))} Not delivered ✗`;
+        $(".cap", $("#out")).innerHTML = `Not delivered ✗`;
         $("#bench").classList.add("done");
         story("Reshoot requested", "fail");
-        narrateEnd(run, `${verdictBadge(verdict(ev))} Reshoot requested — ${esc(item ? item.guidance : "the retry budget is spent")}`, "fail refuse");
+        narrateEnd(run, `${verdictBadge(verdict(ev))} ${esc(verdict(ev).line)}`, "fail red");
       }
       break;
     case "error": {
@@ -656,7 +663,7 @@ function buildProcessed() {
   const runs = doneRuns();
   const wrap = $("#processed-cards"); wrap.innerHTML = "";
   const vs = runs.map(r => verdict(r.end));
-  $("#processed-title").innerHTML = `${plural(runs.length, "recording")} processed — ${vs.map(v => verdictBadge(v)).join(`<span class="varr">·</span>`)}`;
+  $("#processed-title").innerHTML = `${plural(runs.length, "recording")} processed — ${vs.map(v => verdictBadge(v)).join(`<span class="varr"></span>`)}`;
   wrap.dataset.n = Math.min(runs.length, 4);
   runs.forEach((run, i) => {
     const ev = run.end, clip = run.clip;

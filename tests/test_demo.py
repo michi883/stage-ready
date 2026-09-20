@@ -9,7 +9,7 @@ from stage_ready.models import Decision, VerifyResult, Gate
 from stage_ready.profile import Profile
 
 
-CLIPS = ("michi", "ethel", "sandy")
+CLIPS = ("sandy", "ethel", "zach")
 
 
 def trace(clip_id, backend=None):
@@ -18,12 +18,12 @@ def trace(clip_id, backend=None):
 
 
 class DemoPaths(unittest.TestCase):
-    EXPECTED = {   # ACCEPT → ADAPT → REFUSE: the three outcomes, in lineup order
-        "michi": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),
-        "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),
-        "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),
+    EXPECTED = {   # the lineup, in billing order — three agent behaviours, each recording's own path
+        "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),               # fix what can be fixed, then catch what cannot
+        "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),     # adapt and recover
+        "zach": ("reshoot", ["inspect", "process", "verify ✗", "reprocess", "verify ✗", "reshoot"]),         # stop when processing cannot honestly satisfy the profile
     }
-    DELIVERED = ("michi", "ethel")
+    DELIVERED = ("ethel",)
 
     def test_three_paths(self):
         for cid, (outcome, path) in self.EXPECTED.items():
@@ -62,6 +62,19 @@ class DemoPaths(unittest.TestCase):
         self.assertEqual(after["resolved"], ["picture_area", "subject_size"])
         self.assertEqual(after["new_defects"], [])
         self.assertEqual([e["result"]["strategy"] for e in evs if e["type"] == "fix.result"], ["fix.reframe"])
+
+    def test_zach_retry_reaches_the_bounds_and_stops(self):
+        # The retry is the same strategy that recovered Ethel; on Zach it moves 1.00x to 1.45x and is
+        # still short, so the loop stops with one retry unused — the strategy has nowhere further to go.
+        evs = trace("zach")
+        seps = [g["value"] for e in evs if e["type"] == "verify.result" for g in e["result"]["gates"] if g["id"] == "separation"]
+        self.assertEqual(seps, [1.0, 1.45])
+        self.assertEqual([e["result"]["strategy"] for e in evs if e["type"] == "process.result"], ["process.standard", "process.separation_targeted"])
+        end = evs[-1]
+        self.assertEqual(end["outcome"], "reshoot")
+        self.assertEqual([i["id"] for i in end["reshoot"]["items"]], ["separation"])
+        self.assertIn("wear the stage", end["reshoot"]["items"][0]["guidance"])
+        self.assertEqual(end["reshoot"]["budget"], {"reprocesses_used": 1, "retry_budget": 2})
 
     def test_sandy_reshoot_names_the_cause_first(self):
         # The gates that fail are head height; the cause is the walk-in INSPECT warned about, and
@@ -108,7 +121,7 @@ class Recognition(unittest.TestCase):
 
     def test_lineup_order_and_fingerprints(self):
         clips = get_backend(demo=True).clips()
-        self.assertEqual([c.name for c in clips], ["Michi Yamamoto", "Ethel Chadwick", "Sandy Hackett"])   # ACCEPT → ADAPT → REFUSE
+        self.assertEqual([c.name for c in clips], ["Sandy Hackett", "Ethel Chadwick", "Zach Sain"])   # midtownshow.com/2040
         for c in clips:
             hashes = c.recognize.get("sha256")
             for x in ([hashes] if isinstance(hashes, str) else hashes):
@@ -127,14 +140,11 @@ class Recognition(unittest.TestCase):
         self.assertEqual(c.id, "ethel")
         self.assertEqual(c.recognize["matched_by"], "name")
 
-    def test_a_derived_input_is_recognised_by_its_own_hash_not_its_originals(self):
-        # michi_sample_v1.mp4 is derived from michi.mp4 (demo/derived.json). The demo replays the
-        # derived file's run; the original is a different recording and must not be matched to it.
+    def test_either_container_of_the_same_source_is_recognised(self):
         b = get_backend(demo=True)
-        c = b.clip("michi")
-        self.assertEqual(b.recognize(sha256=c.recognize["sha256"]).id, "michi")
-        self.assertIsNone(b.recognize(sha256=c.recognize["derived_from"]["sha256"]))
-        self.assertNotIn("michi.mp4", [n.lower() for n in c.recognize["names"]])
+        mov, mp4 = b.clip("zach").recognize["sha256"]
+        self.assertEqual(b.recognize(sha256=mov).id, "zach")
+        self.assertEqual(b.recognize(sha256=mp4).id, "zach")
 
     def test_unknown_is_none_not_a_guess(self):
         self.assertIsNone(get_backend(demo=True).recognize(sha256="00" * 32, name="holiday.mp4"))
@@ -159,10 +169,12 @@ class Guardrails(unittest.TestCase):
             return self._d.pop(0)
 
     def test_deliver_refused_before_any_verification(self):
+        # Ethel's own path (standard fails, the retry passes), with a premature deliver in front of it.
         b = self.Scripted([Decision(action="deliver", reasoning="premature"),
                            Decision(action="process", strategy="process.standard", reasoning="ok"),
+                           Decision(action="process", strategy="process.separation_targeted", reasoning="retry"),
                            Decision(action="deliver", reasoning="ok")])
-        evs = list(run(b.clip("michi"), Profile.load(), b))
+        evs = list(run(b.clip("ethel"), Profile.load(), b))
         guards = [e for e in evs if e["type"] == "guard"]
         self.assertEqual(len(guards), 1)
         self.assertIn("nothing has been verified", guards[0]["reason"])
@@ -171,9 +183,11 @@ class Guardrails(unittest.TestCase):
     def test_unknown_strategy_refused(self):
         b = self.Scripted([Decision(action="process", strategy="process.magic", reasoning="?"),
                            Decision(action="process", strategy="process.standard", reasoning="ok"),
+                           Decision(action="process", strategy="process.separation_targeted", reasoning="retry"),
                            Decision(action="deliver", reasoning="ok")])
-        evs = list(run(b.clip("michi"), Profile.load(), b))
+        evs = list(run(b.clip("ethel"), Profile.load(), b))
         self.assertIn("not in the profile", [e for e in evs if e["type"] == "guard"][0]["reason"])
+        self.assertEqual(evs[-1]["outcome"], "delivered")
 
     def test_spent_budget_ends_in_reshoot_request(self):
         # Ethel with a retry budget of zero: the first failed verification is the end of the road.
@@ -190,7 +204,7 @@ class Guardrails(unittest.TestCase):
     def test_missing_fixture_is_loud(self):
         b = self.Scripted([Decision(action="fix", strategy="fix.reframe", reasoning="no fixture for Zach")])
         with self.assertRaises(FixtureMissing):
-            list(run(b.clip("michi"), Profile.load(), b))
+            list(run(b.clip("ethel"), Profile.load(), b))
 
 
 if __name__ == "__main__":

@@ -164,6 +164,7 @@ figure.outfig figcaption { max-width: none; }
 .step .sub:empty { display: none; }
 .step .row.past .phrase { font-size: 12.5px; opacity: .6; }
 .step .row.past .sub { display: none; }
+.step .row.past.failed .sub { display: block; }   /* a failed attempt keeps its number: 1.00× then 1.45× is the story */
 .step .row.past.failed .phrase { color: var(--fail); opacity: .85; }
 .step .row.failed .phrase { color: var(--fail); }
 .step .ptag { font-size: 10px; font-family: var(--mono); color: #ffc46b; border: 1px solid #6f5a2a; border-radius: 4px; padding: 0 5px; margin-top: 3px; }
@@ -233,13 +234,13 @@ figure.outfig figcaption { max-width: none; }
 .ftag { font-weight: 750; padding: 3px 11px; border-radius: 999px; font-size: 13px; }
 /* the three outcomes: one colour each, everywhere they appear */
 .verdict { display: inline-block; font-weight: 900; letter-spacing: .12em; font-size: 11px; padding: 3px 9px; border-radius: 6px; color: #0b0b0d; vertical-align: middle; }
-.verdict.accept { background: var(--verify); } .verdict.adapt { background: var(--warn); } .verdict.refuse { background: var(--fail); }
+.verdict.green { background: var(--verify); } .verdict.amber { background: var(--warn); } .verdict.red { background: var(--fail); }
 .verdict.big { font-size: 15px; padding: 6px 14px; border-radius: 8px; margin-bottom: 4px; }
-.varr { color: var(--dim); margin: 0 10px; }
+.varr { display: inline-block; width: 10px; }
 .pcard-h .vline { font-size: 12px; color: var(--muted); text-align: center; max-width: 100%; margin-bottom: 6px; }
-.pcard.accept .fout .frame { border-color: var(--verify); box-shadow: 0 0 0 3px var(--verify-soft), 0 20px 60px rgba(0,0,0,.6); }
-.pcard.adapt .fout .frame { border-color: var(--warn); box-shadow: 0 0 0 3px var(--warn-soft), 0 20px 60px rgba(0,0,0,.6); }
-.pcard.refuse .fout .frame { border-color: var(--fail); box-shadow: 0 0 0 3px var(--fail-soft); }
+.pcard.green .fout .frame { border-color: var(--verify); box-shadow: 0 0 0 3px var(--verify-soft), 0 20px 60px rgba(0,0,0,.6); }
+.pcard.amber .fout .frame { border-color: var(--warn); box-shadow: 0 0 0 3px var(--warn-soft), 0 20px 60px rgba(0,0,0,.6); }
+.pcard.red .fout .frame { border-color: var(--fail); box-shadow: 0 0 0 3px var(--fail-soft); }
 .narrator.end .verdict { margin-right: 8px; }
 .ftag.pass { background: var(--verify); color: #0b0b0d; }
 .ftag.fail { background: var(--fail); color: #0b0b0d; }
