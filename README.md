@@ -263,6 +263,45 @@ Judges should know exactly what they are looking at:
   against the archive's Apple Vision opinions on all three clips (`segcheck`); not used for the
   separation edge, where it measured up to 0.14× off — see [Why OpenCV 5](#why-opencv-5).
 
+## Evaluation
+
+Three hand-picked recordings are not an evaluation, so the loop is scored against a labelled set —
+`demo/eval/set.json`, 19 items, every one labelled *before* it ran: ten real recordings and derived
+excerpts (Brian, Ethel, Joel, Sandy, both Zach takes, Michi, Tehila, sta, Abby, a two-performer
+composite), four synthesised negatives with one known defect each (Brian's clean recording padded,
+cropped to a close-up, its crown cut off, in a dark room — `demo/eval/derive_eval.sh`), and three
+defective deliveries for the gates alone (a frame dropped, the audio re-encoded, 30 frames frozen).
+`python3 -m stage_ready evaluate` runs each through the real loop — OpenCV 5 measurement here, the
+archived render, the agent on Bedrock — and again with the agent replaced by a rule table
+(`--agent rules`, the ablation); `--report` regenerates
+[`demo/eval/EVALUATION.md`](demo/eval/EVALUATION.md), which is the record. The headline, 2026-09-20:
+
+| | Stage Ready (agent on Bedrock, blind) | the same loop with a rule table | the linear pipeline alone |
+|---|---|---|---|
+| outcomes as labelled | **17 / 19** | 16 / 19 | — |
+| silently wrong deliveries | **1** — the frozen-frames delivery, a known blind spot | 1 — the same | **2 + 1** — Sandy's and Zach's black-shirt renders shipped with failing gates, plus the same frozen frames |
+| renders it would ship that fail a gate | 0 | 0 | 5 of 13 (the loop caught all five: 2 reshoot requests, 3 recovered by the retry) |
+| labelled defects missed by a finding | 1 (a short walk-in at 1.33× against the 1.35× threshold) | the same | — |
+| cost of the set | 35 Bedrock calls, 154k in / 15k out tokens, ≈ $0.65; 14 min of measurement | 0 calls; 13 min | — |
+
+Every defective delivery with a wrong frame count or re-encoded audio was rejected; the agent and the rule table differ on one
+item — a close-up the fixer landed 0.3 % over the size cap, which the agent processed (and it verified) and the rule table refused.
+
+What the set found, beyond the numbers:
+
+- **Two labels were wrong, and the measurement was right.** Tehila's take, labelled "nothing visibly wrong" from a contact sheet, starts
+  with her leaning into the phone (a 1.88× size change) and the pipeline's pose QC refuses it; sta's "portrait" file is a landscape
+  picture with black bars top and bottom, which INSPECT found and the label had not. Labels are set before a run and left as they were.
+- **The head-height gates go blind when the crown is cut on every frame** — the matte's top is the picture edge and cannot move, so a
+  carved crown delivers at 0.1 % spread. `headroom` is a warning; it should be a gate above some fraction of frames.
+- **The size cap and the size gate measure with different rulers** (a smoothed shoulder span vs the raw p95); a close-up can land 0.3 %
+  over the cap after the fix. The fix is one ruler in both `track_frame.py` and the port, then re-rendering the capped recordings.
+- **The agent reads the intake brief.** With the labels leaking through the brief, the agent reshot three recordings at its first decision,
+  quoting the brief; blind, it takes the measured path. The evaluation runs blind; the demo's briefs are the show's intake notes and
+  are worth knowing about as an input the agent trusts.
+- **No gate measures motion continuity** — thirty frozen frames pass every gate. That is the one silently wrong delivery on the set and it
+  is counted as one.
+
 ## Under the hood
 
 ### Architecture
@@ -508,9 +547,13 @@ web/                                the workspace
 demo/clips/<id>/                    cached fixtures, keyed the way a live cache would be; clip.json → archive names the files
 demo/lineup.json                    the polished demo: Brian (padded) → Ethel → Zach (everything else stays replayable by id — ?clip=sandy, ?clip=zach_padded)
 demo/derive.sh, demo/derived.json   every derived input (excerpts, the padded controlled input, the corpus's michi sample): exact command, hashes, edits
-demo/eval/                          the evaluation corpus: measured candidates, moved fixtures, the live AWS traces
+demo/eval/set.json, derive_eval.sh   the labelled evaluation set (19 items) and the synthesised negatives' exact commands
+demo/eval/EVALUATION.md, results/   the generated evaluation report and every item's result, per agent (bedrock, rules)
+demo/eval/corpus/, live/            the evaluation corpus: measured candidates, moved fixtures, the live AWS traces
+stage_ready/evaluate.py, eval_report.py, rules_agent.py   the evaluation runner, its report, and the rule-table agent (the ablation)
 stage_ready/record.py               writes a clip's inspect/verify/process fixtures from the live measurement, not by hand
 tests/test_demo.py                  22 tests: the lineup's three behaviours, the corpus's reshoot, determinism, recognition, provenance, the guardrails
+tests/test_eval.py                  7 tests: the rule table reproduces every fixture path; the evaluation's scoring rules
 tests/test_vision.py                5 tests: OpenCV 5 reproduces the archived numbers; the DNN opinion agrees with Vision (skipped without OpenCV 5 + the archive + the model)
 stage_ready/bundle.py               the judge bundle: build from the archive, install into a clone, verify
 ```

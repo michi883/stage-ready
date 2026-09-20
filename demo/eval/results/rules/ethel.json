@@ -165,7 +165,7 @@
     "frames": 1237,
     "duration_s": 41.2
    },
-   "duration_ms": 19783,
+   "duration_ms": 21518,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2 and ethel_chadwick_v2.mp4",
    "failing": []
@@ -285,7 +285,7 @@
     "head_drift_px": 3.1,
     "frames": 1237
    },
-   "duration_ms": 21119,
+   "duration_ms": 32103,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2, ethel_chadwick_v2_v1.mp4",
    "passed": false,
@@ -417,7 +417,7 @@
     "head_drift_px": 3.1,
     "frames": 1237
    },
-   "duration_ms": 23140,
+   "duration_ms": 31138,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2, work/midtown_ethel_chadwick_v2/comp_sep",
    "passed": true,
@@ -496,7 +496,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 64.4,
+ "wall_s": 85.1,
  "score": {
   "expected": "deliver",
   "got": "deliver",

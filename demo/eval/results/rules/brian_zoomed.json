@@ -166,7 +166,7 @@
     "frames": 1285,
     "duration_s": 42.8
    },
-   "duration_ms": 7668,
+   "duration_ms": 7291,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_zoomed and brian_zoomed.mp4",
    "failing": [
@@ -335,7 +335,7 @@
     "frames": 1285,
     "duration_s": 42.8
    },
-   "duration_ms": 5202,
+   "duration_ms": 4905,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_zoomed and brian_zoomed.mp4",
    "failing": [
@@ -370,7 +370,7 @@
      "id": "band",
      "label": "Crop to picture area",
      "tool": "vision.detect_band → crop",
-     "duration_ms": 2932,
+     "duration_ms": 2862,
      "cached": false,
      "reused": false,
      "summary": "The picture already fills the file — nothing to crop.",
@@ -418,7 +418,7 @@
     },
     "pixels_invented": 0
    },
-   "duration_ms": 2932,
+   "duration_ms": 2862,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_zoomed and brian_zoomed.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
   }
@@ -478,7 +478,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 15.8,
+ "wall_s": 15.1,
  "score": {
   "expected": "deliver",
   "got": "reshoot",

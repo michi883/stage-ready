@@ -125,7 +125,7 @@
     "head_drift_px": 1.2,
     "frames": 1285
    },
-   "duration_ms": 20672,
+   "duration_ms": 19317,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_shirley_v2_base, work/midtown_brian_shirley_v2_base/comp",
    "passed": false,
@@ -148,7 +148,7 @@
   "verify ✗"
  ],
  "delivery_sha256": "523c9ec19ccb76a000844f02594bd9ad15c3307437fe0580e52cec616944e4f5",
- "wall_s": 20.9,
+ "wall_s": 19.6,
  "score": {
   "expected": "reject",
   "got": "reject",

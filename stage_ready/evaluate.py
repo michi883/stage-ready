@@ -49,8 +49,13 @@ def load_set() -> dict[str, Any]:
 
 
 def _clip(item: dict[str, Any]) -> Clip:
-    return Clip(id=item["id"], name=item["name"], brief=item["labels"].get("why", ""), source={}, archive=json.loads(json.dumps(item["archive"])),
-                recognize={"sha256": "", "names": [Path(item["source"]).name]})
+    """The clip the loop and the agent see: blind. No name, no brief, no file name — the agent's prompt
+    carries the recording's id, name and brief, and a label leaking into it would make the evaluation
+    worthless (the first Bedrock run read "synthesised: crown cut" in the name and reshot on it). The
+    agent decides from the measurements alone here, which is stricter than the demo, whose briefs
+    are the show's intake notes."""
+    return Clip(id="evaluation-input", name="Evaluation input", brief="", source={}, archive=json.loads(json.dumps(item["archive"])),
+                recognize={"sha256": "", "names": []})
 
 
 def _sha(path: Path) -> str:
@@ -167,6 +172,7 @@ def run_item(item: dict[str, Any], backend: EvalBackend, profile: Profile, archi
     end = events[-1]
     out["outcome"] = end["outcome"]
     out["path"] = end["path"]
+    out["blind"] = True
     out["inspect"] = [to_dict(e["result"]) for e in events if e["type"] == "inspect.result"]
     out["fixes"] = [to_dict(e["result"]) for e in events if e["type"] == "fix.result"]
     out["verify"] = [to_dict(e["result"]) for e in events if e["type"] == "verify.result"]
@@ -253,7 +259,10 @@ def evaluate(agent: str = "bedrock", items: list[str] | None = None, prepare_mis
         print(f"  {item['id']:22s} {r['outcome']:10s} expected {sc['expected']:8s} {'ok ' if sc['outcome_ok'] else 'NOT ok'}"
               f"{'  SILENTLY WRONG' if sc['silently_wrong'] else ''}  missed {sc['missed'] or '-'}  path {' → '.join(r['path'])}", flush=True)
         results.append(r)
-    summary = summarize(results, s["defect_map"], agent)
+    # the summary covers every item with a result on disk (a partial run updates its items only)
+    ids = [i["id"] for i in s["items"]]
+    on_disk = [json.loads((out_dir / f"{i}.json").read_text()) for i in ids if (out_dir / f"{i}.json").exists()]
+    summary = summarize(on_disk, s["defect_map"], agent)
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
     return summary
 

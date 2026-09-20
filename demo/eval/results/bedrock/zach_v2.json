@@ -1,0 +1,583 @@
+{
+ "id": "zach_v2",
+ "name": "Zach Sain — black-shirt take, untouched",
+ "kind": "real",
+ "agent": "bedrock",
+ "labels": {
+  "defects": [
+   "wardrobe_near_plate",
+   "crown_cut",
+   "over_lit"
+  ],
+  "expected_outcome": "reshoot",
+  "why": "black shirt and black trousers on a red wall: the silhouette sits in the curtain's luminance; the retry at the bounds measured 1.45× — he is wearing the stage"
+ },
+ "source": "zach_sain_v2.mov",
+ "source_sha256": "1c204e79c86e0a7a7ad1a8110bbfd5065bd1ce38b4220aedffaa415d12c6a09a",
+ "outcome": "reshoot",
+ "path": [
+  "inspect",
+  "process",
+  "verify ✗",
+  "reprocess",
+  "verify ✗",
+  "reshoot"
+ ],
+ "blind": true,
+ "inspect": [
+  {
+   "target": "source",
+   "findings": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "pass",
+     "value": {
+      "w": 480,
+      "h": 412,
+      "x": 0,
+      "y": 0
+     },
+     "unit": "px",
+     "threshold": "fills the 480×412 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (71 of 2116)",
+     "detail": "The recorded picture fills the file: 480x412+0+0, no padding.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+     "id": "pose_coverage",
+     "label": "Pose coverage",
+     "status": "pass",
+     "value": 1.0,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "confidence": 1.0,
+     "frames": "2116 / 2116",
+     "detail": "A body pose on 100 % of frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 1.0,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "confidence": 1.0,
+     "frames": "0 frames off-subject (0 by size, 0 by position)",
+     "detail": "The same subject, of the same size, in the same place, on 100.0 % of frames.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "subject_size",
+     "label": "Subject size on canvas",
+     "status": "pass",
+     "value": {
+      "p50": 0.338,
+      "p95": 0.345
+     },
+     "unit": "shoulder span / canvas width",
+     "threshold": {
+      "op": "<=",
+      "value": 0.55
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %) — under the 55 % cap.",
+     "tool": "vision.track.dry_solve (OpenCV 5)"
+    },
+    {
+     "id": "distance_steady",
+     "label": "Distance steady",
+     "status": "pass",
+     "value": 1.16,
+     "unit": "apparent size p95/p5",
+     "threshold": {
+      "op": "<=",
+      "value": 1.35
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "Apparent size steady to 1.16×.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "headroom",
+     "label": "Headroom",
+     "status": "warn",
+     "value": {
+      "crown_cut_frames": 0.78
+     },
+     "unit": "fraction of frames with the crown outside the picture",
+     "threshold": {
+      "recommended": [
+       0.05,
+       0.12
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "The crown leaves the picture on 78 % of frames — rows that were never recorded.",
+     "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
+     "id": "face_exposure",
+     "label": "Face exposure",
+     "status": "warn",
+     "value": 0.8,
+     "unit": "exposure gain toward the 0.46 target",
+     "threshold": {
+      "target": 0.46,
+      "clamp": [
+       0.8,
+       1.25
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Face luma 0.727 asked for ×0.37 and was held at ×0.80 — the recording is over-lit for the stage.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    },
+    {
+     "id": "key_direction",
+     "label": "Key direction",
+     "status": "info",
+     "value": 1.23,
+     "unit": "silhouette L/R luma ratio",
+     "threshold": {
+      "flat_below": 1.08
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Key from the right (L 0.156 / R 0.191, ×1.23); the stage's key and rim follow it.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    }
+   ],
+   "facts": {
+    "picture": "480×412 at +0+0",
+    "fps": 29.999,
+    "frames": 2116,
+    "duration_s": 70.5
+   },
+   "duration_ms": 5038,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v2 and zach_sain_v2.mov",
+   "failing": []
+  }
+ ],
+ "fixes": [],
+ "verify": [
+  {
+   "artifact": "attempt_1",
+   "gates": [
+    {
+     "id": "pose_coverage",
+     "label": "Pose on frames",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "unit": "fraction of frames",
+     "detail": "100 % of 2116 frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "unit": "fraction of frames",
+     "detail": "100.0 %.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "matte_extent",
+     "label": "Matte extent vs second opinion",
+     "status": "pass",
+     "value": 1.018,
+     "threshold": {
+      "op": ">=",
+      "value": 0.9
+     },
+     "unit": "head width ratio, median",
+     "detail": "Matte head width 102 % of the OpenCV 5 DNN opinion's over 16 frames (worst frame 1975: 147 px vs 146 px).",
+     "tool": "vision.segment.SubjectSegmenter + vision.matte_extent (OpenCV 5 DNN)"
+    },
+    {
+     "id": "separation",
+     "label": "Subject vs background luminance",
+     "status": "fail",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 1.5
+     },
+     "unit": "edge luma ratio",
+     "detail": "Edge luma 0.116 inside / 0.116 outside — separation 1.00× over 24 frames of comp; the performer is the brighter side; short of the 1.5× gate by 0.50×.",
+     "tool": "vision.separation (OpenCV 5)"
+    },
+    {
+     "id": "head_spread",
+     "label": "Head height spread",
+     "status": "pass",
+     "value": 0.006,
+     "threshold": {
+      "op": "<=",
+      "value": 0.02
+     },
+     "unit": "fraction of output height",
+     "detail": "1.8 % of source → 0.6 % of output.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "head_drift",
+     "label": "Head drift (slower than 2 s)",
+     "status": "pass",
+     "value": 1.5,
+     "threshold": {
+      "op": "<=",
+      "value": 4.0
+     },
+     "unit": "px",
+     "detail": "1.5 px of head-top motion slower than 2 s after the solve.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "frame_count",
+     "label": "Frame count = source",
+     "status": "pass",
+     "value": 2116,
+     "threshold": 2116,
+     "unit": "frames",
+     "detail": "2116 = 2116.",
+     "tool": "vision.frame_count (OpenCV 5)"
+    },
+    {
+     "id": "audio_md5",
+     "label": "Audio MD5 = source",
+     "status": "pass",
+     "value": "equal",
+     "threshold": "equal",
+     "unit": "",
+     "detail": "Decoded audio MD5 identical to the source.",
+     "tool": "vision.audio_md5 (ffmpeg)"
+    }
+   ],
+   "measurements": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.338,
+    "separation": 1.0,
+    "edge_luma_in": 0.116,
+    "edge_luma_out": 0.116,
+    "head_spread": 0.006,
+    "head_drift_px": 1.5,
+    "frames": 2116
+   },
+   "duration_ms": 13114,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v2, work/midtown_zach_sain_v2/comp",
+   "passed": false,
+   "failing": [
+    {
+     "id": "separation",
+     "label": "Subject vs background luminance",
+     "status": "fail",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 1.5
+     },
+     "unit": "edge luma ratio",
+     "detail": "Edge luma 0.116 inside / 0.116 outside — separation 1.00× over 24 frames of comp; the performer is the brighter side; short of the 1.5× gate by 0.50×.",
+     "tool": "vision.separation (OpenCV 5)"
+    }
+   ]
+  },
+  {
+   "artifact": "attempt_2",
+   "gates": [
+    {
+     "id": "pose_coverage",
+     "label": "Pose on frames",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "unit": "fraction of frames",
+     "detail": "100 % of 2116 frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "unit": "fraction of frames",
+     "detail": "100.0 %.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "matte_extent",
+     "label": "Matte extent vs second opinion",
+     "status": "pass",
+     "value": 1.018,
+     "threshold": {
+      "op": ">=",
+      "value": 0.9
+     },
+     "unit": "head width ratio, median",
+     "detail": "Matte head width 102 % of the OpenCV 5 DNN opinion's over 16 frames (worst frame 1975: 147 px vs 146 px).",
+     "tool": "vision.segment.SubjectSegmenter + vision.matte_extent (OpenCV 5 DNN)"
+    },
+    {
+     "id": "separation",
+     "label": "Subject vs background luminance",
+     "status": "fail",
+     "value": 1.45,
+     "threshold": {
+      "op": ">=",
+      "value": 1.5
+     },
+     "unit": "edge luma ratio",
+     "detail": "Edge luma 0.173 inside / 0.119 outside — separation 1.45× over 24 frames of comp_sep; the performer is the brighter side; short of the 1.5× gate by 0.05×.",
+     "tool": "vision.separation (OpenCV 5)"
+    },
+    {
+     "id": "head_spread",
+     "label": "Head height spread",
+     "status": "pass",
+     "value": 0.006,
+     "threshold": {
+      "op": "<=",
+      "value": 0.02
+     },
+     "unit": "fraction of output height",
+     "detail": "1.8 % of source → 0.6 % of output.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "head_drift",
+     "label": "Head drift (slower than 2 s)",
+     "status": "pass",
+     "value": 1.5,
+     "threshold": {
+      "op": "<=",
+      "value": 4.0
+     },
+     "unit": "px",
+     "detail": "1.5 px of head-top motion slower than 2 s after the solve.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "frame_count",
+     "label": "Frame count = source",
+     "status": "pass",
+     "value": 2116,
+     "threshold": 2116,
+     "unit": "frames",
+     "detail": "2116 = 2116.",
+     "tool": "vision.frame_count (OpenCV 5)"
+    },
+    {
+     "id": "audio_md5",
+     "label": "Audio MD5 = source",
+     "status": "pass",
+     "value": "equal",
+     "threshold": "equal",
+     "unit": "",
+     "detail": "Decoded audio MD5 identical to the source.",
+     "tool": "vision.audio_md5 (ffmpeg)"
+    }
+   ],
+   "measurements": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.338,
+    "separation": 1.45,
+    "edge_luma_in": 0.173,
+    "edge_luma_out": 0.119,
+    "head_spread": 0.006,
+    "head_drift_px": 1.5,
+    "frames": 2116
+   },
+   "duration_ms": 12183,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v2, work/midtown_zach_sain_v2/comp_sep",
+   "passed": false,
+   "failing": [
+    {
+     "id": "separation",
+     "label": "Subject vs background luminance",
+     "status": "fail",
+     "value": 1.45,
+     "threshold": {
+      "op": ">=",
+      "value": 1.5
+     },
+     "unit": "edge luma ratio",
+     "detail": "Edge luma 0.173 inside / 0.119 outside — separation 1.45× over 24 frames of comp_sep; the performer is the brighter side; short of the 1.5× gate by 0.05×.",
+     "tool": "vision.separation (OpenCV 5)"
+    }
+   ]
+  }
+ ],
+ "decisions": [
+  {
+   "action": "process",
+   "reasoning": "This is decision number 1 with no prior attempts, no fixes applied, and no latest verification — so the correct first move is to run the standard render and see what the gates say. Looking at the current findings: picture_area passes (480×412, no padding), pose_coverage passes at 1.0 (gate requires ≥0.6), one_subject passes at 1.0 (gate requires ≥0.95), subject_size passes with p50 0.338 / p95 0.345 well under the 0.55 cap, and distance_steady passes at 1.16× (gate requires ≤1.35). The only non-passing items are warnings (headroom: crown outside on 78% of frames — recorded-content limit, not a defect to fix; face_exposure: gain held at ×0.80 — also a warning within the fgexp_clamp bounds) and an info item (key_direction). No gate has been measured as failing yet because no composite has been attempted. The matte_extent, separation, head_spread, head_drift, frame_count, and audio_md5 gates all require a rendered output to evaluate. process.standard is the designated standard strategy for a first attempt and has no gate-failure prerequisite. If this attempt reveals failing gates that process.standard doesn't address (e.g. separation), the next decision can select process.separation_targeted, which addresses separation and has 2 retries remaining in the budget.",
+   "strategy": "process.standard",
+   "cites": [
+    "picture_area",
+    "pose_coverage",
+    "one_subject",
+    "subject_size",
+    "distance_steady",
+    "headroom",
+    "face_exposure",
+    "key_direction"
+   ],
+   "confidence": 0.9,
+   "model": "bedrock:global.anthropic.claude-sonnet-4-6",
+   "duration_ms": 7329,
+   "cached": false
+  },
+  {
+   "action": "process",
+   "reasoning": "The latest verification (attempt_1) failed on exactly one gate: separation (id \"separation\"), which measured 1.00× against the required ≥1.5× — short by 0.50×. All other gates passed: pose_coverage 1.0, one_subject 1.0, matte_extent 1.018, head_spread 0.006, head_drift 1.5 px, frame_count 2116, and audio_md5 equal. The standard process (process.standard) used rimamt 0.28 and lwamt 0.5, which was insufficient to lift the edge luma ratio. The allowed strategy process.separation_targeted directly addresses the \"separation\" gate and permits stronger rim and light wrap (rimamt_max 0.45, lwamt_max 0.7) plus a bounded shadow lift (shadow_lift_max 0.04) and fgexp clamped to [0.8, 1.25], all without altering the performer's pixels. The retry budget shows 0 reprocesses used against a budget of 2, so there is one remaining slot after this attempt. If this also fails the separation gate and the budget is exhausted, the honest exit is reshoot with guidance to avoid wearing deep-red/burgundy tones that blend into the stage curtain.",
+   "strategy": "process.separation_targeted",
+   "cites": [
+    "separation",
+    "attempt_1",
+    "process.separation_targeted"
+   ],
+   "confidence": 0.85,
+   "model": "bedrock:global.anthropic.claude-sonnet-4-6",
+   "duration_ms": 6514,
+   "cached": false
+  },
+  {
+   "action": "reshoot",
+   "reasoning": "Both allowed process strategies have now been exhausted. Attempt 1 used process.standard and failed separation with a value of 1.45× against the required 1.5×. Attempt 2 pushed process.separation_targeted to its absolute bounds (rimamt 0.45, lwamt 0.7, shadow_lift 0.04, fgexp 0.8 — all at their maximums per the strategy's bounds) and still only reached 1.45×, still 0.05× short of the 1.5× gate. The retry budget of 2 reprocesses is now fully spent (reprocesses_used: 1, meaning one non-standard retry consumed, and both strategies have been run). No fix strategy addresses the separation gate — fix.reframe only addresses picture_area and subject_size. The root cause, per the separation finding, is that the edge luma inside (0.173) vs outside (0.119) is too close: the performer's outfit or the recording conditions don't give enough contrast against the deep red curtain. The reshoot guidance is clear: don't wear colors that blend with the stage — the curtain is deep red, so no red, maroon, burgundy or hot pink; mid-tone neutrals, blue, green or a pattern should separate by about 3×. The face is also over-lit (face luma 0.727, held at ×0.80 gain), and the crown is outside the picture on 78% of frames. The performer should also stand further back or reframe so the crown is within the picture, and use a softer front light to bring face luma closer to 0.46.",
+   "strategy": null,
+   "cites": [
+    "separation",
+    "attempt_1",
+    "attempt_2",
+    "process.standard",
+    "process.separation_targeted",
+    "headroom",
+    "face_exposure"
+   ],
+   "confidence": 0.99,
+   "model": "bedrock:global.anthropic.claude-sonnet-4-6",
+   "duration_ms": 9203,
+   "cached": false
+  }
+ ],
+ "guards": [],
+ "reshoot": {
+  "items": [
+   {
+    "id": "headroom",
+    "label": "Headroom",
+    "value": {
+     "crown_cut_frames": 0.78
+    },
+    "threshold": {
+     "recommended": [
+      0.05,
+      0.12
+     ]
+    },
+    "unit": "fraction of frames with the crown outside the picture",
+    "detail": "The crown leaves the picture on 78 % of frames — rows that were never recorded.",
+    "guidance": "",
+    "cause": true
+   },
+   {
+    "id": "face_exposure",
+    "label": "Face exposure",
+    "value": 0.8,
+    "threshold": {
+     "target": 0.46,
+     "clamp": [
+      0.8,
+      1.25
+     ]
+    },
+    "unit": "exposure gain toward the 0.46 target",
+    "detail": "Face luma 0.727 asked for ×0.37 and was held at ×0.80 — the recording is over-lit for the stage.",
+    "guidance": "One large soft light in front of you at eye level; the face must be clearly lit.",
+    "cause": true
+   },
+   {
+    "id": "separation",
+    "label": "Subject vs background luminance",
+    "value": 1.45,
+    "threshold": {
+     "op": ">=",
+     "value": 1.5
+    },
+    "unit": "edge luma ratio",
+    "detail": "Edge luma 0.173 inside / 0.119 outside — separation 1.45× over 24 frames of comp_sep; the performer is the brighter side; short of the 1.5× gate by 0.05×.",
+    "guidance": "Don't wear the stage. The curtain is deep red: no red, maroon, burgundy or hot pink. Mid-tone neutrals, blue, green or a pattern separate by about 3x.",
+    "cause": false
+   }
+  ],
+  "attempts": 2,
+  "budget": {
+   "reprocesses_used": 1,
+   "retry_budget": 2
+  }
+ },
+ "bedrock": {
+  "calls": 3,
+  "input_tokens": 13873,
+  "output_tokens": 1400,
+  "latency_ms": 23046
+ },
+ "wall_s": 53.6,
+ "score": {
+  "expected": "reshoot",
+  "got": "reshoot",
+  "outcome_ok": true,
+  "silently_wrong": false,
+  "detections": {
+   "wardrobe_near_plate": {
+    "finding": "separation",
+    "status": "fail",
+    "detected": true
+   },
+   "crown_cut": {
+    "finding": "headroom",
+    "status": "warn",
+    "detected": true
+   },
+   "over_lit": {
+    "finding": "face_exposure",
+    "status": "warn",
+    "detected": true
+   }
+  },
+  "unlabelled_flags": [],
+  "missed": []
+ }
+}

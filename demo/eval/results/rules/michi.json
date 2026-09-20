@@ -161,7 +161,7 @@
     "frames": 1351,
     "duration_s": 45.0
    },
-   "duration_ms": 20892,
+   "duration_ms": 21511,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_michi_sample_v1 and michi_sample_v1.mp4",
    "failing": []
@@ -281,7 +281,7 @@
     "head_drift_px": 1.6,
     "frames": 1351
    },
-   "duration_ms": 30796,
+   "duration_ms": 22465,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_michi_sample_v1, work/midtown_michi_sample_v1/comp",
    "passed": true,
@@ -350,7 +350,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 51.8,
+ "wall_s": 44.1,
  "score": {
   "expected": "either",
   "got": "deliver",

@@ -169,7 +169,7 @@
     "frames": 919,
     "duration_s": 30.6
    },
-   "duration_ms": 8378,
+   "duration_ms": 8107,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4",
    "failing": [
@@ -354,7 +354,7 @@
     "frames": 919,
     "duration_s": 30.6
    },
-   "duration_ms": 5811,
+   "duration_ms": 5569,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4",
    "failing": []
@@ -369,7 +369,7 @@
      "id": "band",
      "label": "Crop to picture area",
      "tool": "vision.detect_band → crop",
-     "duration_ms": 3308,
+     "duration_ms": 3262,
      "cached": false,
      "reused": false,
      "summary": "crop=1080:764:0:574 — the 0 dead columns and 1156 dead rows are gone; the picture bottom is now the frame bottom.",
@@ -417,7 +417,7 @@
     },
     "pixels_invented": 0
    },
-   "duration_ms": 3308,
+   "duration_ms": 3262,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
   }
@@ -535,7 +535,7 @@
     "head_drift_px": 2.3,
     "frames": 919
    },
-   "duration_ms": 20568,
+   "duration_ms": 12814,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s, work/midtown_sta_30s/comp",
    "passed": false,
@@ -667,7 +667,7 @@
     "head_drift_px": 2.3,
     "frames": 919
    },
-   "duration_ms": 18383,
+   "duration_ms": 13056,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s, work/midtown_sta_30s/comp_sep",
    "passed": true,
@@ -761,7 +761,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 173.3,
+ "wall_s": 43.0,
  "score": {
   "expected": "either",
   "got": "deliver",

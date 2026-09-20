@@ -13,7 +13,7 @@
  "source": "midtown_two_sumitas_v1.mp4",
  "source_sha256": "9a99d4034e956bc2f3a47047a998c5f8f2ca2f0f29ad7463f77a78bbb5d660a1",
  "outcome": "refused",
- "refusal": "no workdir — run `evaluate --prepare`",
+ "refusal": "pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip",
  "path": [
   "prepare ✗"
  ],
@@ -27,8 +27,8 @@
    "two_subjects": {
     "finding": "one_subject",
     "status": "refused",
-    "detected": null,
-    "note": "refused before the loop: no workdir — run `evaluate --prepare`"
+    "detected": true,
+    "note": "refused before the loop: pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip"
    }
   },
   "unlabelled_flags": [],

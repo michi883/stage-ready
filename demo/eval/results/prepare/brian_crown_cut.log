@@ -8,3 +8,18 @@ pick_seed: frame 341 of 17 candidates (head 486 px, coverage 20.4%, crown CUT, e
 clean_seed: 1 components -> 1, coverage 20.43% -> 20.43%
 [4/9] Apple Vision seed on frame 341 (threshold >32)
 [5/9] MatAnyone (local MPS) — the long stage, seeded from frame 341
+      head width vs Apple Vision, median 100% over 17 frames (worst frame 1021: 388 px vs 389 px); crown leaves the picture on 100% of frames
+      crown cut on 1285 frames (100% of the clip); 0 completed from 0 reference frames (0 switches, 0 candidates with the crown >= 10 rows inside), 1285 dome-carved [no reference frame — crown never inside the picture]
+track_frame: pose 100% of frames, cut off at frame bottom on 100%, head_target=0.334
+  scale 1.334..1.334 (median 1.334)
+  head height spread 0.2% of source -> 0.1% of output
+[6/9] tracked (head at 0.334 of frame height, drift removed above 1.25s)
+[7/9] reframed to 1080x1920
+auto_grade: silhouette L 0.258 / R 0.450 (x1.75) -> key from the right
+  face luma 0.375 -> target 0.46, fgexp 1.250
+  WARNING: the face wanted a x1.57 lift and was held at x1.25. This recording is under-lit for the stage; the performer will still read darker than intended. See RECORDING_REQUIREMENTS.md.
+[8/9] composited 1285 frames  (keydx=1 rimdx=6 fgexp=1.250)
+      edge luma 0.332 inside / 0.121 outside — separation 2.75x
+[9/9] verified: 1285 frames, audio identical to source
+done in 861s -> eval/brian_crown_cut_red_v1.mp4
+exit 0

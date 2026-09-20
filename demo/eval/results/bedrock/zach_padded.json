@@ -1,0 +1,648 @@
+{
+ "id": "zach_padded",
+ "name": "Zach — padded (synthesised: pillarbox)",
+ "kind": "synthesised",
+ "agent": "bedrock",
+ "labels": {
+  "defects": [
+   "pillarbox",
+   "crown_cut",
+   "over_lit"
+  ],
+  "expected_outcome": "deliver",
+  "expected_fix": "fix.reframe",
+  "why": "the demo excerpt inside a 1280×720 canvas"
+ },
+ "source": "zach_sain_v1_padded.mp4",
+ "source_sha256": "588c6814bb87c0e02f03380e6f80b90c6f64774a8b03ed36c7a48beb885a3b13",
+ "outcome": "delivered",
+ "path": [
+  "inspect",
+  "fix",
+  "inspect",
+  "process",
+  "verify ✓",
+  "deliver"
+ ],
+ "blind": true,
+ "inspect": [
+  {
+   "target": "source",
+   "findings": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "fail",
+     "value": {
+      "w": 480,
+      "h": 404,
+      "x": 400,
+      "y": 158
+     },
+     "unit": "px",
+     "threshold": "fills the 1280×720 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (60 of 1800)",
+     "detail": "The recorded picture is 480×404 inside a 1280×720 file, at +400+158: padding the fixer must crop before framing.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+     "id": "pose_coverage",
+     "label": "Pose coverage",
+     "status": "pass",
+     "value": 1.0,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "confidence": 1.0,
+     "frames": "1800 / 1800",
+     "detail": "A body pose on 100 % of frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 1.0,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "confidence": 1.0,
+     "frames": "0 frames off-subject (0 by size, 0 by position)",
+     "detail": "The same subject, of the same size, in the same place, on 100.0 % of frames.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "subject_size",
+     "label": "Subject size on canvas",
+     "status": "pass",
+     "value": {
+      "p50": 0.338,
+      "p95": 0.344
+     },
+     "unit": "shoulder span / canvas width",
+     "threshold": {
+      "op": "<=",
+      "value": 0.55
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+     "tool": "vision.track.dry_solve (OpenCV 5)"
+    },
+    {
+     "id": "distance_steady",
+     "label": "Distance steady",
+     "status": "pass",
+     "value": 1.06,
+     "unit": "apparent size p95/p5",
+     "threshold": {
+      "op": "<=",
+      "value": 1.35
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "Apparent size steady to 1.06×.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "headroom",
+     "label": "Headroom",
+     "status": "warn",
+     "value": {
+      "crown_cut_frames": 0.34
+     },
+     "unit": "fraction of frames with the crown outside the picture",
+     "threshold": {
+      "recommended": [
+       0.05,
+       0.12
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded.",
+     "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
+     "id": "face_exposure",
+     "label": "Face exposure",
+     "status": "warn",
+     "value": 0.8,
+     "unit": "exposure gain toward the 0.46 target",
+     "threshold": {
+      "target": 0.46,
+      "clamp": [
+       0.8,
+       1.25
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Face luma 0.729 asked for ×0.36 and was held at ×0.80 — the recording is over-lit for the stage.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    },
+    {
+     "id": "key_direction",
+     "label": "Key direction",
+     "status": "info",
+     "value": 1.0,
+     "unit": "silhouette L/R luma ratio",
+     "threshold": {
+      "flat_below": 1.08
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Flat-lit (L 0.285 / R 0.284); the stage convention stands.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    }
+   ],
+   "facts": {
+    "picture": "480×404 at +400+158",
+    "fps": 30.0,
+    "frames": 1800,
+    "duration_s": 60.0
+   },
+   "duration_ms": 4959,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded and zach_sain_v1_padded.mp4",
+   "failing": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "fail",
+     "value": {
+      "w": 480,
+      "h": 404,
+      "x": 400,
+      "y": 158
+     },
+     "unit": "px",
+     "threshold": "fills the 1280×720 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (60 of 1800)",
+     "detail": "The recorded picture is 480×404 inside a 1280×720 file, at +400+158: padding the fixer must crop before framing.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    }
+   ]
+  },
+  {
+   "target": "fixed",
+   "findings": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "pass",
+     "value": {
+      "w": 480,
+      "h": 404,
+      "x": 0,
+      "y": 0
+     },
+     "unit": "px",
+     "threshold": "fills the 1280×720 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (60 of 1800)",
+     "detail": "The recorded picture is 480×404 inside a 1280×720 file, at +400+158 — cropped to the picture.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+     "id": "pose_coverage",
+     "label": "Pose coverage",
+     "status": "pass",
+     "value": 1.0,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "confidence": 1.0,
+     "frames": "1800 / 1800",
+     "detail": "A body pose on 100 % of frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 1.0,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "confidence": 1.0,
+     "frames": "0 frames off-subject (0 by size, 0 by position)",
+     "detail": "The same subject, of the same size, in the same place, on 100.0 % of frames.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "subject_size",
+     "label": "Subject size on canvas",
+     "status": "pass",
+     "value": {
+      "p50": 0.338,
+      "p95": 0.344
+     },
+     "unit": "shoulder span / canvas width",
+     "threshold": {
+      "op": "<=",
+      "value": 0.55
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+     "tool": "vision.track.dry_solve (OpenCV 5)"
+    },
+    {
+     "id": "distance_steady",
+     "label": "Distance steady",
+     "status": "pass",
+     "value": 1.06,
+     "unit": "apparent size p95/p5",
+     "threshold": {
+      "op": "<=",
+      "value": 1.35
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "Apparent size steady to 1.06×.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "headroom",
+     "label": "Headroom",
+     "status": "warn",
+     "value": {
+      "crown_cut_frames": 0.34
+     },
+     "unit": "fraction of frames with the crown outside the picture",
+     "threshold": {
+      "recommended": [
+       0.05,
+       0.12
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded.",
+     "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
+     "id": "face_exposure",
+     "label": "Face exposure",
+     "status": "warn",
+     "value": 0.8,
+     "unit": "exposure gain toward the 0.46 target",
+     "threshold": {
+      "target": 0.46,
+      "clamp": [
+       0.8,
+       1.25
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Face luma 0.729 asked for ×0.36 and was held at ×0.80 — the recording is over-lit for the stage.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    },
+    {
+     "id": "key_direction",
+     "label": "Key direction",
+     "status": "info",
+     "value": 1.0,
+     "unit": "silhouette L/R luma ratio",
+     "threshold": {
+      "flat_below": 1.08
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Flat-lit (L 0.285 / R 0.284); the stage convention stands.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    }
+   ],
+   "facts": {
+    "picture": "480×404 at +400+158",
+    "fps": 30.0,
+    "frames": 1800,
+    "duration_s": 60.0
+   },
+   "duration_ms": 4274,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded and zach_sain_v1_padded.mp4",
+   "failing": []
+  }
+ ],
+ "fixes": [
+  {
+   "strategy": "fix.reframe",
+   "artifact": "fixed",
+   "stages": [
+    {
+     "id": "band",
+     "label": "Crop to picture area",
+     "tool": "vision.detect_band → crop",
+     "duration_ms": 3020,
+     "cached": false,
+     "reused": false,
+     "summary": "crop=480:404:400:158 — the 800 dead columns and 316 dead rows are gone; the picture bottom is now the frame bottom.",
+     "params": {
+      "crop": [
+       480,
+       404,
+       400,
+       158
+      ]
+     }
+    },
+    {
+     "id": "size_cap",
+     "label": "Size-capped reframe solve",
+     "tool": "vision.track.dry_solve (SIZE_CAP, HEAD_TARGET_MAX)",
+     "duration_ms": 0,
+     "cached": false,
+     "reused": false,
+     "summary": "Performer reaches 34 % of canvas width at head_target 0.334 — under the 55 % cap; the floor stands.",
+     "params": {
+      "head_target_floor": 0.334,
+      "head_target": 0.334,
+      "head_target_max": 0.55,
+      "size_cap": 0.55
+     }
+    }
+   ],
+   "changes": {
+    "picture": {
+     "before": "480×404 at +400+158 in a 1280×720 file",
+     "after": "480×404, the whole picture"
+    },
+    "head_target": {
+     "before": 0.334,
+     "after": 0.334
+    },
+    "shoulder_span_p50": {
+     "before": 0.338,
+     "after": 0.338
+    },
+    "shoulder_span_p95": {
+     "before": 0.344,
+     "after": 0.344
+    },
+    "pixels_invented": 0
+   },
+   "duration_ms": 3020,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded and zach_sain_v1_padded.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
+  }
+ ],
+ "verify": [
+  {
+   "artifact": "attempt_1",
+   "gates": [
+    {
+     "id": "pose_coverage",
+     "label": "Pose on frames",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "unit": "fraction of frames",
+     "detail": "100 % of 1800 frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "unit": "fraction of frames",
+     "detail": "100.0 %.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "matte_extent",
+     "label": "Matte extent vs second opinion",
+     "status": "pass",
+     "value": 1.016,
+     "threshold": {
+      "op": ">=",
+      "value": 0.9
+     },
+     "unit": "head width ratio, median",
+     "detail": "Matte head width 102 % of the OpenCV 5 DNN opinion's over 17 frames (worst frame 358: 158 px vs 160 px).",
+     "tool": "vision.segment.SubjectSegmenter + vision.matte_extent (OpenCV 5 DNN)"
+    },
+    {
+     "id": "separation",
+     "label": "Subject vs background luminance",
+     "status": "pass",
+     "value": 2.36,
+     "threshold": {
+      "op": ">=",
+      "value": 1.5
+     },
+     "unit": "edge luma ratio",
+     "detail": "Edge luma 0.267 inside / 0.113 outside — separation 2.36× over 24 frames of comp; the performer is the brighter side; clears the 1.5× gate by 0.86×.",
+     "tool": "vision.separation (OpenCV 5)"
+    },
+    {
+     "id": "head_spread",
+     "label": "Head height spread",
+     "status": "pass",
+     "value": 0.007,
+     "threshold": {
+      "op": "<=",
+      "value": 0.02
+     },
+     "unit": "fraction of output height",
+     "detail": "2.4 % of source → 0.7 % of output.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "head_drift",
+     "label": "Head drift (slower than 2 s)",
+     "status": "pass",
+     "value": 1.9,
+     "threshold": {
+      "op": "<=",
+      "value": 4.0
+     },
+     "unit": "px",
+     "detail": "1.9 px of head-top motion slower than 2 s after the solve.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "frame_count",
+     "label": "Frame count = source",
+     "status": "pass",
+     "value": 1800,
+     "threshold": 1800,
+     "unit": "frames",
+     "detail": "1800 = 1800.",
+     "tool": "vision.frame_count (OpenCV 5)"
+    },
+    {
+     "id": "audio_md5",
+     "label": "Audio MD5 = source",
+     "status": "pass",
+     "value": "equal",
+     "threshold": "equal",
+     "unit": "",
+     "detail": "Decoded audio MD5 identical to the source.",
+     "tool": "vision.audio_md5 (ffmpeg)"
+    }
+   ],
+   "measurements": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.338,
+    "separation": 2.36,
+    "edge_luma_in": 0.267,
+    "edge_luma_out": 0.113,
+    "head_spread": 0.007,
+    "head_drift_px": 1.9,
+    "frames": 1800
+   },
+   "duration_ms": 13233,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded, work/midtown_zach_sain_v1_padded/comp",
+   "passed": true,
+   "failing": []
+  }
+ ],
+ "decisions": [
+  {
+   "action": "fix",
+   "reasoning": "The only failing gate-level finding right now is picture_area: the recorded picture is only 480×404 pixels sitting inside a 1280×720 file at offset +400+158 — it is heavily pillarboxed/letterboxed and must be cropped to the actual picture content before any composite can be attempted. The fix.reframe strategy explicitly addresses \"picture_area\" and \"subject_size\". Subject size is already passing (p50 0.338, p95 0.344 shoulder span, well under the 0.55 cap) and distance is steady (1.06×), so the reframe just needs to crop the padding and set the head target to 0.334 within the allowed head_target_max of 0.55 and scale_tol of 0.25. The headroom warning (crown outside picture on 34 % of frames) is a recorded-content limit, not a defect the fixer can invent content to fix — it is noted for the report only. No process attempt has been made yet (attempts_so_far is empty), and the retry budget is at 2, so spending one fix here is well within budget. If this fix fails to resolve picture_area (e.g. the crop produces an output that still fails a gate), the next step would be to run process.standard; if gates still fail after that with no remaining strategies, the exit would be reshoot with guidance on exporting without padding.",
+   "strategy": "fix.reframe",
+   "cites": [
+    "picture_area",
+    "subject_size",
+    "headroom",
+    "fix.reframe"
+   ],
+   "confidence": 0.97,
+   "model": "bedrock:global.anthropic.claude-sonnet-4-6",
+   "duration_ms": 7341,
+   "cached": false
+  },
+  {
+   "action": "process",
+   "reasoning": "All inspection findings are either passing or warnings (recorded-content limits, not defects to fix). Specifically: picture_area passes, pose_coverage is 1.0 (gate requires ≥0.6), one_subject is 1.0 (gate requires ≥0.95), subject_size p50 0.338 and p95 0.344 are both well under the 0.55 cap, and distance_steady is 1.06 (≤1.35). The headroom finding (34% of frames with crown outside picture) and face_exposure (held at ×0.80) are both warnings — recorded-content limits noted for the report, not gate-blocking defects. No gate failures are present in current_findings; latest_verification is null because no process attempt has been made yet. The fix.reframe has already been applied (decision 1), so the correct next step is to render the first process attempt using process.standard, the standard strategy for a first attempt. The retry budget is 2 with 0 reprocesses used. If process.standard produces a verification that fails separation, process.separation_targeted remains available as a fallback; if both are exhausted with failures, reshoot is the exit.",
+   "strategy": "process.standard",
+   "cites": [
+    "picture_area",
+    "pose_coverage",
+    "one_subject",
+    "subject_size",
+    "distance_steady",
+    "headroom",
+    "face_exposure",
+    "process.standard"
+   ],
+   "confidence": 0.88,
+   "model": "bedrock:global.anthropic.claude-sonnet-4-6",
+   "duration_ms": 6659,
+   "cached": false
+  },
+  {
+   "action": "deliver",
+   "reasoning": "The latest verification for attempt_1 (process.standard) passed every gate: pose_coverage 1.0 ≥ 0.6, one_subject 1.0 ≥ 0.95, matte_extent 1.016 ≥ 0.9, separation 2.36 ≥ 1.5, head_spread 0.007 ≤ 0.02, head_drift 1.9 px ≤ 4.0 px, frame_count 1800 = 1800, and audio_md5 equal. All eight gates are green with no failures. The two open items — headroom warning (crown outside picture on 34 % of frames) and face_exposure warning (gain held at ×0.80) — are recorded-content limits flagged as warnings, not gate failures, and the rules explicitly say warnings are not defects to fix. No gate is failing, the retry budget has not been spent, and the artifact passed its verification, so the correct and only honest action is to deliver.",
+   "strategy": null,
+   "cites": [
+    "pose_coverage",
+    "one_subject",
+    "matte_extent",
+    "separation",
+    "head_spread",
+    "head_drift",
+    "frame_count",
+    "audio_md5",
+    "headroom",
+    "face_exposure"
+   ],
+   "confidence": 1.0,
+   "model": "bedrock:global.anthropic.claude-sonnet-4-6",
+   "duration_ms": 5517,
+   "cached": false
+  }
+ ],
+ "guards": [],
+ "delivery": {
+  "artifact": "attempt_1",
+  "strategy": "process.standard",
+  "output": {
+   "canvas": [
+    1080,
+    1920
+   ],
+   "frames": 1800,
+   "head_target": 0.334,
+   "scale_median": 3.198
+  },
+  "measurements": {
+   "head_target": 0.334,
+   "shoulder_span_p50": 0.338,
+   "separation": 2.36,
+   "edge_luma_in": 0.267,
+   "edge_luma_out": 0.113,
+   "head_spread": 0.007,
+   "head_drift_px": 1.9,
+   "frames": 1800
+  },
+  "attempts": 1,
+  "fixes": [
+   "fix.reframe"
+  ],
+  "budget": {
+   "reprocesses_used": 0,
+   "retry_budget": 2
+  }
+ },
+ "bedrock": {
+  "calls": 3,
+  "input_tokens": 12554,
+  "output_tokens": 1256,
+  "latency_ms": 19517
+ },
+ "wall_s": 45.1,
+ "score": {
+  "expected": "deliver",
+  "got": "deliver",
+  "outcome_ok": true,
+  "silently_wrong": false,
+  "detections": {
+   "pillarbox": {
+    "finding": "picture_area",
+    "status": "fail",
+    "detected": true
+   },
+   "crown_cut": {
+    "finding": "headroom",
+    "status": "warn",
+    "detected": true
+   },
+   "over_lit": {
+    "finding": "face_exposure",
+    "status": "warn",
+    "detected": true
+   }
+  },
+  "unlabelled_flags": [],
+  "missed": [],
+  "fix": {
+   "strategy": "fix.reframe",
+   "expected": "fix.reframe",
+   "resolved": true
+  }
+ }
+}

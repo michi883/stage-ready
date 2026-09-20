@@ -1,0 +1,30 @@
+== Midtown Show — Red Curtain Pipeline ==
+[1/9] picture area 1920x1080 at +0+0   30/1 fps
+[2/9] 1285 frames
+[3/9] coverage 100%, one subject on 100.0% of frames, subject 27% of picture height and steady to 1.05x
+pick_seed: frame 341 of 17 candidates (head 473 px, coverage 18.3%, crown whole, edges touched 1, threshold >32)
+           runner-up frame 1: head 379 px, coverage 17.8%, crown whole
+           runner-up frame 1191: head 357 px, coverage 18.2%, crown whole
+clean_seed: 4 components -> 1, coverage 18.28% -> 18.28%
+[4/9] Apple Vision seed on frame 341 (threshold >32)
+[5/9] MatAnyone (local MPS) — the long stage, seeded from frame 341
+      head width vs Apple Vision, median 99% over 17 frames (worst frame 596: 317 px vs 325 px); crown leaves the picture on 0% of frames
+      the crown is inside the picture on every frame — nothing to complete
+track_frame: pose 100% of frames, cut off at frame bottom on 100%, head_target=0.334
+  scale 1.275..1.289 (median 1.279)
+  head height spread 1.9% of source -> 0.7% of output
+[6/9] tracked (head at 0.334 of frame height, drift removed above 1.25s)
+[7/9] reframed to 1080x1920
+auto_grade: silhouette L 0.089 / R 0.155 (x1.74) -> key from the right
+  face luma 0.131 -> target 0.46, fgexp 1.250
+  WARNING: the face wanted a x15.73 lift and was held at x1.25. This recording is under-lit for the stage; the performer will still read darker than intended. See RECORDING_REQUIREMENTS.md.
+[8/9] composited 1285 frames  (keydx=1 rimdx=6 fgexp=1.250)
+  WARNING: the performer separates from the curtain by only 1.02x in luminance
+  (a well-separated clip measures 2.9x). They are dressed close to the stage, so the
+  silhouette is carried by hue alone and will weaken on a small screen, under heavy
+  compression, or in greyscale. The colour delivery is faithful; nothing is wrong with
+  the render. See RECORDING_REQUIREMENTS.md — don't wear the stage.
+      edge luma 0.113 inside / 0.111 outside — separation 1.02x
+[9/9] verified: 1285 frames, audio identical to source
+done in 976s -> eval/brian_underlit_red_v1.mp4
+exit 0

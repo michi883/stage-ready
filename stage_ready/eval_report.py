@@ -33,7 +33,9 @@ def write_report() -> Path:
     L.append(f"Generated {datetime.date.today().isoformat()} by `python3 -m stage_ready evaluate --report` from `demo/eval/set.json` and "
              f"`demo/eval/results/`. Every item was labelled before it ran (`labels.why` says how); the loop ran as it runs live — "
              f"INSPECT / FIX / VERIFY measured with OpenCV 5 on this machine, PROCESS the archived render — with the agent on Amazon Bedrock "
-             f"(Claude Sonnet 4.6, the product) and, as the ablation, replaced by the rule table in `stage_ready/rules_agent.py`.\n")
+             f"(Claude Sonnet 4.6, the product) and, as the ablation, replaced by the rule table in `stage_ready/rules_agent.py`. "
+             f"The agent runs **blind**: the prompt carries no name, brief or file name for an evaluation input — only the measurements — "
+             f"which is stricter than the demo, whose briefs are the show's intake notes.\n")
     n = len(s["items"])
     L.append("## The number the product exists to make zero\n")
     L.append("| agent | items | outcomes as labelled | **silently wrong deliveries** | labelled defects missed | flags no label explains |")
@@ -106,7 +108,7 @@ def write_report() -> Path:
                  + f"wall time {sm['wall_s'] / 60:.0f} min for the set (measurement, not rendering — the renders are cached by source hash).\n")
         for r in wrong:
             sc = r["score"]
-            L.append(f"- `{r['id']}`: expected **{sc['expected']}**, got **{sc['got']}** — {r['labels']['why']}"
+            L.append(f"- `{r['id']}`: expected **{sc['expected']}**, got **{sc['got']}** — {r['labels']['why'].rstrip('.')}."
                      + (f" Reshoot cites: {', '.join(i['id'] for i in r['reshoot']['items'][:3])}." if r.get("reshoot") else "")
                      + (f" Refused: {r['refusal']}." if r.get("refusal") else "")
                      + (f" Error: {r['error']}." if r.get("error") else ""))
@@ -122,6 +124,42 @@ def write_report() -> Path:
         for i in diff:
             L.append(f"- `{i}`: Bedrock {ib[i]['outcome']} ({' → '.join(ib[i]['path'])}); rules {ir[i]['outcome']} ({' → '.join(ir[i]['path'])}).")
         L.append("")
+    # the linear pipeline as the baseline: it ships the standard render whenever its prep succeeds, warning in a log
+    a0 = agents[0]
+    _, items0 = sums[a0]
+    L.append("## The linear pipeline as the baseline\n")
+    L.append("`midtown_red_curtain.sh` on its own — fixed order, no agent, no gate — ships the standard render of every recording its prep "
+             "accepts and writes its warnings to a log. Its deliveries are the loop's first attempts, so their gates are already measured "
+             "(the first VERIFY of each item, above). What the linear pipeline would have shipped:\n")
+    L.append("| item | linear pipeline ships | gates the shipped render fails | label | what the loop did instead |")
+    L.append("|---|---|---|---|---|")
+    n_ship = n_fail = n_wrong = n_recovered = 0
+    for it in s["items"]:
+        r = items0.get(it["id"])
+        if not r or r["kind"] == "gate":
+            continue
+        if r["outcome"] == "refused":
+            L.append(f"| `{it['id']}` | no — refused at prep | — | {it['labels']['expected_outcome']} | the same refusal |")
+            continue
+        v1 = (r.get("verify") or [None])[0]
+        fails = [g["id"] for g in v1["gates"] if g["status"] == "fail"] if v1 else []
+        n_ship += 1
+        if fails:
+            n_fail += 1
+        wrong = it["labels"]["expected_outcome"] == "reshoot"
+        if wrong:
+            n_wrong += 1
+        recovered = bool(fails) and r["outcome"] == "delivered"
+        if recovered:
+            n_recovered += 1
+        did = ("delivered after " + ("a fix and " if r.get("fixes") else "") + f"{len(r.get('verify', []))} verification(s)" if r["outcome"] == "delivered"
+               else "reshoot request, citing " + ", ".join(i["id"] for i in (r.get("reshoot") or {}).get("items", [])[:2]))
+        L.append(f"| `{it['id']}` | yes{' — no verification of its own' if not v1 else ''} | {', '.join(fails) if fails else 'none'}"
+                 f"{' — **silently wrong by label**' if wrong else ''} | {it['labels']['expected_outcome']} | {did} |")
+    L.append("")
+    L.append(f"Of {n_ship} renders the linear pipeline ships, **{n_fail} fail a gate** it does not have; {n_wrong} of those are recordings the label says "
+             f"must not be delivered (the loop asked for a reshoot on each), and {n_recovered} were recovered by the loop's retry into a verified delivery. "
+             f"The linear pipeline's silently wrong deliveries on this set: **{n_wrong}**; the loop's: 0 among these, plus the frozen-frames delivery both miss.\n")
     L.append("## Limitations the set makes visible\n")
     L.append("- **No gate measures motion continuity.** `gate_frozen_frames` — a delivery with 30 frames frozen, the count and the audio intact — "
              "is expected to pass every gate; if it does, it is counted above as a silently wrong delivery, because it is one. The fix is a gate, not a label.")
@@ -129,6 +167,16 @@ def write_report() -> Path:
              "count and the audio. A delivery whose frames were swapped after compositing is caught only if its count or audio changed.")
     L.append("- **A recording the pipeline cannot matte is refused before the loop** (Apple Vision finds no reliable pose; two subjects) — an honest "
              "exit, but one the agent never sees; the refusal is scored as the reshoot exit.")
+    L.append("- **A crown cut on every frame makes the head-height gates blind.** `brian_crown_cut` delivers with head spread 0.1 % and drift "
+             "0.0 px — not because the head is still but because the matte's top is the picture edge on every frame and cannot move; the delivered "
+             "video has a carved crown. `headroom` is a warning in the profile, so the loop delivers. The remedy is a gate on crown-cut frames, not a threshold change.")
+    L.append("- **The size cap and the size gate use different rulers.** The fixer caps the performer's width on a 0.5-s-smoothed shoulder span; the "
+             "inspection's `subject_size` measures the raw span's p95. `brian_zoomed` lands at 0.553 against the 0.55 cap after the fix, and the rule "
+             "table reshoots a recording whose render then verifies (the agent processed it and it passed). The remedy is one ruler in "
+             "`track_frame.py` and `vision/track.py`, then re-rendering the capped items.")
+    L.append("- **The agent reads the intake brief.** A first Bedrock run passed each item's label text as the recording's brief; the agent quoted it "
+             "and asked for a reshoot at the first decision on Sandy, Zach's black-shirt take and the crown-cut input — before measuring. Blind, it "
+             "takes the measured path on all three. The demo's briefs are the show's intake notes; this is the reason the evaluation carries none.")
     L.append("- **The labels are ours.** `either` marks the items where a delivery and a reshoot are both defensible; the number that matters there "
              "is that a delivery carries a measured pass.")
     OUT.write_text("\n".join(L) + "\n")

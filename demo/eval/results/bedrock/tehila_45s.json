@@ -1,0 +1,28 @@
+{
+ "id": "tehila_45s",
+ "name": "Tehila — seated, striped dress (derived: first 45 s)",
+ "kind": "derived",
+ "agent": "bedrock",
+ "labels": {
+  "defects": [],
+  "expected_outcome": "deliver",
+  "why": "seated at one distance, crown inside, a black-and-white striped dress on a beige wall; nothing visibly wrong"
+ },
+ "source": "eval/tehila_45s.mp4",
+ "source_sha256": "c68c262e98cd8fecc78ccdc7409cbf0193328f1560a506d24574b499d18ba577",
+ "outcome": "refused",
+ "refusal": "pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip",
+ "path": [
+  "prepare ✗"
+ ],
+ "wall_s": 0.1,
+ "score": {
+  "expected": "deliver",
+  "got": "reshoot",
+  "outcome_ok": false,
+  "silently_wrong": false,
+  "detections": {},
+  "unlabelled_flags": [],
+  "missed": []
+ }
+}
