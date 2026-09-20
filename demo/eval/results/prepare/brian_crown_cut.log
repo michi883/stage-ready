@@ -1,0 +1,10 @@
+== Midtown Show — Red Curtain Pipeline ==
+[1/9] picture area 1920x960 at +0+0   30/1 fps
+[2/9] 1285 frames
+[3/9] coverage 100%, one subject on 100.0% of frames, subject 30% of picture height and steady to 1.07x
+pick_seed: frame 341 of 17 candidates (head 486 px, coverage 20.4%, crown CUT, edges touched 2, threshold >32)
+           runner-up frame 1: head 417 px, coverage 19.8%, crown CUT
+           runner-up frame 426: head 410 px, coverage 21.2%, crown CUT
+clean_seed: 1 components -> 1, coverage 20.43% -> 20.43%
+[4/9] Apple Vision seed on frame 341 (threshold >32)
+[5/9] MatAnyone (local MPS) — the long stage, seeded from frame 341

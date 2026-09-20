@@ -1,0 +1,27 @@
+== Midtown Show — Red Curtain Pipeline ==
+[1/9] picture area 1056x600 at +0+0   30/1 fps
+[2/9] 1285 frames
+[3/9] coverage 100%, one subject on 100.0% of frames, subject 50% of picture height and steady to 1.06x
+pick_seed: frame 341 of 17 candidates (head 202 px, coverage 28.5%, crown whole, edges touched 1, threshold >32)
+           runner-up frame 1191: head 176 px, coverage 27.3%, crown whole
+           runner-up frame 1021: head 167 px, coverage 26.0%, crown whole
+clean_seed: 1 components -> 1, coverage 28.49% -> 28.49%
+[4/9] Apple Vision seed on frame 341 (threshold >32)
+[5/9] MatAnyone (local MPS) — the long stage, seeded from frame 341
+      head width vs Apple Vision, median 99% over 17 frames (worst frame 851: 156 px vs 159 px); crown leaves the picture on 0% of frames
+      the crown is inside the picture on every frame — nothing to complete
+track_frame: performer reaches 71% of canvas width at HEAD_TARGET 0.334 (cap 55%) — this is a close-up source;
+  holding their size by moving the head down to 0.481 of frame height
+track_frame: pose 100% of frames, cut off at frame bottom on 100%, head_target=0.481
+  scale 1.905..1.947 (median 1.916)
+  head height spread 3.3% of source -> 1.1% of output
+[6/9] tracked (head at 0.481 of frame height, drift removed above 1.25s)
+[7/9] reframed to 1080x1920
+auto_grade: silhouette L 0.299 / R 0.472 (x1.58) -> key from the right
+  face luma 0.382 -> target 0.46, fgexp 1.250
+  WARNING: the face wanted a x1.50 lift and was held at x1.25. This recording is under-lit for the stage; the performer will still read darker than intended. See RECORDING_REQUIREMENTS.md.
+[8/9] composited 1285 frames  (keydx=1 rimdx=6 fgexp=1.250)
+      edge luma 0.383 inside / 0.113 outside — separation 3.38x
+[9/9] verified: 1285 frames, audio identical to source
+done in 323s -> eval/brian_zoomed_red_v1.mp4
+exit 0

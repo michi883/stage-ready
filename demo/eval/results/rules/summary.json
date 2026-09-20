@@ -1,0 +1,44 @@
+{
+ "agent": "rules",
+ "n": 2,
+ "loop_items": 2,
+ "gate_items": 0,
+ "outcome_ok": 2,
+ "silently_wrong": [],
+ "wrong_outcome": [],
+ "missed_defects": {},
+ "unlabelled_flags": {},
+ "per_finding": {},
+ "outcomes": {
+  "abby_9s": {
+   "outcome": "refused",
+   "path": [
+    "prepare ✗"
+   ],
+   "expected": "either",
+   "ok": true,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 0.0,
+   "bedrock": null,
+   "refusal": "pose found on only 0% of frames — the performer is not reliably visible in this recording. See RECORDING_REQUIREMENTS.md.",
+   "error": null
+  },
+  "two_sumitas": {
+   "outcome": "refused",
+   "path": [
+    "prepare ✗"
+   ],
+   "expected": "reshoot",
+   "ok": true,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 0.0,
+   "bedrock": null,
+   "refusal": "no workdir — run `evaluate --prepare`",
+   "error": null
+  }
+ },
+ "bedrock_total": null,
+ "wall_s": 0.0
+}

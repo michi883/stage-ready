@@ -1,0 +1,535 @@
+{
+ "note": "The evaluation set for `python3 -m stage_ready evaluate`. Every item is labelled BEFORE the loop runs on it — from how it was constructed (a synthesised defect) or by looking at the recording (a real one). Labels name the defects present in the input and the outcome a careful operator would accept; the loop is scored against them. `defects` map to finding/gate ids in `defect_map`. Sources are relative to the Red Curtain archive (~/mts); workdirs are the pipeline's, produced by demo/eval/derive_eval.sh + the pipeline (`evaluate --prepare`).",
+ "defect_map": {
+  "pillarbox": {
+   "finding": "picture_area",
+   "phase": "inspect",
+   "status": "fail",
+   "fixable_by": "fix.reframe"
+  },
+  "too_close": {
+   "finding": "subject_size",
+   "phase": "inspect",
+   "status": "fail",
+   "fixable_by": "fix.reframe"
+  },
+  "walk_in": {
+   "finding": "distance_steady",
+   "phase": "inspect",
+   "status": "warn"
+  },
+  "crown_cut": {
+   "finding": "headroom",
+   "phase": "inspect",
+   "status": "warn"
+  },
+  "under_lit": {
+   "finding": "face_exposure",
+   "phase": "inspect",
+   "status": "warn"
+  },
+  "over_lit": {
+   "finding": "face_exposure",
+   "phase": "inspect",
+   "status": "warn"
+  },
+  "two_subjects": {
+   "finding": "one_subject",
+   "phase": "inspect",
+   "status": "fail"
+  },
+  "wardrobe_near_plate": {
+   "finding": "separation",
+   "phase": "verify",
+   "status": "fail",
+   "retry": "process.separation_targeted"
+  },
+  "head_moves": {
+   "finding": "head_spread",
+   "phase": "verify",
+   "status": "fail"
+  },
+  "frames_dropped": {
+   "finding": "frame_count",
+   "phase": "verify",
+   "status": "fail"
+  },
+  "audio_reencoded": {
+   "finding": "audio_md5",
+   "phase": "verify",
+   "status": "fail"
+  },
+  "frames_frozen": {
+   "finding": null,
+   "phase": "verify",
+   "status": "fail",
+   "note": "no gate measures motion continuity — a known limitation, scored as such"
+  }
+ },
+ "items": [
+  {
+   "id": "brian",
+   "name": "Brian Shirley — untouched",
+   "kind": "real",
+   "source": "brian_shirley_v2.mp4",
+   "labels": {
+    "defects": [
+     "under_lit"
+    ],
+    "expected_outcome": "deliver",
+    "why": "recorded to spec but against a bright window: the face is under-lit (a warning, not a gate); crown inside, one distance"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_shirley_v2_base",
+    "source": "brian_shirley_v2.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "brian_shirley_v2_base_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "ethel",
+   "name": "Ethel Chadwick — untouched",
+   "kind": "real",
+   "source": "ethel_chadwick_v2.mp4",
+   "labels": {
+    "defects": [
+     "wardrobe_near_plate"
+    ],
+    "expected_outcome": "deliver",
+    "why": "a red trouser suit for a red curtain: the standard grade cannot separate her; the separation-targeted grade does, at its bounds (measured 1.52×)"
+   },
+   "archive": {
+    "workdir": "work/midtown_ethel_chadwick_v2",
+    "source": "ethel_chadwick_v2.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "ethel_chadwick_v2_v1.mp4",
+      "note": "the standard grade. Its composite frames were overwritten by the shadow-lift render (comp/ is ethel_chadwick_v2_v2, 1.37×), so separation is measured from the delivered file."
+     },
+     "attempt_2": {
+      "video": "ethel_chadwick_v2_v3.mp4",
+      "composite": "comp_sep",
+      "note": "the separation-targeted grade at its bounds, measured 2026-09-19 (separation.log)."
+     }
+    }
+   }
+  },
+  {
+   "id": "joel",
+   "name": "Joel Pelletier — untouched",
+   "kind": "real",
+   "source": "joel_pelletier_v4.mp4",
+   "labels": {
+    "defects": [],
+    "expected_outcome": "deliver",
+    "why": "recorded to spec: one distance, crown inside, lit; nothing to fix"
+   },
+   "archive": {
+    "workdir": "work/midtown_joel_pelletier_v4",
+    "source": "joel_pelletier_v4.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "joel_pelletier_v4_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "sandy",
+   "name": "Sandy Hackett — untouched",
+   "kind": "real",
+   "source": "sandy_hackett_v2.mp4",
+   "labels": {
+    "defects": [
+     "pillarbox",
+     "too_close",
+     "walk_in",
+     "crown_cut",
+     "head_moves"
+    ],
+    "expected_outcome": "reshoot",
+    "why": "a pillarboxed export of a close-up he walks into; the crown is cut on 76 % of frames and the completed crown's head top moves more than the gate allows — nothing allowed fixes that (demo/eval/corpus/sandy_excerpts)"
+   },
+   "archive": {
+    "workdir": "work/midtown_sandy_hackett_v2",
+    "source": "sandy_hackett_v2.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "sandy_hackett_v2_red_v4.mp4",
+      "composite": "comp",
+      "note": "the v4 run (crown completion, 2026-09-11) — the run the workdir holds and the fixture measures; v3 (2026-09-08, the earlier fixture) is no longer reproducible."
+     }
+    }
+   }
+  },
+  {
+   "id": "zach_v2",
+   "name": "Zach Sain — black-shirt take, untouched",
+   "kind": "real",
+   "source": "zach_sain_v2.mov",
+   "labels": {
+    "defects": [
+     "wardrobe_near_plate",
+     "crown_cut",
+     "over_lit"
+    ],
+    "expected_outcome": "reshoot",
+    "why": "black shirt and black trousers on a red wall: the silhouette sits in the curtain's luminance; the retry at the bounds measured 1.45× — he is wearing the stage"
+   },
+   "archive": {
+    "workdir": "work/midtown_zach_sain_v2",
+    "source": "zach_sain_v2.mov",
+    "artifacts": {
+     "attempt_1": {
+      "video": "zach_sain_v2_v2.mp4",
+      "composite": "comp",
+      "note": "the crown-completion render (2026-09-11), the standard grade"
+     },
+     "attempt_2": {
+      "video": "zach_sain_v2_v3.mp4",
+      "composite": "comp_sep",
+      "note": "the separation-targeted grade at its bounds (rim 0.45, wrap 0.70, lift +0.040), rendered and measured 2026-09-19 — params_sep.txt"
+     }
+    }
+   }
+  },
+  {
+   "id": "zach",
+   "name": "Zach Sain — the demo excerpt (derived)",
+   "kind": "derived",
+   "source": "zach_sain_v1_demo.mp4",
+   "labels": {
+    "defects": [
+     "crown_cut",
+     "over_lit"
+    ],
+    "expected_outcome": "deliver",
+    "why": "mint trousers carry the outline; the crown leaves the small picture on a third of frames and the room is over-lit — warnings"
+   },
+   "archive": {
+    "workdir": "work/midtown_zach_sain_v1_demo",
+    "source": "zach_sain_v1_demo.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "zach_sain_v1_demo_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "michi",
+   "name": "Michi — club sample (derived)",
+   "kind": "derived",
+   "source": "michi_sample_v1.mp4",
+   "labels": {
+    "defects": [],
+    "expected_outcome": "either",
+    "why": "a dark shirt in a dark club — the near-threshold case (1.51× on 2026-09-19, by 0.01×); a delivery or a reshoot are both defensible, a delivery must show ≥ 1.5×. Label corrected after the first run: it had listed wardrobe_near_plate, which predicts a gate failure rather than naming a defect — the shirt is dark, and it measures over the gate."
+   },
+   "archive": {
+    "workdir": "work/midtown_michi_sample_v1",
+    "source": "michi_sample_v1.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "michi_sample_v1_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "tehila_45s",
+   "name": "Tehila — seated, striped dress (derived: first 45 s)",
+   "kind": "derived",
+   "source": "eval/tehila_45s.mp4",
+   "labels": {
+    "defects": [],
+    "expected_outcome": "deliver",
+    "why": "seated at one distance, crown inside, a black-and-white striped dress on a beige wall; nothing visibly wrong"
+   },
+   "archive": {
+    "workdir": "work/midtown_tehila_45s",
+    "source": "eval/tehila_45s.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/tehila_45s_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "sta_30s",
+   "name": "sta — walks in, black top on grey",
+   "kind": "real",
+   "source": "sta_30s.mp4",
+   "labels": {
+    "defects": [
+     "walk_in",
+     "wardrobe_near_plate"
+    ],
+    "expected_outcome": "either",
+    "why": "turns and walks into position in the first seconds; a black top sits in the curtain's luminance (Zach's failure mode) — the separation gate decides, and a delivery must show ≥ 1.5×"
+   },
+   "archive": {
+    "workdir": "work/midtown_sta_30s",
+    "source": "sta_30s.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/sta_30s_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "abby_9s",
+   "name": "Abby — close-up, 9 s",
+   "kind": "real",
+   "source": "abby_9s.mp4",
+   "labels": {
+    "defects": [
+     "too_close",
+     "crown_cut"
+    ],
+    "expected_outcome": "either",
+    "why": "a phone close-up: head and shoulders fill the picture, the crown touches the top; the size cap has to hold her and the head gates decide"
+   },
+   "archive": {
+    "workdir": "work/midtown_abby_9s",
+    "source": "abby_9s.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/abby_9s_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "two_sumitas",
+   "name": "Two Sumitas — two subjects (a composite)",
+   "kind": "real",
+   "source": "midtown_two_sumitas_v1.mp4",
+   "labels": {
+    "defects": [
+     "two_subjects"
+    ],
+    "expected_outcome": "reshoot",
+    "why": "two performers of the same size side by side, and an audience: the profile is for one performer — one_subject / pose QC must refuse it"
+   },
+   "archive": {
+    "workdir": "work/midtown_midtown_two_sumitas_v1",
+    "source": "midtown_two_sumitas_v1.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/midtown_two_sumitas_v1_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "brian_padded",
+   "name": "Brian — padded (synthesised: pillarbox)",
+   "kind": "synthesised",
+   "source": "brian_shirley_v2_padded.mp4",
+   "labels": {
+    "defects": [
+     "pillarbox",
+     "under_lit"
+    ],
+    "expected_outcome": "deliver",
+    "expected_fix": "fix.reframe",
+    "why": "the untouched recording inside a 2560×1440 canvas: picture_area must fail, the crop must resolve it, then the recording's own numbers"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_shirley_v2_padded",
+    "source": "brian_shirley_v2_padded.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "brian_shirley_v2_padded_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "zach_padded",
+   "name": "Zach — padded (synthesised: pillarbox)",
+   "kind": "synthesised",
+   "source": "zach_sain_v1_padded.mp4",
+   "labels": {
+    "defects": [
+     "pillarbox",
+     "crown_cut",
+     "over_lit"
+    ],
+    "expected_outcome": "deliver",
+    "expected_fix": "fix.reframe",
+    "why": "the demo excerpt inside a 1280×720 canvas"
+   },
+   "archive": {
+    "workdir": "work/midtown_zach_sain_v1_padded",
+    "source": "zach_sain_v1_padded.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "zach_sain_v1_padded_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "brian_zoomed",
+   "name": "Brian — too close (synthesised: cropped to head and chest)",
+   "kind": "synthesised",
+   "source": "eval/brian_zoomed.mp4",
+   "labels": {
+    "defects": [
+     "too_close",
+     "under_lit"
+    ],
+    "expected_outcome": "deliver",
+    "expected_fix": "fix.reframe",
+    "why": "crop=1056:600:337:0 — the picture ends at his chest, so the reframe would magnify him past the 55 % cap; the size cap must hold him and the head gates should pass (his head is steady)"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_zoomed",
+    "source": "eval/brian_zoomed.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/brian_zoomed_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "brian_crown_cut",
+   "name": "Brian — crown cut (synthesised: top 120 rows removed)",
+   "kind": "synthesised",
+   "source": "eval/brian_crown_cut.mp4",
+   "labels": {
+    "defects": [
+     "crown_cut",
+     "under_lit"
+    ],
+    "expected_outcome": "either",
+    "why": "crop=1920:960:0:120 — the crown is outside the picture on every frame; headroom must warn; with no uncut reference frame the completion can only carve, and the head gates decide"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_crown_cut",
+    "source": "eval/brian_crown_cut.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/brian_crown_cut_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "brian_underlit",
+   "name": "Brian — dark room (synthesised: gain ×0.35)",
+   "kind": "synthesised",
+   "source": "eval/brian_underlit.mp4",
+   "labels": {
+    "defects": [
+     "under_lit",
+     "wardrobe_near_plate"
+    ],
+    "expected_outcome": "either",
+    "why": "the whole picture at ×0.35: face exposure must warn (the grade is clamped at ×1.25), and the silhouette's luminance approaches the curtain's — the separation gate decides; a delivery must show ≥ 1.5×"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_underlit",
+    "source": "eval/brian_underlit.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/brian_underlit_red_v1.mp4",
+      "composite": "comp"
+     }
+    }
+   }
+  },
+  {
+   "id": "gate_frame_drop",
+   "name": "Delivery with one frame dropped",
+   "kind": "gate",
+   "source": "brian_shirley_v2.mp4",
+   "labels": {
+    "defects": [
+     "frames_dropped"
+    ],
+    "expected_outcome": "reject",
+    "why": "Brian's delivery re-encoded without frame 600 (1284 frames): frame_count must fail"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_shirley_v2_base",
+    "source": "brian_shirley_v2.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/gate_frame_drop.mp4",
+      "composite": "comp",
+      "note": "a synthesised defective delivery of the untouched recording; the composite frames are the base run's"
+     }
+    }
+   }
+  },
+  {
+   "id": "gate_audio_reencoded",
+   "name": "Delivery with re-encoded audio",
+   "kind": "gate",
+   "source": "brian_shirley_v2.mp4",
+   "labels": {
+    "defects": [
+     "audio_reencoded"
+    ],
+    "expected_outcome": "reject",
+    "why": "Brian's delivery with its audio re-encoded to AAC 128k: audio_md5 must fail"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_shirley_v2_base",
+    "source": "brian_shirley_v2.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/gate_audio_reencoded.mp4",
+      "composite": "comp",
+      "note": "a synthesised defective delivery of the untouched recording; the composite frames are the base run's"
+     }
+    }
+   }
+  },
+  {
+   "id": "gate_frozen_frames",
+   "name": "Delivery with 30 frozen frames",
+   "kind": "gate",
+   "source": "brian_shirley_v2.mp4",
+   "labels": {
+    "defects": [
+     "frames_frozen"
+    ],
+    "expected_outcome": "reject",
+    "why": "Brian's delivery with frames 600–629 replaced by frame 600 — the count and the audio are intact; no gate measures motion continuity, so this is expected to pass every gate: a known limitation, counted as a silently wrong delivery if it does"
+   },
+   "archive": {
+    "workdir": "work/midtown_brian_shirley_v2_base",
+    "source": "brian_shirley_v2.mp4",
+    "artifacts": {
+     "attempt_1": {
+      "video": "eval/gate_frozen_frames.mp4",
+      "composite": "comp",
+      "note": "a synthesised defective delivery of the untouched recording; the composite frames are the base run's"
+     }
+    }
+   }
+  }
+ ]
+}

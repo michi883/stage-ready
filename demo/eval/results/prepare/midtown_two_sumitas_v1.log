@@ -1,0 +1,12 @@
+== Midtown Show — Red Curtain Pipeline ==
+[1/9] picture area 1920x1080 at +0+0   24/1 fps
+[2/9] 192 frames
+  107 frame(s) off-subject: 1 by size, 107 by position
+  WARNING: the performer changes apparent size by 1.96x across this take — they
+  walk toward or away from the camera. The stabiliser corrects position and size, not
+  perspective, so this is delivered as shot: whatever the closest framing is, that is
+  what most of the stage clip looks like. Re-record at a fixed distance.
+  See RECORDING_REQUIREMENTS.md. (Stop now: this is printed before matting.)
+pose_qc: 56% of frames track a different subject than the rest of the clip (limit 5%). Something else in the room is being read as a person. See RECORDING_REQUIREMENTS.md — nobody else, no mirrors, no screens.
+ERROR: pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip
+exit 1

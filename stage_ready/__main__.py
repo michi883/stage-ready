@@ -287,9 +287,20 @@ def main(argv: list[str] | None = None) -> int:
     aw = sub.add_parser("aws"); aw.add_argument("what", choices=["status", "sync", "deploy", "web-deploy", "web-publish", "web-invalidate"]); aw.add_argument("clips", nargs="*"); aw.add_argument("--layer", default=None); aw.add_argument("--archive", default=None)
     ae = sub.add_parser("agent-eval"); ae.add_argument("--model", default=None); ae.add_argument("--repeat", type=int, default=1); ae.add_argument("--clips", nargs="*"); ae.add_argument("--json", action="store_true")
     mo = sub.add_parser("models"); mo.add_argument("what", nargs="?", default="list", choices=["list", "fetch"]); mo.add_argument("name", nargs="?", default=None)
+    ev = sub.add_parser("evaluate"); ev.add_argument("--agent", default="bedrock", choices=["bedrock", "rules"]); ev.add_argument("--items", nargs="*"); ev.add_argument("--prepare", action="store_true")
+    ev.add_argument("--report", action="store_true"); ev.add_argument("--archive", default=None); ev.add_argument("--opinion", default="dnn", choices=["vision", "dnn"])
     sc = sub.add_parser("segcheck"); sc.add_argument("clips", nargs="*"); sc.add_argument("--archive", default=None); sc.add_argument("--no-crop", action="store_true"); sc.add_argument("--json", action="store_true"); sc.add_argument("--model", default=None)
     a = ap.parse_args(argv)
 
+    if a.cmd == "evaluate":
+        from .evaluate import evaluate
+        from .eval_report import write_report
+        if not a.report or a.items or a.prepare:
+            s_ = evaluate(a.agent, a.items, a.prepare, a.archive, a.opinion)
+            print(f"  {s_['agent']}: {s_['outcome_ok']}/{s_['n']} outcomes as labelled · silently wrong {len(s_['silently_wrong'])} {s_['silently_wrong']} · missed {s_['missed_defects'] or '-'}")
+        if a.report:
+            print(f"  report: {write_report()}")
+        return 0
     if a.cmd == "aws":
         return _aws(a)
     if a.cmd == "agent-eval":

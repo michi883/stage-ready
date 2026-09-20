@@ -1,0 +1,38 @@
+== Midtown Show — Red Curtain Pipeline ==
+[1/9] picture area 1080x764 at +0+574   30/1 fps
+[2/9] 919 frames
+  1 frame(s) off-subject: 1 by size, 0 by position
+[3/9] coverage 100%, one subject on 99.9% of frames, subject 45% of picture height and steady to 1.33x
+pick_seed: frame 245 of 17 candidates (head 240 px, coverage 33.0%, crown whole, edges touched 1, threshold >32)
+           runner-up frame 123: head 239 px, coverage 30.2%, crown whole
+           runner-up frame 184: head 237 px, coverage 32.9%, crown whole
+clean_seed: 7 components -> 1, coverage 33.00% -> 33.00%
+[4/9] Apple Vision seed on frame 245 (threshold >32)
+[5/9] MatAnyone (local MPS) — the long stage, seeded from frame 245
+      head width vs Apple Vision, median 101% over 17 frames (worst frame 306: 237 px vs 236 px); crown leaves the picture on 2% of frames
+      crown cut on 20 frames (2% of the clip); 20 completed from 5 reference frames (1 switches, 878 candidates with the crown >= 8 rows inside), 0 dome-carved
+      picture extended by 26 rows on top, 0 columns each side -> 1080x790
+track_frame: performer reaches 75% of canvas width at HEAD_TARGET 0.334 (cap 55%) — this is a close-up source;
+  holding their size by moving the head down to 0.514 of frame height
+track_frame: pose 100% of frames, cut off at frame bottom on 100%, head_target=0.514
+  scale 1.263..1.291 (median 1.275)
+  head height spread 4.3% of source -> 1.4% of output
+[6/9] tracked (head at 0.514 of frame height, drift removed above 1.25s)
+[7/9] reframed to 1080x1920
+/Users/michi/mts/tools/auto_grade.py:71: RuntimeWarning: Mean of empty slice
+  hx = np.nanmean([fnum(r, k) for k in ("nose_x", "eyeL_x", "eyeR_x", "earL_x", "earR_x")])
+/Users/michi/mts/tools/auto_grade.py:72: RuntimeWarning: Mean of empty slice
+  hy = np.nanmean([fnum(r, k) for k in ("nose_y", "eyeL_y", "eyeR_y")])
+auto_grade: silhouette L 0.187 / R 0.136 (x0.73) -> key from the left
+  face luma 0.657 -> target 0.46, fgexp 0.800
+  WARNING: the face wanted a x0.46 lift and was held at x0.80. This recording is over-lit for the stage; the performer will still read brighter than intended. See RECORDING_REQUIREMENTS.md.
+[8/9] composited 919 frames  (keydx=-1 rimdx=-6 fgexp=0.800)
+  WARNING: the performer separates from the curtain by only 1.41x in luminance
+  (a well-separated clip measures 2.9x). They are dressed close to the stage, so the
+  silhouette is carried by hue alone and will weaken on a small screen, under heavy
+  compression, or in greyscale. The colour delivery is faithful; nothing is wrong with
+  the render. See RECORDING_REQUIREMENTS.md — don't wear the stage.
+      edge luma 0.160 inside / 0.113 outside — separation 1.41x
+[9/9] verified: 919 frames, audio identical to source
+done in 284s -> eval/sta_30s_red_v1.mp4
+exit 0
