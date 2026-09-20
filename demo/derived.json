@@ -58,12 +58,32 @@
         "note": "the same excerpt without the timestamp zeroing: the source decodes to 1800 frames but the pipeline's demux emitted 1801 (a duplicate at t=0), so the render had 1801 — caught by the live frame-count gate on AWS (FFmpeg decoder: 1801 ≠ 1800) while the local check, which counts through AVFoundation, read 1801 = 1801. Not used."
       },
       "derived_on": "2026-09-20"
+    },
+    "zach_padded": {
+      "role": "polished demo: the controlled repair demonstration (Zach, padded)",
+      "kind": "controlled demo input — the defect is injected on purpose",
+      "original": "zach_sain_v1_demo.mp4",
+      "original_sha256": "f4eee6dd5534b694b5b804a584a3577b52f4f76da389df53304d05b1fe9a409c",
+      "original_role": "the clean base: Zach's demo recording, verified on its own (2.37×, head 0.7 %, 1800 frames) before the defect was injected",
+      "output": "zach_sain_v1_padded.mp4",
+      "output_sha256": "588c6814bb87c0e02f03380e6f80b90c6f64774a8b03ed36c7a48beb885a3b13",
+      "time_range": "00:00:00 → 00:01:00 (60 s — the whole base, untrimmed)",
+      "command": "ffmpeg -v error -y -i zach_sain_v1_demo.mp4 -vf pad=1280:720:400:158:black -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart zach_sain_v1_padded.mp4",
+      "injected_defect": "picture_area: the 480×404 picture placed unscaled and centred inside a 1280×720 black canvas (+400+158)",
+      "edits": [
+        "no trim, no frame-rate change, no scaling, no mis-centering — 1800 frames, 30 fps, timestamps as the base",
+        "video re-encoded once (x264 crf 18, 1 thread); inside the picture the pixels differ from the base by the compression pass only (frame 900: mean 0.86/255, p99 5/255)",
+        "audio stream copied (decoded MD5 identical to the base)"
+      ],
+      "measured": "2026-09-20, real pipeline + live loop (Lambda + Bedrock): inspect ✗ picture_area only → fix.reframe crop 480:404:400:158, head_target 0.334 unchanged, 0 pixels invented → re-inspect passes → process.standard → verify ✓ separation 2.36×, matte 102 %, head 0.7 % / 1.9 px, 1800 frames, audio equal → deliver",
+      "derived_on": "2026-09-20"
     }
   },
   "demo_lineup": {
     "sandy": "sandy_hackett_v2.mp4, untouched (fix → caught → reshoot); the derived excerpt sandy_hackett_v2_demo.mp4 failed the head gates and is evaluation corpus (demo/eval/corpus/sandy_excerpts)",
     "ethel": "archived recording, unchanged",
-    "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass"
+    "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass",
+    "zach_padded": "zach_sain_v1_padded.mp4 (controlled: see derived.zach_padded) — ran 2026-09-20, fix → verified; lineup placement pending"
   },
   "evaluation_corpus": {
     "sandy_hackett_v2.mp4": "untouched — walks into a close-up; live result 2026-09-20: fix holds, verify fails head spread 2.9 % / drift 5.3 px → reshoot",

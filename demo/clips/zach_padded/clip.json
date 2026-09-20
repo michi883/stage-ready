@@ -1,0 +1,74 @@
+{
+  "id": "zach_padded",
+  "name": "Zach Sain",
+  "order": 4,
+  "brief": "Misframed, repairable — the real 480×404 picture sits unscaled inside a 1280×720 export, black on every side; the performer is untouched.",
+  "source": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30.0,
+    "duration_s": 60.0,
+    "frames": 1800,
+    "room": "red wall, bright",
+    "wardrobe": "black shirt, mint trousers",
+    "framing": "head to shin, crown tight to the top; the picture is a third of the file",
+    "audio": "48 kHz AAC",
+    "picture": "480×404 at +400+158 (padded on all four sides)"
+  },
+  "fixture": "zach_sain_v1_padded (controlled demo input: the clean base zach_sain_v1_demo.mp4 padded into a 1280×720 canvas — demo/derived.json; Red Curtain archive run 2026-09-20)",
+  "stills": {
+    "source": "source.jpg",
+    "attempt_1": "attempt_1.jpg"
+  },
+  "videos": {
+    "source": "source.mp4",
+    "attempt_1": "attempt_1.mp4"
+  },
+  "recognize": {
+    "sha256": "588c6814bb87c0e02f03380e6f80b90c6f64774a8b03ed36c7a48beb885a3b13",
+    "names": [
+      "zach_sain_v1_padded.mp4"
+    ],
+    "derived_from": {
+      "file": "zach_sain_v1_demo.mp4 (the clean base: Zach's demo recording, verified 2.37× on the first pass)",
+      "sha256": "f4eee6dd5534b694b5b804a584a3577b52f4f76da389df53304d05b1fe9a409c",
+      "original": {
+        "file": "zach_sain_v1.mov",
+        "sha256": "d20abd43ed3b9bb6515a84e8be8ef9946b04c234b985f5a7e31b3d9333116c9c",
+        "time_range": "00:00:15 → 00:01:15 (60 s)"
+      },
+      "injected_defect": "picture_area — the 480×404 picture placed unscaled and centred inside a 1280×720 black canvas (+400+158): the padded export a phone clip gets when it is dropped on a 720p timeline",
+      "command": "ffmpeg -v error -y -i zach_sain_v1_demo.mp4 -vf pad=1280:720:400:158:black -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart zach_sain_v1_padded.mp4",
+      "edits": [
+        "no trim, no frame-rate change, no scaling, no mis-centering: 1800 frames, 30 fps, timestamps as the base",
+        "video re-encoded once (x264 crf 18, 1 thread); inside the picture the pixels differ from the base by the compression pass only (frame 900: mean 0.86/255, p99 5/255)",
+        "audio stream copied — decoded MD5 identical to the base (279c1861…)"
+      ],
+      "time_range": "00:00:00 → 00:01:00 (60 s — the whole base, untrimmed)"
+    },
+    "note": "SHA-256 of the derived source (work/midtown_zach_sain_v1_padded/source.key, the matte-cache key). This is a controlled demonstration input: the defect was injected on purpose (README, Polished demo vs evaluation corpus). The clean base is the demo's 'zach' clip; it is unchanged."
+  },
+  "archive": {
+    "workdir": "work/midtown_zach_sain_v1_padded",
+    "source": "zach_sain_v1_padded.mp4",
+    "artifacts": {
+      "attempt_1": {
+        "video": "zach_sain_v1_padded_red_v1.mp4",
+        "composite": "comp"
+      }
+    }
+  },
+  "visual": {
+    "pillars": 0.3125,
+    "head_y": 0.012,
+    "shoulder_span": 0.227,
+    "subject_height": 0.28,
+    "wardrobe": "#2b2726",
+    "wardrobe_luma": 0.173,
+    "skin": "#e8b19e",
+    "hair": "#473f3c",
+    "room": "#a53436",
+    "room_accent": "#dac9b5",
+    "key_side": "left"
+  }
+}

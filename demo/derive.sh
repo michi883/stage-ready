@@ -59,9 +59,20 @@ SRC3=zach_sain_v1.mov; DST3=zach_sain_v1_demo.mp4
 CMD3="ffmpeg -v error -y -ss 15 -t 60 -i $SRC3 -vf setpts=PTS-STARTPTS -af asetpts=PTS-STARTPTS -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart $DST3"
 if [ ! -f "$DST3" ]; then eval "$CMD3"; fi
 
-python3 - "$OUT" "$SRC" "$(sha "$SRC")" "$DST" "$(sha "$DST")" "$CMD" "$FFV" "$SRC2" "$(sha "$SRC2")" "$DST2" "$(sha "$DST2")" "$CMD2" "$SRC3" "$(sha "$SRC3")" "$DST3" "$(sha "$DST3")" "$CMD3" <<'EOF'
+# ---- zach_padded: the controlled repair demonstration (polished demo) -----------------------------
+# A demo input whose defect is injected on purpose, on a base that verifies on its own: Zach's demo
+# recording (zach_sain_v1_demo.mp4, every gate on the first pass, separation 2.37×) placed unscaled
+# and centred inside a 1280×720 black canvas — the padded export a phone clip gets when it is dropped
+# on a 720p timeline. Nothing inside the picture is scaled, moved, trimmed or retimed; the video is
+# re-encoded once (the pad needs a new frame), the audio stream is copied. This is not a naturally
+# occurring defect and is never presented as one (README, "Polished demo vs evaluation corpus").
+SRC4=zach_sain_v1_demo.mp4; DST4=zach_sain_v1_padded.mp4
+CMD4="ffmpeg -v error -y -i $SRC4 -vf pad=1280:720:400:158:black -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart $DST4"
+if [ ! -f "$DST4" ]; then eval "$CMD4"; fi
+
+python3 - "$OUT" "$SRC" "$(sha "$SRC")" "$DST" "$(sha "$DST")" "$CMD" "$FFV" "$SRC2" "$(sha "$SRC2")" "$DST2" "$(sha "$DST2")" "$CMD2" "$SRC3" "$(sha "$SRC3")" "$DST3" "$(sha "$DST3")" "$CMD3" "$SRC4" "$(sha "$SRC4")" "$DST4" "$(sha "$DST4")" "$CMD4" <<'EOF'
 import json, sys, datetime
-out, src, ssha, dst, dsha, cmd, ffv, src2, ssha2, dst2, dsha2, cmd2, src3, ssha3, dst3, dsha3, cmd3 = sys.argv[1:]
+out, src, ssha, dst, dsha, cmd, ffv, src2, ssha2, dst2, dsha2, cmd2, src3, ssha3, dst3, dsha3, cmd3, src4, ssha4, dst4, dsha4, cmd4 = sys.argv[1:]
 d = {"note": "Derived inputs for the evaluation corpus. The polished demo runs on the three archived recordings untouched (Sandy, Ethel, Zach).",
      "ffmpeg": ffv, "derived": {}}
 try:
@@ -82,12 +93,20 @@ d["derived"]["zach_demo"] = {"role": "polished demo candidate (Zach)", "original
                              "edits": ["alternate real take (zach_sain_v1.mov, mint trousers, crown inside the picture)", "trim 15 s → 75 s", "30 fps unchanged; timestamps zeroed (setpts/asetpts) so the frame count is unambiguous — 1800 by the container, by decoding, and by the pipeline's demux", "container rotation (180°) baked into the pixels by the re-encode — the picture is unchanged", "video re-encoded once (x264 crf 18, 1 thread)", "audio re-encoded AAC 160k (the .mov audio is not MP4-compatible as-is)"],
                              "rejected_candidate": {"note": "the same excerpt without the timestamp zeroing: the source decodes to 1800 frames but the pipeline's demux emitted 1801 (a duplicate at t=0), so the render had 1801 — caught by the live frame-count gate on AWS (FFmpeg decoder: 1801 ≠ 1800) while the local check, which counts through AVFoundation, read 1801 = 1801. Not used."},
                              "derived_on": datetime.date.today().isoformat()}
+d["derived"]["zach_padded"] = {"role": "polished demo: the controlled repair demonstration (Zach, padded)", "kind": "controlled demo input — the defect is injected on purpose",
+                               "original": src4, "original_sha256": ssha4, "original_role": "the clean base: Zach's demo recording, verified on its own (2.37×, head 0.7 %, 1800 frames) before the defect was injected",
+                               "output": dst4, "output_sha256": dsha4, "time_range": "00:00:00 → 00:01:00 (60 s — the whole base, untrimmed)", "command": cmd4,
+                               "injected_defect": "picture_area: the 480×404 picture placed unscaled and centred inside a 1280×720 black canvas (+400+158)",
+                               "edits": ["no trim, no frame-rate change, no scaling, no mis-centering — 1800 frames, 30 fps, timestamps as the base", "video re-encoded once (x264 crf 18, 1 thread); inside the picture the pixels differ from the base by the compression pass only (frame 900: mean 0.86/255, p99 5/255)", "audio stream copied (decoded MD5 identical to the base)"],
+                               "measured": "2026-09-20, real pipeline + live loop (Lambda + Bedrock): inspect ✗ picture_area only → fix.reframe crop 480:404:400:158, head_target 0.334 unchanged, 0 pixels invented → re-inspect passes → process.standard → verify ✓ separation 2.36×, matte 102 %, head 0.7 % / 1.9 px, 1800 frames, audio equal → deliver",
+                               "derived_on": datetime.date.today().isoformat()}
 d["evaluation_corpus"] = {"sandy_hackett_v2.mp4": "untouched — walks into a close-up; live result 2026-09-20: fix holds, verify fails head spread 2.9 % / drift 5.3 px → reshoot",
                           "zach_sain_v2.mov": "untouched — black shirt on the red wall; live result 2026-09-20: separation 1.00× → 1.45× at the bounds → reshoot",
                           "ethel_chadwick_v2.mp4": "untouched — the demo's Ethel is this recording",
                           "michi_sample_v1.mp4": "derived — the near-threshold pass (1.51×)"}
 d["demo_lineup"] = {"sandy": "sandy_hackett_v2.mp4, untouched (fix → caught → reshoot); the derived excerpt sandy_hackett_v2_demo.mp4 failed the head gates and is evaluation corpus (demo/eval/corpus/sandy_excerpts)",
-                    "ethel": "archived recording, unchanged", "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass"}
+                    "ethel": "archived recording, unchanged", "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass",
+                    "zach_padded": "zach_sain_v1_padded.mp4 (controlled: see derived.zach_padded) — ran 2026-09-20, fix → verified; lineup placement pending"}
 json.dump(d, open(out, "w"), indent=2, ensure_ascii=False); open(out, "a").write("\n")
 print(f"{dst}: {dsha[:16]}…  from {src}: {ssha[:16]}…")
 EOF

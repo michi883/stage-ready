@@ -1,0 +1,144 @@
+{
+  "target": "fixed",
+  "findings": [
+    {
+      "id": "picture_area",
+      "label": "Picture area",
+      "status": "pass",
+      "value": {
+        "w": 480,
+        "h": 404,
+        "x": 0,
+        "y": 0
+      },
+      "unit": "px",
+      "threshold": "fills the 1280×720 file",
+      "confidence": 1.0,
+      "frames": "sampled every 30th frame (60 of 1800)",
+      "detail": "The recorded picture is 480×404 inside a 1280×720 file, at +400+158 — cropped to the picture.",
+      "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+      "id": "pose_coverage",
+      "label": "Pose coverage",
+      "status": "pass",
+      "value": 1.0,
+      "unit": "fraction of frames",
+      "threshold": {
+        "op": ">=",
+        "value": 0.6
+      },
+      "confidence": 1.0,
+      "frames": "1800 / 1800",
+      "detail": "A body pose on 100 % of frames.",
+      "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+      "id": "one_subject",
+      "label": "One subject",
+      "status": "pass",
+      "value": 1.0,
+      "unit": "fraction of frames",
+      "threshold": {
+        "op": ">=",
+        "value": 0.95
+      },
+      "confidence": 1.0,
+      "frames": "0 frames off-subject (0 by size, 0 by position)",
+      "detail": "The same subject, of the same size, in the same place, on 100.0 % of frames.",
+      "tool": "vision.pose_qc"
+    },
+    {
+      "id": "subject_size",
+      "label": "Subject size on canvas",
+      "status": "pass",
+      "value": {
+        "p50": 0.338,
+        "p95": 0.344
+      },
+      "unit": "shoulder span / canvas width",
+      "threshold": {
+        "op": "<=",
+        "value": 0.55
+      },
+      "confidence": 1.0,
+      "frames": "all frames",
+      "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+      "tool": "vision.track.dry_solve (OpenCV 5)"
+    },
+    {
+      "id": "distance_steady",
+      "label": "Distance steady",
+      "status": "pass",
+      "value": 1.06,
+      "unit": "apparent size p95/p5",
+      "threshold": {
+        "op": "<=",
+        "value": 1.35
+      },
+      "confidence": 1.0,
+      "frames": "all frames",
+      "detail": "Apparent size steady to 1.06×.",
+      "tool": "vision.pose_qc"
+    },
+    {
+      "id": "headroom",
+      "label": "Headroom",
+      "status": "warn",
+      "value": {
+        "crown_cut_frames": 0.34
+      },
+      "unit": "fraction of frames with the crown outside the picture",
+      "threshold": {
+        "recommended": [
+          0.05,
+          0.12
+        ]
+      },
+      "confidence": 1.0,
+      "frames": "all frames",
+      "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded.",
+      "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
+      "id": "face_exposure",
+      "label": "Face exposure",
+      "status": "warn",
+      "value": 0.8,
+      "unit": "exposure gain toward the 0.46 target",
+      "threshold": {
+        "target": 0.46,
+        "clamp": [
+          0.8,
+          1.25
+        ]
+      },
+      "confidence": 1.0,
+      "frames": "median over the take",
+      "detail": "Face luma 0.729 asked for ×0.36 and was held at ×0.80 — the recording is over-lit for the stage.",
+      "tool": "vision.grade_qc (OpenCV 5)"
+    },
+    {
+      "id": "key_direction",
+      "label": "Key direction",
+      "status": "info",
+      "value": 1.0,
+      "unit": "silhouette L/R luma ratio",
+      "threshold": {
+        "flat_below": 1.08
+      },
+      "confidence": 1.0,
+      "frames": "median over the take",
+      "detail": "Flat-lit (L 0.285 / R 0.284); the stage convention stands.",
+      "tool": "vision.grade_qc (OpenCV 5)"
+    }
+  ],
+  "facts": {
+    "picture": "480×404 at +400+158",
+    "fps": 30.0,
+    "frames": 1800,
+    "duration_s": 60.0
+  },
+  "duration_ms": 4214,
+  "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded — python3 -m stage_ready record zach_padded (stage_ready.measure; every value computed from the archived files)"
+}

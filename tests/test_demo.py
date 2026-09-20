@@ -9,7 +9,7 @@ from stage_ready.models import Decision, VerifyResult, Gate
 from stage_ready.profile import Profile
 
 
-CLIPS = ("sandy", "ethel", "zach")
+CLIPS = ("sandy", "ethel", "zach", "zach_padded")
 
 
 def trace(clip_id, backend=None):
@@ -22,8 +22,9 @@ class DemoPaths(unittest.TestCase):
         "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),               # fix what can be fixed, then catch what cannot
         "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),     # adapt and recover
         "zach": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),                                # already suitable: verified on the first pass
+        "zach_padded": ("delivered", ["inspect", "fix", "inspect", "process", "verify ✓", "deliver"]),       # controlled input: fix what was injected, then verified
     }
-    DELIVERED = ("ethel", "zach")
+    DELIVERED = ("ethel", "zach", "zach_padded")
 
     def test_three_paths(self):
         for cid, (outcome, path) in self.EXPECTED.items():
@@ -129,7 +130,7 @@ class Recognition(unittest.TestCase):
 
     def test_lineup_order_and_fingerprints(self):
         clips = get_backend(demo=True).clips()
-        self.assertEqual([c.name for c in clips], ["Sandy Hackett", "Ethel Chadwick", "Zach Sain"])   # midtownshow.com/2040
+        self.assertEqual([c.id for c in clips], ["sandy", "ethel", "zach", "zach_padded"])   # midtownshow.com/2040 + the controlled input (lineup placement pending)
         for c in clips:
             hashes = c.recognize.get("sha256")
             for x in ([hashes] if isinstance(hashes, str) else hashes):

@@ -1,0 +1,19 @@
+{
+  "action": "deliver",
+  "reasoning": "Every gate passes on the first attempt: the matte holds 102 % of the second opinion's head width, head height held to 0.7 % of the output with 1.9 px of drift, 1800 frames and the audio bit-identical to the source. Separation is 2.36× against 1.5 — the shirt sits in the curtain's luminance, but the trousers, the face and the hands carry the outline. The crown cut on 34 % of frames and the ×0.80 exposure hold are warnings for the report, not gates. Nothing to change and nothing to retry; deliver, with two capture notes: export without padding, and give the crown headroom.",
+  "cites": [
+    "pose_coverage",
+    "one_subject",
+    "matte_extent",
+    "separation",
+    "head_spread",
+    "head_drift",
+    "frame_count",
+    "audio_md5",
+    "headroom",
+    "face_exposure"
+  ],
+  "confidence": 0.95,
+  "model": "cached",
+  "duration_ms": 6400
+}

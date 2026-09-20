@@ -1,0 +1,17 @@
+{
+  "action": "fix",
+  "strategy": "fix.reframe",
+  "reasoning": "One finding outside the profile, and it is about the file, not the performer: the recorded picture is 480×404 inside a 1280×720 file, at +400+158 — black padding on all four sides that would be framed as if it were picture. The allowed fix addresses exactly this — crop to the measured picture area, one-sidedly, inventing nothing. Everything else already passes: a pose on 100 % of frames, one subject, the shoulders at 34 % of the canvas (p95 34 %) under the 55 % cap, apparent size steady to 1.06×. The crown leaving the picture on 34 % of frames and the face held at ×0.80 are recorded-content limits for the report; no fixer changes what was recorded. Fix first, re-inspect, then process; if a later verification fails on a gate no strategy addresses, the exit is a reshoot.",
+  "cites": [
+    "picture_area",
+    "subject_size",
+    "pose_coverage",
+    "one_subject",
+    "distance_steady",
+    "headroom",
+    "face_exposure"
+  ],
+  "confidence": 0.94,
+  "model": "cached",
+  "duration_ms": 5200
+}
