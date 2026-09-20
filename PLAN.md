@@ -203,20 +203,21 @@ small delta and we already work in measurements. Skip it the moment it competes 
   section and no evaluation.
 - **Build, deploy and test instructions with pinned dependencies** — verified from a clean clone.
 
-## The demo lineup — 2026-09-20 (final, user's decision): Sandy, Ethel, Zach; the padded case by deep link
+## The demo lineup — 2026-09-20 (final, user's decision): Brian (padded) → Ethel → Zach
 
 Measured with the live OpenCV 5 measurer over every archived recording (`demo-corpus`, memory).
-The picker is the show's billing — Sandy → Ethel → Zach — three agent behaviours, each the path
-its input's own numbers produce, the behaviour named first on the card (`demo/lineup.json`). A
-reviewer's interim lineup (padded Zach → Ethel → Zach, two Zachs) was deployed for an hour on
-2026-09-20 and reverted at the user's request; the padded case stays replayable by id.
+The picker is three performers and three behaviours, the behaviour named first on the card
+(`demo/lineup.json`). The user's requirements, in order: Sandy's video on the left (his only honest
+path is a reshoot, and a delivery would need a pipeline knob the user declined as complexity),
+then "who else if not Zach" → **Brian**. Sandy and the padded Zach stay replayable by deep link.
 
 | # | recording | path | behaviour |
 |---|---|---|---|
-| 1 | **Sandy Hackett** — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot (cause first: distance) | **FIXED · CAUGHT** |
+| 1 | **Brian Shirley, padded** — his untouched recording (re-verified on its own with today's pipeline: 2.91×, head 0.7 %, 1285 frames) placed unscaled inside a 2560×1440 black canvas; one injected defect; provenance on the card, source card and Details (`demo/derived.json`) | inspect ✗ picture_area → fix.reframe (crop 1920:1080:320:180, head target unchanged, 0 px invented) → inspect ✓ → process → verify ✓ **2.90×**, matte 100 %, 0.7 % / 1.2 px → deliver (warn: under-lit ×1.25) | **FIXED · VERIFIED** |
 | 2 | **Ethel Chadwick** — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **ADAPTED · RECOVERED** |
 | 3 | **Zach Sain** — a derived excerpt (15–75 s) of his other real take `zach_sain_v1.mov` (mint trousers) | inspect (warn: crown cut 33 %, over-lit) → process → verify ✓ **2.37×** → deliver | **VERIFIED · FIRST PASS** |
-| — | **Zach, padded** (`?clip=zach_padded`, not in the picker) — the clean excerpt inside a 1280×720 black canvas, one injected defect, provenance on the card, source card and Details | inspect ✗ picture_area → fix.reframe (crop 480:404:400:158, head target unchanged, 0 px invented) → inspect ✓ → process → verify ✓ **2.36×** → deliver | **FIXED · VERIFIED** |
+| — | **Sandy Hackett** (`?clip=sandy`) — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot | **FIXED · CAUGHT** |
+| — | **Zach, padded** (`?clip=zach_padded`) — the same construction on Zach's excerpt | inspect ✗ picture_area → fix → inspect ✓ → process → verify ✓ 2.36× → deliver | **FIXED · VERIFIED** |
 
 Why the repair-success case is not Sandy: no Sandy source verifies on its own. v1 — Apple Vision
 finds the seated close-up on 6 % of frames (the pipeline refuses); v2 — the crown is cut on 76 %,
@@ -234,7 +235,7 @@ reshoot) and Michi's near-threshold sample (1.51×) are in the corpus too.
 | the loop running on a real recording | step 2 (OpenCV 5 computing it live) — INSPECT/VERIFY live since 2026-09-19; Michi's sample is the clean run |
 | Ethel's failed gate changing the agent's next action | **step 0**, then step 3 (Bedrock deciding) |
 | the delivered output with its numbers | step 0 |
-| the other exit — a reshoot request | nothing — Sandy's path is one (in the demo, and live 2026-09-20); `&budget=0` shows Ethel's |
+| the other exit — a reshoot request | Sandy's path (`?clip=sandy`, and live 2026-09-20); `&budget=0` shows Ethel's in the picker |
 | "a second destination is a second JSON file" | step 7 |
 | architecture: OpenCV 5 + AWS | steps 2, 3, diagram |
 | results and limitations | steps 5, 6 |

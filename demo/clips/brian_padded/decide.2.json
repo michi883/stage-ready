@@ -1,0 +1,17 @@
+{
+  "action": "process",
+  "strategy": "process.standard",
+  "reasoning": "After the crop every gate passes: the picture is the whole 1920×1080 file, the pose holds on 100 % of frames, one subject, shoulders 35 % of the canvas (p95 36 %) at the head_target floor, apparent size steady to 1.05×, the crown inside on every frame. The one warning — the face held at ×1.25 — is a limit of the recording, not a defect to fix. No attempt has been made (reprocesses_used 0 of a budget of 2), so the standard Red Curtain composite is the first thing to try; if verification then fails on separation or the matte, the separation-targeted retry is still within budget.",
+  "cites": [
+    "picture_area",
+    "pose_coverage",
+    "one_subject",
+    "subject_size",
+    "distance_steady",
+    "headroom",
+    "face_exposure"
+  ],
+  "confidence": 0.95,
+  "model": "cached",
+  "duration_ms": 6100
+}

@@ -1,0 +1,93 @@
+{
+  "provenance": "recorded from the archived run: work/midtown_brian_shirley_v2_padded — seed_pick.log, matte.key, track.log, crown.log, params.txt; stage durations from the workdir's file times (python3 -m stage_ready record)",
+  "artifact": "attempt_1",
+  "duration_ms": 944470,
+  "stages": [
+    {
+      "id": "seed",
+      "label": "Seed mask",
+      "tool": "PersonMatte + pick_seed.py + clean_seed.py",
+      "duration_ms": 1244,
+      "summary": "Vision on 17 candidate frames; seed from frame 341 (crown whole, head 471 px, coverage 18.2 %)."
+    },
+    {
+      "id": "matte",
+      "label": "Video matte",
+      "tool": "MatAnyone 2 (local MPS)",
+      "duration_ms": 774640,
+      "cached": true,
+      "summary": "1285 mattes propagated both ways from frame 341 — keyed on source SHA-256 + seed SHA-256 (matte.key); a repeat run is a cache hit."
+    },
+    {
+      "id": "crown",
+      "label": "Crown completion",
+      "tool": "complete_crown.py",
+      "duration_ms": 11108,
+      "summary": "The crown is inside the picture on every frame — nothing to complete."
+    },
+    {
+      "id": "track",
+      "label": "Tracked reframe solve",
+      "tool": "track_frame.py",
+      "duration_ms": 5542,
+      "summary": "head_target 0.334 — the floor, unchanged; scale 1.275..1.289 (median 1.279); head height spread 1.9 % of source → 0.7 % of output; cut off at the frame bottom on 100 % of frames.",
+      "params": {
+        "head_target": 0.334,
+        "scale_min": 1.275,
+        "scale_max": 1.289,
+        "scale_median": 1.279
+      }
+    },
+    {
+      "id": "warp",
+      "label": "Reframe to canvas",
+      "tool": "warp.py",
+      "duration_ms": 9732,
+      "summary": "1080×1920, one resample."
+    },
+    {
+      "id": "grade",
+      "label": "Measured grade",
+      "tool": "auto_grade.py",
+      "duration_ms": 909,
+      "summary": "keydx=1 rimdx=6 fgexp=1.25 — measured off the recording, not typed.",
+      "params": {
+        "keydx": 1.0,
+        "rimdx": 6.0,
+        "fgexp": 1.25
+      }
+    },
+    {
+      "id": "composite",
+      "label": "Composite",
+      "tool": "Composite",
+      "duration_ms": 134484,
+      "summary": "1285 frames on the Red Curtain plate — light wrap 0.5, rim 0.28."
+    },
+    {
+      "id": "encode",
+      "label": "Encode",
+      "tool": "ffmpeg",
+      "duration_ms": 6811,
+      "summary": "H.264 CRF 20, faststart, source audio copied."
+    }
+  ],
+  "params": {
+    "look": "red_curtain_grade",
+    "keydx": 1.0,
+    "rimdx": 6.0,
+    "fgexp": 1.25,
+    "rimamt": 0.28,
+    "lwamt": 0.5,
+    "shadow_lift": 0.0
+  },
+  "output": {
+    "canvas": [
+      1080,
+      1920
+    ],
+    "frames": 1285,
+    "head_target": 0.334,
+    "scale_median": 1.279
+  }
+}

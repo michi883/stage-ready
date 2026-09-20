@@ -9,7 +9,7 @@ from stage_ready.models import Decision, VerifyResult, Gate
 from stage_ready.profile import Profile
 
 
-CLIPS = ("sandy", "ethel", "zach", "zach_padded")
+CLIPS = ("sandy", "ethel", "zach", "zach_padded", "brian_padded")
 
 
 def trace(clip_id, backend=None):
@@ -23,8 +23,9 @@ class DemoPaths(unittest.TestCase):
         "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),     # adapt and recover
         "zach": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),                                # already suitable: verified on the first pass
         "zach_padded": ("delivered", ["inspect", "fix", "inspect", "process", "verify ✓", "deliver"]),       # controlled input: fix what was injected, then verified
+        "brian_padded": ("delivered", ["inspect", "fix", "inspect", "process", "verify ✓", "deliver"]),      # the same construction on Brian — the left card
     }
-    DELIVERED = ("ethel", "zach", "zach_padded")
+    DELIVERED = ("ethel", "zach", "zach_padded", "brian_padded")
 
     def test_three_paths(self):
         for cid, (outcome, path) in self.EXPECTED.items():
@@ -131,18 +132,20 @@ class Recognition(unittest.TestCase):
 
     def test_lineup_order_and_fingerprints(self):
         clips = get_backend(demo=True).clips()
-        self.assertEqual([c.id for c in clips], ["sandy", "ethel", "zach", "zach_padded"])   # everything replayable, in billing order
-        # the polished demo (demo/lineup.json): the show's three, in this order; the padded case stays replayable, not offered
+        self.assertEqual([c.id for c in clips], ["sandy", "ethel", "zach", "brian_padded", "zach_padded"])   # everything replayable, in billing order
+        # the polished demo (demo/lineup.json): three performers, three behaviours; Sandy and the padded Zach stay replayable, not offered
         lineup = get_backend(demo=True).clips(lineup=True)
-        self.assertEqual([c.id for c in lineup], ["sandy", "ethel", "zach"])                   # the show's billing: midtownshow.com/2040
+        self.assertEqual([c.id for c in lineup], ["brian_padded", "ethel", "zach"])            # three performers, three behaviours
         self.assertEqual([self.EXPECTED_PATHS[c.id] for c in lineup],
-                         [["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"],
+                         [["inspect", "fix", "inspect", "process", "verify ✓", "deliver"],
                           ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"],
                           ["inspect", "process", "verify ✓", "deliver"]])
-        self.assertEqual(trace("zach_padded")[-1]["outcome"], "delivered")                    # the controlled repair case, replayable by id
+        self.assertEqual(trace("sandy")[-1]["outcome"], "reshoot")                            # the natural failure case, replayable by id
+        self.assertEqual(trace("zach_padded")[-1]["outcome"], "delivered")                    # the same construction on Zach, replayable by id
         for c in lineup:
             self.assertTrue(c.provenance, c.id)                                                # every offered input says where it comes from
-        self.assertIn("Controlled demo input", get_backend(demo=True).clip("zach_padded").provenance)
+        for cid in ("brian_padded", "zach_padded"):
+            self.assertIn("Controlled demo input", get_backend(demo=True).clip(cid).provenance)
         for c in clips:
             hashes = c.recognize.get("sha256")
             for x in ([hashes] if isinstance(hashes, str) else hashes):

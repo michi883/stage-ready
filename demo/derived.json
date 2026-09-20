@@ -77,13 +77,31 @@
       ],
       "measured": "2026-09-20, real pipeline + live loop (Lambda + Bedrock): inspect ✗ picture_area only → fix.reframe crop 480:404:400:158, head_target 0.334 unchanged, 0 pixels invented → re-inspect passes → process.standard → verify ✓ separation 2.36×, matte 102 %, head 0.7 % / 1.9 px, 1800 frames, audio equal → deliver",
       "derived_on": "2026-09-20"
+    },
+    "brian_padded": {
+      "role": "polished demo: the controlled repair demonstration (Brian, padded) — the left card",
+      "kind": "controlled demo input — the defect is injected on purpose",
+      "original": "brian_shirley_v2.mp4",
+      "original_sha256": "53553848a13c7169d719fc4fe68ce02efd42354d4718f1fcaea033d44403055a",
+      "original_role": "the clean base: the untouched recording, verified on its own with today's pipeline before the defect was injected (2026-09-20: separation 2.91×, matte 100 %, head 0.7 % / 1.2 px, 1285 frames, audio equal; one warning — under-lit, grade held at ×1.25)",
+      "output": "brian_shirley_v2_padded.mp4",
+      "output_sha256": "2aa94922f1700dea2e79434b119ccef8b63bd127088087ac14227328b0f4ad63",
+      "time_range": "00:00:00 → 00:00:42.8 (the whole recording, untrimmed)",
+      "command": "ffmpeg -v error -y -i brian_shirley_v2.mp4 -vf pad=2560:1440:320:180:black -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart brian_shirley_v2_padded.mp4",
+      "injected_defect": "picture_area: the 1920×1080 picture placed unscaled and centred inside a 2560×1440 black canvas (+320+180)",
+      "edits": [
+        "no trim, no frame-rate change, no scaling, no mis-centering — 1285 frames, 30 fps, timestamps as the source",
+        "video re-encoded once (x264 crf 18, 1 thread); inside the picture the pixels differ from the source by the compression pass only",
+        "audio stream copied (decoded MD5 identical to the source)"
+      ],
+      "derived_on": "2026-09-20"
     }
   },
   "demo_lineup": {
-    "sandy": "sandy_hackett_v2.mp4, untouched (fix → caught → reshoot); the derived excerpt sandy_hackett_v2_demo.mp4 failed the head gates and is evaluation corpus (demo/eval/corpus/sandy_excerpts)",
+    "brian_padded": "brian_shirley_v2_padded.mp4 (controlled: see derived.brian_padded) — the left card, fix → verified",
     "ethel": "archived recording, unchanged",
     "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — ran 2026-09-20, verified first pass",
-    "zach_padded": "zach_sain_v1_padded.mp4 (controlled: see derived.zach_padded) — ran 2026-09-20, fix → verified; lineup placement pending"
+    "not in the picker": "sandy (untouched, fix → caught → reshoot — the natural failure case; ?clip=sandy), zach_padded (the same construction on Zach; ?clip=zach_padded)"
   },
   "evaluation_corpus": {
     "sandy_hackett_v2.mp4": "untouched — walks into a close-up; live result 2026-09-20: fix holds, verify fails head spread 2.9 % / drift 5.3 px → reshoot",

@@ -1,0 +1,59 @@
+{
+  "strategy": "fix.reframe",
+  "artifact": "fixed",
+  "stages": [
+    {
+      "id": "band",
+      "label": "Crop to picture area",
+      "tool": "vision.detect_band → crop",
+      "duration_ms": 7982,
+      "cached": false,
+      "reused": false,
+      "summary": "crop=1920:1080:320:180 — the 640 dead columns and 360 dead rows are gone; the picture bottom is now the frame bottom.",
+      "params": {
+        "crop": [
+          1920,
+          1080,
+          320,
+          180
+        ]
+      }
+    },
+    {
+      "id": "size_cap",
+      "label": "Size-capped reframe solve",
+      "tool": "vision.track.dry_solve (SIZE_CAP, HEAD_TARGET_MAX)",
+      "duration_ms": 0,
+      "cached": false,
+      "reused": false,
+      "summary": "Performer reaches 36 % of canvas width at head_target 0.334 — under the 55 % cap; the floor stands.",
+      "params": {
+        "head_target_floor": 0.334,
+        "head_target": 0.334,
+        "head_target_max": 0.55,
+        "size_cap": 0.55
+      }
+    }
+  ],
+  "changes": {
+    "picture": {
+      "before": "1920×1080 at +320+180 in a 2560×1440 file",
+      "after": "1920×1080, the whole picture"
+    },
+    "head_target": {
+      "before": 0.334,
+      "after": 0.334
+    },
+    "shoulder_span_p50": {
+      "before": 0.346,
+      "after": 0.346
+    },
+    "shoulder_span_p95": {
+      "before": 0.359,
+      "after": 0.359
+    },
+    "pixels_invented": 0
+  },
+  "duration_ms": 7982,
+  "provenance": "measured: OpenCV 5 over work/midtown_brian_shirley_v2_padded — detect_band for the crop, the size-capped dry solve for the head target (python3 -m stage_ready record brian_padded --fixed)"
+}

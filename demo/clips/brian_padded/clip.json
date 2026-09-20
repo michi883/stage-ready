@@ -1,0 +1,70 @@
+{
+  "id": "brian_padded",
+  "name": "Brian Shirley",
+  "order": 4,
+  "brief": "Misframed, repairable — the real 1920×1080 picture sits unscaled inside a 2560×1440 export, black on every side; the performer is untouched.",
+  "source": {
+    "width": 2560,
+    "height": 1440,
+    "picture": "1920×1080 at +320+180 (padded on all four sides)",
+    "fps": 30.0,
+    "duration_s": 42.8,
+    "frames": 1285,
+    "room": "bedroom, a bright window behind",
+    "wardrobe": "grey-blue t-shirt",
+    "framing": "head to thigh, crown inside the picture; the picture is 56 % of the file",
+    "audio": "48 kHz AAC stereo"
+  },
+  "fixture": "brian_shirley_v2_padded (controlled demo input: the untouched recording brian_shirley_v2.mp4 padded into a 2560×1440 canvas — demo/derived.json; Red Curtain archive run 2026-09-20)",
+  "stills": {
+    "source": "source.jpg",
+    "attempt_1": "attempt_1.jpg"
+  },
+  "videos": {
+    "source": "source.mp4",
+    "attempt_1": "attempt_1.mp4"
+  },
+  "recognize": {
+    "sha256": "2aa94922f1700dea2e79434b119ccef8b63bd127088087ac14227328b0f4ad63",
+    "names": [
+      "brian_shirley_v2_padded.mp4"
+    ],
+    "derived_from": {
+      "file": "brian_shirley_v2.mp4 (the clean base: the untouched recording, verified on its own before the defect was injected)",
+      "sha256": "53553848a13c7169d719fc4fe68ce02efd42354d4718f1fcaea033d44403055a",
+      "time_range": "00:00:00 → 00:00:42.8 (the whole recording, untrimmed)",
+      "injected_defect": "picture_area — the 1920×1080 picture placed unscaled and centred inside a 2560×1440 black canvas (+320+180): the padded export a Full-HD clip gets when it is dropped on a QHD timeline",
+      "command": "ffmpeg -v error -y -i brian_shirley_v2.mp4 -vf pad=2560:1440:320:180:black -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart brian_shirley_v2_padded.mp4",
+      "edits": [
+        "no trim, no frame-rate change, no scaling, no mis-centering: 1285 frames, 30 fps, timestamps as the source",
+        "video re-encoded once (x264 crf 18, 1 thread); inside the picture the pixels differ from the source by the compression pass only",
+        "audio stream copied — decoded MD5 identical to the source (476199d8…)"
+      ]
+    },
+    "note": "SHA-256 of the derived source (work/midtown_brian_shirley_v2_padded/source.key, the matte-cache key). This is a controlled demonstration input: the defect was injected on purpose (README, Polished demo vs evaluation corpus). The untouched recording is the clean base and is not matched to it."
+  },
+  "provenance": "Controlled demo input derived from real performer footage by adding padding. Performer pixels and motion were not altered.",
+  "archive": {
+    "workdir": "work/midtown_brian_shirley_v2_padded",
+    "source": "brian_shirley_v2_padded.mp4",
+    "artifacts": {
+      "attempt_1": {
+        "video": "brian_shirley_v2_padded_red_v1.mp4",
+        "composite": "comp"
+      }
+    }
+  },
+  "visual": {
+    "pillars": 0.125,
+    "head_y": 0.03,
+    "shoulder_span": 0.2,
+    "subject_height": 0.27,
+    "wardrobe": "#7f97a3",
+    "wardrobe_luma": 0.55,
+    "skin": "#d9a98f",
+    "hair": "#c9b9a8",
+    "room": "#d9d4cc",
+    "room_accent": "#f2efe8",
+    "key_side": "right"
+  }
+}
