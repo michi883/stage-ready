@@ -14,7 +14,7 @@
       "value": 0.999, "unit": "fraction of frames", "threshold": { "op": ">=", "value": 0.95 },
       "confidence": 0.95, "frames": "2 frames off-subject", "detail": "Unchanged: 99.9 %.", "tool": "pose_qc.py" },
     { "id": "subject_size", "label": "Subject size on canvas", "status": "pass",
-      "value": { "p50": 0.442, "p95": 0.548 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
+      "value": { "p50": 0.443, "p95": 0.55 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
       "confidence": 1.0, "frames": "all frames",
       "detail": "At head_target 0.413 the shoulders span 44 % of the canvas (p95 held at the 55 % cap). Same head height for the whole clip.", "tool": "track_frame.py" },
     { "id": "distance_steady", "label": "Distance steady", "status": "warn",

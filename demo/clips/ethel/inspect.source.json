@@ -16,7 +16,7 @@
       "confidence": 1.0, "frames": "0 frames off-subject",
       "detail": "The same subject, of the same size, in the same place, on 100 % of frames.", "tool": "pose_qc.py" },
     { "id": "subject_size", "label": "Subject size on canvas", "status": "pass",
-      "value": { "p50": 0.338, "p95": 0.35 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
+      "value": { "p50": 0.339, "p95": 0.348 }, "unit": "shoulder span / canvas width", "threshold": { "op": "<=", "value": 0.55 },
       "confidence": 1.0, "frames": "all frames",
       "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %) — under the 55 % cap.", "tool": "track_frame.py (dry solve)" },
     { "id": "distance_steady", "label": "Distance steady", "status": "pass",

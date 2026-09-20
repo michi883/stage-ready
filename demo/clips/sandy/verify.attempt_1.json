@@ -103,7 +103,7 @@
   ],
   "measurements": {
     "head_target": 0.413,
-    "shoulder_span_p50": 0.442,
+    "shoulder_span_p50": 0.443,
     "separation": 1.72,
     "edge_luma_in": 0.227,
     "edge_luma_out": 0.132,

@@ -54,7 +54,7 @@
       "status": "pass",
       "value": {
         "p50": 0.338,
-        "p95": 0.344
+        "p95": 0.342
       },
       "unit": "shoulder span / canvas width",
       "threshold": {
@@ -63,7 +63,7 @@
       },
       "confidence": 1.0,
       "frames": "all frames",
-      "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+      "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
       "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -139,6 +139,6 @@
     "frames": 1800,
     "duration_s": 60.0
   },
-  "duration_ms": 4214,
+  "duration_ms": 4187,
   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded — python3 -m stage_ready record zach_padded (stage_ready.measure; every value computed from the archived files)"
 }

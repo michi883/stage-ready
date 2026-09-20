@@ -11,5 +11,5 @@
     { "id": "frame_count", "label": "Frame count = source", "status": "pass", "value": 1237, "threshold": 1237, "unit": "frames", "detail": "1237 = 1237.", "tool": "ffprobe" },
     { "id": "audio_md5", "label": "Audio MD5 = source", "status": "pass", "value": "equal", "threshold": "equal", "unit": "", "detail": "Decoded audio MD5 identical to the source.", "tool": "ffmpeg -f md5" }
   ],
-  "measurements": { "head_target": 0.334, "shoulder_span_p50": 0.338, "separation": 1.13, "edge_luma_in": 0.138, "edge_luma_out": 0.122, "head_spread": 0.013, "frames": 1237 }
+  "measurements": { "head_target": 0.334, "shoulder_span_p50": 0.339, "separation": 1.13, "edge_luma_in": 0.138, "edge_luma_out": 0.122, "head_spread": 0.013, "frames": 1237 }
 }

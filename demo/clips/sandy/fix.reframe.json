@@ -13,8 +13,8 @@
   "changes": {
     "picture": { "before": "1620×1080 at +150+0 in a 1920×1080 file", "after": "1620×1080, the whole picture" },
     "head_target": { "before": 0.334, "after": 0.413 },
-    "shoulder_span_p50": { "before": 0.501, "after": 0.442 },
-    "shoulder_span_p95": { "before": 0.622, "after": 0.548 },
+    "shoulder_span_p50": { "before": 0.503, "after": 0.443 },
+    "shoulder_span_p95": { "before": 0.624, "after": 0.55 },
     "pixels_invented": 0
   }
 }

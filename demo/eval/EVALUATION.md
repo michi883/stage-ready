@@ -116,7 +116,7 @@ Of 13 renders the linear pipeline ships, **5 fail a gate** it does not have; 2 o
 
 ## Limitations the set makes visible
 
-- **No gate measures motion continuity.** `gate_frozen_frames` — a delivery with 30 frames frozen, the count and the audio intact — is expected to pass every gate; if it does, it is counted above as a silently wrong delivery, because it is one. The fix is a gate, not a label.
+- **Known limitation — Stage Ready currently verifies frame count and visual quality but does not yet detect frozen/repeated-frame motion continuity.** `gate_frozen_frames` — a delivery with 30 frames frozen, the count and the audio intact — passes every gate and is counted above as a silently wrong delivery, because it is one. The label stays; the remedy is a gate, deliberately not added yet.
 - **VERIFY trusts the composite frames for the picture gates** (separation, matte extent, head height) and the delivered file for the count and the audio. A delivery whose frames were swapped after compositing is caught only if its count or audio changed.
 - **A recording the pipeline cannot matte is refused before the loop** (Apple Vision finds no reliable pose; two subjects) — an honest exit, but one the agent never sees; the refusal is scored as the reshoot exit.
 - **A crown cut on every frame makes the head-height gates blind.** `brian_crown_cut` delivers with head spread 0.1 % and drift 0.0 px — not because the head is still but because the matte's top is the picture edge on every frame and cannot move; the delivered video has a carved crown. `headroom` is a warning in the profile, so the loop delivers. The remedy is a gate on crown-cut frames, not a threshold change.

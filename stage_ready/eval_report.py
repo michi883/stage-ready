@@ -161,8 +161,9 @@ def write_report() -> Path:
              f"must not be delivered (the loop asked for a reshoot on each), and {n_recovered} were recovered by the loop's retry into a verified delivery. "
              f"The linear pipeline's silently wrong deliveries on this set: **{n_wrong}**; the loop's: 0 among these, plus the frozen-frames delivery both miss.\n")
     L.append("## Limitations the set makes visible\n")
-    L.append("- **No gate measures motion continuity.** `gate_frozen_frames` — a delivery with 30 frames frozen, the count and the audio intact — "
-             "is expected to pass every gate; if it does, it is counted above as a silently wrong delivery, because it is one. The fix is a gate, not a label.")
+    L.append("- **Known limitation — Stage Ready currently verifies frame count and visual quality but does not yet detect frozen/repeated-frame "
+             "motion continuity.** `gate_frozen_frames` — a delivery with 30 frames frozen, the count and the audio intact — passes every gate and is "
+             "counted above as a silently wrong delivery, because it is one. The label stays; the remedy is a gate, deliberately not added yet.")
     L.append("- **VERIFY trusts the composite frames for the picture gates** (separation, matte extent, head height) and the delivered file for the "
              "count and the audio. A delivery whose frames were swapped after compositing is caught only if its count or audio changed.")
     L.append("- **A recording the pipeline cannot matte is refused before the loop** (Apple Vision finds no reliable pose; two subjects) — an honest "

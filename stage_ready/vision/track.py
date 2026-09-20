@@ -152,11 +152,11 @@ class DrySolve:
     itself is not solved here."""
     head_target: float            # the profile's floor
     head_target_used: float       # after the cap — equal to the floor for a to-spec recording
-    span_p50: float               # shoulder span / canvas width at the floor, raw frames
-    span_p95: float
-    span_p50_used: float          # … at head_target_used
-    span_p95_used: float
-    widest: float                 # p95 of the smoothed ruler on canvas at the floor — what the cap tests
+    span_p50: float               # the subject-size ruler / canvas width at the floor: the shoulder span,
+    span_p95: float               #   smoothed over 0.5 s, the eye-to-shoulder drop standing in where the
+    span_p50_used: float          #   shoulders are not seen — ONE ruler, the same the cap is solved on,
+    span_p95_used: float          #   so the gate reads exactly what the fix promised (p95_used == cap when capped)
+    widest: float                 # == span_p95: kept for the fixtures and the fix's wording
     scale_median: float           # at head_target_used
     cut_frac: float               # frames on which the frame bottom cuts the silhouette
     frames: int
@@ -189,9 +189,18 @@ def dry_solve(matte_dir: str, pose: list[dict], canvas: tuple[int, int], fps: fl
             med_h = float(np.median(height_s))
             used = float(np.clip(1.0 - med_h * np.median(s0) * shrink / OH, head_target, head_target_max))
     s_used = OH * (1.0 - used) / height_s
-    ok = np.isfinite(span)
-    p50, p95 = (float(v) / OW for v in np.percentile(span[ok] * s0[ok], [50, 95])) if ok.any() else (float("nan"),) * 2
-    q50, q95 = (float(v) / OW for v in np.percentile(span[ok] * s_used[ok], [50, 95])) if ok.any() else (float("nan"),) * 2
+    # The size the gate reads is the size the cap was solved on: the same smoothed ruler, at the
+    # floor and at the head target actually used. (Reading the raw per-frame shoulder span here
+    # instead — as this did until 2026-09-20 — put a capped close-up 0.3 % over the cap the fix
+    # had just promised; the evaluation caught it.)
+    if np.isfinite(widest):
+        p50, p95 = (float(v) / OW for v in np.percentile(ruler_s * s0, [50, 95]))
+        q50, q95 = (float(v) / OW for v in np.percentile(ruler_s * s_used, [50, 95]))
+    else:                                            # too few frames carry a ruler: report what the raw span says
+        ok = np.isfinite(span)
+        p50, p95 = (float(v) / OW for v in np.percentile(span[ok] * s0[ok], [50, 95])) if ok.any() else (float("nan"),) * 2
+        q50, q95 = (float(v) / OW for v in np.percentile(span[ok] * s_used[ok], [50, 95])) if ok.any() else (float("nan"),) * 2
+        widest = p95
     return DrySolve(head_target=head_target, head_target_used=used, span_p50=p50, span_p95=p95,
                     span_p50_used=q50, span_p95_used=q95, widest=widest, scale_median=float(np.median(s_used)),
                     cut_frac=float(cutoff.mean()), frames=N)

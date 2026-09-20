@@ -294,13 +294,17 @@ What the set found, beyond the numbers:
   picture with black bars top and bottom, which INSPECT found and the label had not. Labels are set before a run and left as they were.
 - **The head-height gates go blind when the crown is cut on every frame** — the matte's top is the picture edge and cannot move, so a
   carved crown delivers at 0.1 % spread. `headroom` is a warning; it should be a gate above some fraction of frames.
-- **The size cap and the size gate measure with different rulers** (a smoothed shoulder span vs the raw p95); a close-up can land 0.3 %
-  over the cap after the fix. The fix is one ruler in both `track_frame.py` and the port, then re-rendering the capped recordings.
+- **The size cap and the size gate measured with different rulers** (a smoothed shoulder span vs the raw p95); a close-up landed 0.3 %
+  over the cap after the fix. **Fixed 2026-09-20**: the gate now reads the ruler the cap is solved on — the shoulder span smoothed over
+  0.5 s, the eye-to-shoulder drop standing in where the shoulders are not seen — at the floor and at the head target used, so a capped
+  recording re-inspects at exactly the cap. The pipeline's solve was already on that ruler; no render changed, and the fixtures moved by
+  at most 0.003.
 - **The agent reads the intake brief.** With the labels leaking through the brief, the agent reshot three recordings at its first decision,
   quoting the brief; blind, it takes the measured path. The evaluation runs blind; the demo's briefs are the show's intake notes and
   are worth knowing about as an input the agent trusts.
-- **No gate measures motion continuity** — thirty frozen frames pass every gate. That is the one silently wrong delivery on the set and it
-  is counted as one.
+- **Known limitation: Stage Ready currently verifies frame count and visual quality but does not yet detect frozen/repeated-frame
+  motion continuity.** Thirty frozen frames pass every gate — the one silently wrong delivery on the set, counted as one and left
+  in the set as such.
 
 ## Under the hood
 

@@ -110,6 +110,6 @@
     "head_drift_px": 1.9,
     "frames": 1800
   },
-  "duration_ms": 10590,
+  "duration_ms": 7697,
   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_demo, comp — python3 -m stage_ready record zach"
 }

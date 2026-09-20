@@ -157,11 +157,11 @@ class ArchiveMeasurer:
         p50, p95 = (d.span_p50_used, d.span_p95_used) if fixed else (d.span_p50, d.span_p95)
         ht = d.head_target_used if fixed else d.head_target
         ok = p95 <= ss["value"] + 1e-9
-        detail = (f"At head_target {ht:.3f} the shoulders span {_pct(p50)} of the canvas (p95 {_pct(p95)}) — "
+        detail = (f"At head_target {ht:.3f} the shoulders span {_pct(p50)} of the canvas (p95 {_pct(p95)}, the same smoothed ruler the size cap is solved on) — "
                   + (f"under the {_pct(ss['value'])} cap." if ok else
                      f"over the {_pct(ss['value'])} cap. Holding their size means moving the head down to {d.head_target_used:.3f}."))
         findings.append(Finding(id="subject_size", label=ss["label"], status="pass" if ok else "fail",
-                                value={"p50": round(p50, 3), "p95": round(p95, 3)} | ({} if ok else {"reach": round(d.widest, 3)}),
+                                value={"p50": round(p50, 3), "p95": round(p95, 3)},
                                 unit=ss["unit"].split(",")[0], threshold={"op": ss["op"], "value": ss["value"]}, frames="all frames",
                                 detail=detail, tool="vision.track.dry_solve (OpenCV 5)"))
 

@@ -102,7 +102,7 @@
   ],
   "measurements": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.346,
+    "shoulder_span_p50": 0.347,
     "separation": 2.9,
     "edge_luma_in": 0.344,
     "edge_luma_out": 0.119,
@@ -110,6 +110,6 @@
     "head_drift_px": 1.2,
     "frames": 1285
   },
-  "duration_ms": 16534,
+  "duration_ms": 17078,
   "provenance": "measured: OpenCV 5 over work/midtown_brian_shirley_v2_padded, comp — python3 -m stage_ready record brian_padded"
 }
