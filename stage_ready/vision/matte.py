@@ -61,6 +61,27 @@ def _performer(v, n, pose, thresh, cv2, np):
     return np.isin(lab, sorted(keep))
 
 
+def head_band_widths(matte_gray, opinion_bool, thresh: int = 32) -> "tuple[int, int] | None":
+    """(matte head width, opinion head width) in px over the head band — the top quarter of the
+    opinion's silhouette, at least 40 rows. None when the opinion is too small to compare."""
+    import numpy as np
+    ys = np.where(opinion_bool.any(1))[0]
+    if not len(ys):
+        return None
+    band = slice(ys.min(), ys.min() + max(40, int(0.25 * (opinion_bool.shape[0] - ys.min()))))
+    wa = int((matte_gray[band] > thresh).any(0).sum())
+    wb = int(opinion_bool[band].any(0).sum())
+    return (wa, wb) if wb >= 20 else None
+
+
+def performer_component(alpha, pose_row: dict | None, thresh: int = 32):
+    """An opinion's alpha reduced to the performer: the connected components the pose is standing in,
+    plus the largest — the cleanup `clean_seed.py` does before a seed is propagated."""
+    cv2 = require_cv2()
+    import numpy as np
+    return _performer(alpha, 1, [pose_row] if pose_row else [], thresh, cv2, np)
+
+
 def matte_extent(matte_dir: str, opinion_dir: str, pose: list[dict], thresh: int = 32) -> MatteQC:
     cv2 = require_cv2()
     import numpy as np
@@ -82,12 +103,10 @@ def matte_extent(matte_dir: str, opinion_dir: str, pose: list[dict], thresh: int
         clean = _performer(b, n, pose, thresh, cv2, np)
         if clean is None or not clean.any():
             continue
-        ys = np.where(clean.any(1))[0]
-        band = slice(ys.min(), ys.min() + max(40, int(0.25 * (b.shape[0] - ys.min()))))
-        wa = int((a[band] > thresh).any(0).sum())
-        wb = int(clean[band].any(0).sum())
-        if wb < 20:
+        w = head_band_widths(a, clean, thresh)
+        if w is None:
             continue
+        wa, wb = w
         ratios.append(wa / wb)
         rows.append((n, wa, wb))
     if not ratios:

@@ -68,13 +68,28 @@ def _frames_from_video(path, idx, cv2):
     cap.release()
 
 
+def edge_luma(comp_bgr, alpha_gray) -> "tuple[float, float] | None":
+    """Median BT.709 luma in the 9-px ring just inside the alpha edge and the ring just outside it,
+    for one frame; None when the rings are too small to trust."""
+    cv2 = require_cv2()
+    import numpy as np
+    BT709 = np.array([0.0722, 0.7152, 0.2126])
+    k = np.ones((9, 9), np.uint8)
+    body = (alpha_gray > 200).astype(np.uint8)
+    inner = (cv2.erode(body, k, iterations=1).astype(bool) ^ cv2.erode(body, k, iterations=2).astype(bool))
+    outer = (cv2.dilate(body, k, iterations=2).astype(bool) ^ cv2.dilate(body, k, iterations=1).astype(bool))
+    if inner.sum() < 200 or outer.sum() < 200:
+        return None
+    lum = comp_bgr.astype(np.float32) / 255.0 @ BT709
+    return float(np.median(lum[inner])), float(np.median(lum[outer]))
+
+
 def separation(composite: str, matte_dir: str, nsamp: int = 24) -> Separation:
     cv2 = require_cv2()
     import numpy as np
 
     from . import sample_indices
 
-    BT709 = np.array([0.0722, 0.7152, 0.2126])          # BGR, as OpenCV loads
     mattes = sorted(glob.glob(os.path.join(matte_dir, "*.png")))
     n = len(mattes)                                     # the warped matte is complete; the composite may be sampled
     if n == 0:
@@ -82,7 +97,6 @@ def separation(composite: str, matte_dir: str, nsamp: int = 24) -> Separation:
     idx = sample_indices(n, nsamp)
     frames = _frames_from_dir(composite, idx, cv2) if os.path.isdir(composite) else _frames_from_video(composite, idx, cv2)
 
-    k = np.ones((9, 9), np.uint8)
     inner_l, outer_l = [], []
     decoder = ""
     for i, c in frames:
@@ -94,14 +108,10 @@ def separation(composite: str, matte_dir: str, nsamp: int = 24) -> Separation:
             continue
         if a.shape[:2] != c.shape[:2]:
             raise ValueError(f"separation: matte {a.shape[:2]} and composite {c.shape[:2]} differ in size on frame {i + 1}")
-        body = (a > 200).astype(np.uint8)
-        inner = (cv2.erode(body, k, iterations=1).astype(bool) ^ cv2.erode(body, k, iterations=2).astype(bool))
-        outer = (cv2.dilate(body, k, iterations=2).astype(bool) ^ cv2.dilate(body, k, iterations=1).astype(bool))
-        if inner.sum() < 200 or outer.sum() < 200:
+        r = edge_luma(c, a)
+        if r is None:
             continue
-        lum = c.astype(np.float32) / 255.0 @ BT709
-        inner_l.append(float(np.median(lum[inner])))
-        outer_l.append(float(np.median(lum[outer])))
+        inner_l.append(r[0]); outer_l.append(r[1])
     if not inner_l:
         raise ValueError("separation: could not sample the silhouette edge")
 

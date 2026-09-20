@@ -3,14 +3,21 @@
     python -m stage_ready serve [--port 8765]        serve the UI and the API
     python -m stage_ready run  [sandy ethel zach] [--live]   print a run's trace as text
     python -m stage_ready trace [sandy ethel zach]           print a run's events as JSON lines
-    python -m stage_ready measure [sandy ethel zach] [--archive ~/mts] [--json]
+    python -m stage_ready measure [sandy ethel zach] [--archive ~/mts] [--json] [--opinion dnn]
                                     compute INSPECT and VERIFY with OpenCV 5 over the archived
-                                    workdirs and print every number next to its demo fixture
+                                    workdirs and print every number next to its demo fixture;
+                                    --opinion dnn uses the DNN segmenter as matte_extent's second opinion
     python -m stage_ready bundle --out <dir> [--archive ~/mts] [--dry-run] [clips…]
                                     build the judge bundle: the demo's media and the files
                                     `measure` reads, in the archive's layout, with a manifest
     python -m stage_ready bundle --install <dir> | --verify <dir>
                                     in a clone: link a bundle's media into demo/clips; check one
+    python -m stage_ready segcheck [clips] [--archive ~/mts] [--no-crop] [--json] [--model pphumanseg|u2net_human_seg]
+                                    the OpenCV 5 DNN SubjectSegmenter against the archive's Apple
+                                    Vision opinions: seed, matte-extent second opinion, separation
+    python -m stage_ready models [list | fetch <name>]
+                                    the DNN segmentation models: registered names, sources, hashes;
+                                    fetch downloads one into models/ and verifies its SHA-256
     python -m stage_ready record <clip> [--archive ~/mts] [--fixed] [--out DIR]
                                     write the clip's inspect/verify/process fixtures from the
                                     live measurement of its archived workdir (not by hand)
@@ -76,7 +83,7 @@ def _text(ev: dict) -> str:
     return f"    {t}: {json.dumps(ev)[:200]}"
 
 
-def _measure(ids: list[str], archive: str | None, as_json: bool) -> int:
+def _measure(ids: list[str], archive: str | None, as_json: bool, opinion: str = "vision") -> int:
     """The accept test for the OpenCV 5 port (PLAN.md step 2a): the live measurer's numbers
     beside the fixture's, for every finding and gate, with the disagreements marked."""
     from .backends.cached import CachedBackend, FixtureMissing
@@ -86,7 +93,7 @@ def _measure(ids: list[str], archive: str | None, as_json: bool) -> int:
 
     cv2 = require_cv2()
     demo = CachedBackend()
-    m = ArchiveMeasurer(archive)
+    m = ArchiveMeasurer(archive, opinion=opinion)
     profile = Profile.load()
     ids = ids or [c.id for c in demo.clips()]
     report: dict[str, Any] = {"opencv": cv2.__version__, "archive": str(m.root), "clips": {}}
@@ -200,11 +207,28 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("serve"); s.add_argument("--port", type=int, default=8765); s.add_argument("--host", default="127.0.0.1")
     r = sub.add_parser("run"); r.add_argument("clips", nargs="*"); r.add_argument("--live", action="store_true")
     t = sub.add_parser("trace"); t.add_argument("clips", nargs="*"); t.add_argument("--live", action="store_true")
-    m = sub.add_parser("measure"); m.add_argument("clips", nargs="*"); m.add_argument("--archive", default=None); m.add_argument("--json", action="store_true")
+    m = sub.add_parser("measure"); m.add_argument("clips", nargs="*"); m.add_argument("--archive", default=None); m.add_argument("--json", action="store_true"); m.add_argument("--opinion", default="vision", choices=["vision", "dnn"])
     b = sub.add_parser("bundle"); b.add_argument("clips", nargs="*"); b.add_argument("--out", default=None); b.add_argument("--archive", default=None)
     b.add_argument("--dry-run", action="store_true"); b.add_argument("--install", default=None); b.add_argument("--verify", default=None)
     r_ = sub.add_parser("record"); r_.add_argument("clip"); r_.add_argument("--archive", default=None); r_.add_argument("--fixed", action="store_true"); r_.add_argument("--out", default=None)
+    mo = sub.add_parser("models"); mo.add_argument("what", nargs="?", default="list", choices=["list", "fetch"]); mo.add_argument("name", nargs="?", default=None)
+    sc = sub.add_parser("segcheck"); sc.add_argument("clips", nargs="*"); sc.add_argument("--archive", default=None); sc.add_argument("--no-crop", action="store_true"); sc.add_argument("--json", action="store_true"); sc.add_argument("--model", default=None)
     a = ap.parse_args(argv)
+
+    if a.cmd == "models":
+        from .vision.segment import DEFAULT_MODEL, MODELS, MODELS_DIR, fetch, sha256_of
+        if a.what == "fetch":
+            p = fetch(a.name or DEFAULT_MODEL); print(f"  {p} ({p.stat().st_size / 1e6:.0f} MB, sha256 {sha256_of(p)[:16]}…)")
+            return 0
+        for name, spec in MODELS.items():
+            p = MODELS_DIR / spec["file"]
+            state = "present" if p.is_file() and sha256_of(p) == spec["sha256"] else ("present, hash differs" if p.is_file() else "not downloaded")
+            print(f"  {name:<18} {spec['input'][0]}×{spec['input'][1]}  {spec['license']:<48} {state}{'  (default)' if name == DEFAULT_MODEL else ''}\n{'':20}{spec['source']}")
+        return 0
+    if a.cmd == "segcheck":
+        from .vision.segcheck import run as segcheck
+        segcheck(a.clips or None, a.archive, crop=not a.no_crop, as_json=a.json, model=a.model)
+        return 0
 
     if a.cmd == "record":
         from pathlib import Path
@@ -213,7 +237,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  wrote {p}")
         return 0
     if a.cmd == "measure":
-        return _measure(a.clips, a.archive, a.json)
+        return _measure(a.clips, a.archive, a.json, a.opinion)
     if a.cmd == "bundle":
         return _bundle(a)
 

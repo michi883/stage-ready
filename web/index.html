@@ -112,7 +112,7 @@
           <li>An upload is recognised by its SHA-256 — the same key the live matte cache uses — and never leaves the browser.</li>
           <li>The loop enforces what the agent may not skip: every process is verified, every fix re-inspected, delivery refused unless the latest verification passed.</li>
           <li>Every number is measured, on the recording it belongs to — Ethel's second attempt (1.52×, measured 2026-09-19), Sandy's render (the archive's own, which fails on head height), Zach's two attempts (1.00×, then 1.45× at the strategy's bounds — rendered and measured). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is, and none borrows another recording's numbers.</li>
-          <li>OpenCV 5 DNN subject segmentation / QC is the first live capability to wire — <span class="chip planned">planned</span>, not running here.</li>
+          <li>OpenCV 5 DNN subject segmentation (U²-Net on <code>cv2.dnn</code>) is live for the seed and the matte's second opinion — measured against the archive's Apple Vision opinions on all three recordings (<code>segcheck</code>). It does not run in the demo, which replays measurements.</li>
         </ul>
         <details id="provenance"><summary>Where the numbers come from</summary><ul></ul></details>
       </section>

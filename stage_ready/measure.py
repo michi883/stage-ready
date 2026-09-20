@@ -39,7 +39,12 @@ def _pct(x: float) -> str:
 
 
 class ArchiveMeasurer:
-    def __init__(self, root: Path | str | None = None):
+    def __init__(self, root: Path | str | None = None, opinion: str = "vision"):
+        # opinion: "vision" reads the archive's Apple Vision frames (seed/) as the matte_extent
+        # second opinion — the archived measurement; "dnn" computes one with SubjectSegmenter on the
+        # same frames (OpenCV 5, runs anywhere). Both are reported by `measure --opinion dnn`.
+        self.opinion = opinion
+        self._seg = None
         self.root = archive_root(None if root is None else str(root))
         self._anchors: dict[str, Any] = {}
         self._pose: dict[str, list[dict]] = {}
@@ -203,6 +208,38 @@ class ArchiveMeasurer:
         return InspectResult(target=target, findings=findings, facts=facts, duration_ms=int((time.time() - t0) * 1000), cached=False,
                              provenance=f"measured: OpenCV 5 over {wd.relative_to(self.root)} and {src.name}")
 
+    def second_opinion(self, wd: Path):
+        """The `matte_extent` measurement: the matte against an independent silhouette on the frames
+        the archive chose (seed/). Vision's silhouettes are on disk; the DNN's are computed here."""
+        from .vision import matte_extent
+        if self.opinion != "dnn":
+            return matte_extent(str(wd / "matte"), str(wd / "seed"), self.pose(wd))
+        import glob, os, re
+        from .vision import require_cv2
+        from .vision.matte import MatteQC, head_band_widths
+        from .vision.segment import SubjectSegmenter
+        cv2 = require_cv2()
+        import numpy as np
+        if self._seg is None:
+            self._seg = SubjectSegmenter(threads=os.cpu_count() or 1)
+        pose = self.pose(wd)
+        mattes = sorted(glob.glob(str(wd / "matte" / "f_*.png")))
+        ratios, rows = [], []
+        for v in sorted(glob.glob(str(wd / "seed" / "f_*.png"))):
+            k = int(re.search(r"f_(\d+)", os.path.basename(v)).group(1))
+            fr = cv2.imread(str(wd / "band" / f"f_{k:04d}.jpg")); a = cv2.imread(mattes[k - 1], cv2.IMREAD_GRAYSCALE) if k <= len(mattes) else None
+            if fr is None or a is None:
+                continue
+            opinion = self._seg.seed(fr, pose[k - 1] if k - 1 < len(pose) else None) > 127
+            w = head_band_widths(a, opinion)
+            if w is None:
+                continue
+            ratios.append(w[0] / w[1]); rows.append((k, w[0], w[1]))
+        if not ratios:
+            raise ValueError("second opinion (dnn): no comparable frames")
+        worst = min(rows, key=lambda r: r[1] / r[2])
+        return MatteQC(median=float(np.median(ratios)), frames=len(ratios), worst_frame=worst[0], worst_matte_px=worst[1], worst_opinion_px=worst[2], ratios=[float(r) for r in ratios])
+
     # ---- VERIFY -------------------------------------------------------------------------------
     def verify(self, clip: Clip, artifact: str, profile: Profile) -> VerifyResult:
         from .vision import matte_extent, pose_qc, probe, separation
@@ -221,7 +258,7 @@ class ArchiveMeasurer:
         th = {g["id"]: g for g in profile.gates}
 
         q = pose_qc(self.pose(wd))
-        mq = matte_extent(str(wd / "matte"), str(wd / "seed"), self.pose(wd))
+        mq = self.second_opinion(wd)
         sep = separation(str(measured_on), str(wd / "mt"))
         hh = head_height(str(self._pick(wd, "matte_ext", "matte")), self.pose(wd, ext=True), read_affine(str(wd / "affine.csv")), canvas_h, fps)
         n_src = self.frames(src)
@@ -246,9 +283,11 @@ class ArchiveMeasurer:
                 gates.append(gate(gid, "pass" if q.one_subject >= g["value"] else "fail", round(q.one_subject, 3),
                                   f"{q.one_subject * 100:.1f} %.", "vision.pose_qc"))
             elif gid == "matte_extent":
+                who = "the OpenCV 5 DNN opinion's" if self.opinion == "dnn" else "the second opinion's"
                 gates.append(gate(gid, "pass" if mq.median >= g["value"] else "fail", round(mq.median, 3),
-                                  f"Matte head width {_pct(mq.median)} of the second opinion's over {mq.frames} frames "
-                                  f"(worst frame {mq.worst_frame}: {mq.worst_matte_px} px vs {mq.worst_opinion_px} px).", "vision.matte_extent (OpenCV 5)"))
+                                  f"Matte head width {_pct(mq.median)} of {who} over {mq.frames} frames "
+                                  f"(worst frame {mq.worst_frame}: {mq.worst_matte_px} px vs {mq.worst_opinion_px} px).",
+                                  "vision.segment.SubjectSegmenter + vision.matte_extent (OpenCV 5 DNN)" if self.opinion == "dnn" else "vision.matte_extent (OpenCV 5)"))
             elif gid == "separation":
                 margin = round(sep.ratio, 2) - g["value"]
                 side = "the performer is the brighter side" if sep.inside > sep.outside else "the performer is the darker side — the silhouette is carried by the curtain being the brighter of the two"

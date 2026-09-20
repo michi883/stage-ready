@@ -19,19 +19,20 @@ default ~/mts), where every sample clip's pose track, matte, solve and composite
 clips, and a live run goes INSPECT (measured) → DECIDE, where it stops until Bedrock is wired.
 A fresh upload has no workdir yet: producing one is `process`, which is milestone 9.
 
-First OpenCV 5 capability to wire — PLANNED, NOT LIVE
------------------------------------------------------
-DNN-based subject segmentation and QC (`SubjectSegmenter` below). Today the pipeline's
-"second opinion" on the matte is Apple Vision (`PersonMatte`, Swift, laptop only) and the
-matte itself is MatAnyone on local MPS. An OpenCV 5 `cv2.dnn` person-segmentation model
-replaces the laptop-only parts with something that runs anywhere OpenCV runs:
+OpenCV 5 DNN subject segmentation — LIVE for the seed and the second opinion, measured
+--------------------------------------------------------------------------------------
+`SubjectSegmenter` (stage_ready/vision/segment.py, re-exported below) runs a person segmenter on
+`cv2.dnn` — U²-Net's human-segmentation weights by default, Apache-2.0 — so the two things the
+Red Curtain pipeline borrowed from Apple Vision can leave the laptop:
 
-    seed     — a per-frame person mask to seed the video matte (pick_seed.py / clean_seed.py)
-    verify   — the independent opinion behind the `matte_extent` gate (matte_qc.py) and the
-               subject/background edge the `separation` gate is measured on (silhouette_qc.py)
+    seed     — the mask the video matte is propagated from: on Zach, a matte propagated from the
+               DNN seed matches the archived (Vision-seeded) matte at IoU 0.98, head widths equal
+    verify   — the independent opinion behind the `matte_extent` gate: within 2 % of Vision's
+               number on Sandy, Ethel and Zach (`python3 -m stage_ready segcheck`)
 
-Nothing below calls OpenCV yet; every method raises `LiveNotWired`. The demo (`?demo=1`)
-replays archived measurements and does not depend on this module.
+Not used for the `separation` edge: measured on the finished composites, a DNN edge lands up to
+0.14× from the pipeline's own matte edge on the small upscaled picture, and the matte is where the
+pipeline runs anyway. The demo (`?demo=1`) replays archived measurements and does not load a model.
 """
 from __future__ import annotations
 
@@ -49,33 +50,7 @@ def _msg(step: str) -> str:
             f"See stage_ready/backends/live.py for what this step maps to.")
 
 
-class SubjectSegmenter:
-    """PLANNED: OpenCV 5 DNN subject segmentation — the first live OpenCV 5 capability.
-
-    Intended shape, so the loop's callers are written against it now:
-
-        seg = SubjectSegmenter(model="<onnx person-segmentation model>")
-        mask = seg.segment(frame_bgr)             # uint8 HxW, 0/255, one subject
-        qc   = seg.matte_extent(matte, mask)      # head-width ratio, the `matte_extent` gate's number
-        sep  = seg.edge_separation(comp, mask)    # inside/outside edge luma ratio, the `separation` gate
-
-    Runs on `cv2.dnn` (CPU, or CUDA/OpenVINO where available), so it can move from the laptop
-    to AWS compute unchanged. Not implemented: every method raises until it is measured against
-    the archived clips (README, roadmap milestone 0) and shown to agree with the current second
-    opinion on A, B and C.
-    """
-
-    def __init__(self, model: str | None = None):
-        self.model = model
-
-    def segment(self, frame_bgr: Any) -> Any:
-        raise LiveNotWired("OpenCV 5 DNN subject segmentation (planned)")
-
-    def matte_extent(self, matte: Any, mask: Any) -> float:
-        raise LiveNotWired("OpenCV 5 DNN matte QC — matte_extent (planned)")
-
-    def edge_separation(self, composite_bgr: Any, mask: Any) -> float:
-        raise LiveNotWired("OpenCV 5 DNN matte QC — separation (planned)")
+from ..vision.segment import SubjectSegmenter  # noqa: E402  — the seam, now the implementation
 
 
 class LiveBackend:

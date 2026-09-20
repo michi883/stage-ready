@@ -236,7 +236,9 @@ Judges should know exactly what they are looking at:
   at DECIDE: the agent (Bedrock), the fixers and the processors are still the shape of the real
   thing and raise `LiveNotWired`. A live run needs the archive's workdirs (`$STAGE_READY_ARCHIVE`,
   default `~/mts`) — producing a workdir for a fresh upload is milestone 9.
-- **OpenCV 5 DNN segmentation is planned, not implemented** — see below.
+- **OpenCV 5 DNN segmentation is live for the seed and the matte's second opinion**, measured
+  against the archive's Apple Vision opinions on all three clips (`segcheck`); not used for the
+  separation edge, where it measured up to 0.14× off — see [Why OpenCV 5](#why-opencv-5).
 
 ## Under the hood
 
@@ -282,24 +284,37 @@ on the canvas (`track`), the crown (`crown_cut`), the matte against a second opi
 (`matte_extent`), luminance separation on the finished composite or the delivered file
 (`separation`), exposure and key direction (`grade_qc`), and the frame count (`media`). They are
 the Red Curtain scripts, ported to the digit — `python3 -m stage_ready measure` shows each number
-against the fixture it was archived in. Two things the pipeline still borrows from the laptop are
-person segmentation (Apple Vision, Swift — the pose track and the matte's second opinion) and the
-video matte (MatAnyone on local MPS) — the parts that cannot follow the loop onto AWS.
+against the fixture it was archived in. Three things the pipeline still borrows from the laptop:
+the body-pose track (`BodyTrack`, Apple Vision), the video matte (MatAnyone on local MPS) and the
+compositor (`Composite`, CoreImage). The person *segmentation* it borrowed — the seed the matte is
+propagated from, and the matte's independent second opinion — no longer is:
 
-**First OpenCV 5 capability to wire: DNN-based subject segmentation and QC — PLANNED, not live.**
-An OpenCV 5 `cv2.dnn` person-segmentation model gives the loop a subject mask that runs anywhere
-OpenCV runs, and it slots into three places the fixtures already name:
+**OpenCV 5 DNN subject segmentation — live for the seed and the second opinion, measured.**
+`stage_ready/vision/segment.py::SubjectSegmenter` runs a person segmenter on `cv2.dnn` (CPU,
+single-threaded by default, bit-for-bit reproducible). Two Apache-2.0 models are registered and
+fetched with hash checks by `python3 -m stage_ready models fetch`; `python3 -m stage_ready segcheck`
+measures both against the archive's Apple Vision opinions on the frames the archive itself used —
+its seed frame, its 16–17 second-opinion frames, its 24 separation frames — on Sandy, Ethel and
+Zach. Measured 2026-09-19:
 
-| where | today | with OpenCV 5 DNN |
-|---|---|---|
-| seed for the video matte | Apple Vision `PersonMatte` + `pick_seed.py` / `clean_seed.py` | `SubjectSegmenter.segment(frame)` |
-| `matte_extent` gate — the independent second opinion | Apple Vision head width in `matte_qc.py` | `SubjectSegmenter.matte_extent(matte, mask)` |
-| `separation` gate — the subject/background edge | matte edge in `silhouette_qc.py` | `SubjectSegmenter.edge_separation(composite, mask)` |
+| use | Vision (archived) | **U²-Net human-seg** (320 px, 176 MB, default) | PP-HumanSeg (OpenCV Zoo, 192 px, 6 MB) |
+|---|---|---|---|
+| seed — IoU against the Vision seed on the seed frame | — | **0.95 / 0.99 / 0.96** | 0.65 / 0.72 / 0.65 |
+| seed → matte: a matte propagated from the DNN seed vs the archived matte (Zach, 106 frames) | — | **IoU 0.98 (min 0.96), alpha diff 1.7/255, head widths 1.000, `matte_extent` 1.006 = 1.006** | not run |
+| `matte_extent` — matte head width / opinion head width, median | 0.981 / 0.996 / 1.006 | **1.003 / 0.989 / 1.018** (within 2.3 %) | 0.945 / 1.337 / 1.426 |
+| the two opinions' head widths, DNN / Vision | — | 1.00 / 1.03 / 0.99 | 1.04 / 0.96 / 0.82 |
+| `separation` with the DNN silhouette as the edge | 1.72 / 1.52 / 1.00→1.45 (matte edge) | 1.72 / 1.46 / 1.14→1.59 | 1.06 / 1.02 / 1.03→1.07 |
+| runtime, CPU | — | 2.7 s per frame on 1 thread, 0.24 s on 8 | 39 ms per frame |
 
-The seam is `stage_ready/backends/live.py::SubjectSegmenter`. **Nothing there calls OpenCV yet** —
-every method raises `LiveNotWired`, the demo does not import it, and the UI's Details panel labels
-it *planned*. It becomes live only once it is measured against the archived clips and shown to
-agree with the current second opinion on all three samples. Until then, no claim.
+So: **the seed and the second opinion are live** on U²-Net — `python3 -m stage_ready measure
+--opinion dnn` recomputes the `matte_extent` gate with the DNN as the opinion and every status
+agrees with the archive's. **The separation edge stays on the pipeline's own matte**: a DNN edge
+lands up to 0.14× from it on Zach's ×3.1-upscaled picture, enough to cross the gate, and the matte
+is where the pipeline runs anyway — `edge_separation` remains on the seam as a cross-check, not a
+measurement of record. **PP-HumanSeg is too coarse for the head band** — at 192 px it drops hair,
+so its opinion is 4–18 % narrower than Vision's and a matte that lost hair would pass against it;
+it is kept as the fast baseline. The models are not in the repository (`models/*.onnx` is
+ignored); the demo (`?demo=1`) never loads one.
 
 ### What comes from the Red Curtain pipeline
 
@@ -319,9 +334,10 @@ Stage Ready keeps its stages and replaces its control flow with the agent.
 | `contact_sheet.py` | report — human review |
 | `RECORDING_REQUIREMENTS.md` | report — reshoot guidance corpus |
 
-**Portability.** The OpenCV scripts port as they are. `BodyTrack`, `PersonMatte` and `Composite`
-are Apple Vision / Swift and MatAnyone runs on local MPS: local workers for the demo, replaced by
-OpenCV-native equivalents when the loop moves off the laptop.
+**Portability.** The OpenCV scripts are ported (`stage_ready/vision`). `PersonMatte`'s two jobs are
+done by `SubjectSegmenter` on `cv2.dnn`. Still on the laptop: `BodyTrack` (the pose track — Apple
+Vision), MatAnyone (the matte — local MPS) and `Composite` (CoreImage); local workers for the demo,
+to be replaced when the loop moves off the laptop.
 
 **Lessons that carry:** measure, never assume · check the right thing · a second opinion beats
 self-consistency · measure the subject against the background · cheap checks before expensive work
@@ -346,7 +362,7 @@ measurements. What is left is the ground truth for one number and the live wirin
 | 5 | **Verification-driven retry.** The separation gate fails, the agent switches strategy, reprocesses, passes | done in the demo (Ethel); the pass is measured (milestone 0) |
 | 6 | **The other exit.** A failed verification with no allowed strategy left ends in a reshoot request that leads with the cause | done (Sandy; `&budget=0` shows the spent-budget variant on Ethel) |
 | 7 | **The screen.** One recording at a time, the session view, Trace and Details | done |
-| 8 | **OpenCV 5 DNN segmentation / QC.** `SubjectSegmenter`, measured against the samples | planned — the first live OpenCV 5 capability |
+| 8 | **OpenCV 5 DNN segmentation / QC.** `SubjectSegmenter`, measured against the samples | live for the seed and the second opinion (U²-Net on `cv2.dnn`, 2026-09-19); the separation edge stays on the matte, by measurement |
 | 9 | **Live wiring.** OpenCV inspection and verification on AWS compute, the matte cache on S3 by source hash, Bedrock for the agent | inspection and verification run live from a workdir; Bedrock, S3 and the processors pending — a hybrid (archived matte, live agent) is the next step |
 
 **Risk, named once — and settled.** Ethel's pass depended on the second strategy clearing the gate
@@ -373,6 +389,8 @@ stage_ready/backends/live.py        live backend: INSPECT and VERIFY measured (O
                                     processors are the shape, not wired; the planned OpenCV 5 DNN seam (SubjectSegmenter)
 stage_ready/vision/                 OpenCV 5 measurements: band, pose, track (dry solve, head height), matte, silhouette,
                                     grade, media — the Red Curtain scripts, ported to the digit
+stage_ready/vision/segment.py       SubjectSegmenter — OpenCV 5 DNN person segmentation (U²-Net / PP-HumanSeg), the seed and
+                                    the matte's second opinion; segcheck.py measures it against the archive's Vision opinions
 stage_ready/measure.py              INSPECT / VERIFY records computed from a workdir's files with stage_ready.vision
 stage_ready/server.py               static UI, /api/recognize, SSE run stream, byte-range media
 web/                                the workspace
@@ -380,7 +398,7 @@ demo/clips/{sandy,ethel,zach}/      cached fixtures, keyed the way a live cache 
 demo/derive.sh, demo/derived.json   a derived evaluation-corpus input (michi_sample_v1), its exact command and hashes
 stage_ready/record.py               writes a clip's inspect/verify/process fixtures from the live measurement, not by hand
 tests/test_demo.py                  20 tests: the three behaviours, determinism, recognition, the guardrails, no projected fixture
-tests/test_vision.py                4 tests: OpenCV 5 reproduces the archived numbers (skipped without OpenCV 5 + the archive)
+tests/test_vision.py                5 tests: OpenCV 5 reproduces the archived numbers; the DNN opinion agrees with Vision (skipped without OpenCV 5 + the archive + the model)
 stage_ready/bundle.py               the judge bundle: build from the archive, install into a clone, verify
 ```
 
@@ -391,8 +409,11 @@ python3 -m unittest discover -s tests   # 20 tests, standard library
 
 python3 -m venv .venv && .venv/bin/pip install -e '.[live]'    # OpenCV 5 + numpy, pinned
 .venv/bin/python -m stage_ready measure                        # every fixture number, recomputed with OpenCV 5
+.venv/bin/python -m stage_ready models fetch                   # the DNN segmenter's weights (176 MB, hash-checked)
+.venv/bin/python -m stage_ready segcheck                       # the DNN against the archive's Vision opinions
+.venv/bin/python -m stage_ready measure --opinion dnn          # matte_extent with the DNN as the second opinion
 .venv/bin/python -m stage_ready run ethel --live               # measured INSPECT, then stops at DECIDE (Bedrock not wired)
-.venv/bin/python -m unittest discover -s tests                 # 24 tests
+.venv/bin/python -m unittest discover -s tests                 # 25 tests
 ```
 
 `measure` and `--live` read the Red Curtain archive's workdirs — `--archive <dir>` or
@@ -442,7 +463,7 @@ python3 -m stage_ready bundle --verify <bundle-dir>      # every manifest entry 
 ```
 
 Verified 2026-09-19 from a fresh `git clone` on this machine: demo tests pass with the standard
-library alone, the bundle installs, the videos serve with byte ranges, and the full suite (24 tests)
+library alone, the bundle installs, the videos serve with byte ranges, and the full suite (25 tests)
 passes with OpenCV 5 against the bundle.
 
 ### Performers and numbers

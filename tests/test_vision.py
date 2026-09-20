@@ -91,5 +91,37 @@ class ReproducesTheArchive(unittest.TestCase):
         self.assertIn("ecoded by", g.detail)
 
 
+from stage_ready.vision.segment import MODELS, MODELS_DIR
+HAVE_U2NET = (MODELS_DIR / MODELS["u2net_human_seg"]["file"]).is_file()
+
+
+@unittest.skipUnless(HAVE_CV2 and HAVE_ARCHIVE and HAVE_U2NET, "needs OpenCV 5, the archive and models/u2net_human_seg.onnx (python3 -m stage_ready models fetch)")
+class DNNSecondOpinion(unittest.TestCase):
+    """The OpenCV 5 DNN segmenter stands in for Apple Vision on the matte_extent gate — measured,
+    on the archive's own frames (`python3 -m stage_ready segcheck` for all three clips)."""
+
+    def test_u2net_agrees_with_vision_on_ethel(self):
+        import os
+        import cv2
+        from stage_ready.measure import ArchiveMeasurer
+        from stage_ready.vision import read_pose
+        from stage_ready.vision.segment import SubjectSegmenter
+        demo = CachedBackend(); clip = demo.clip("ethel")
+        vision = ArchiveMeasurer(ARCHIVE).second_opinion(ArchiveMeasurer(ARCHIVE).workdir(clip))
+        dnn = ArchiveMeasurer(ARCHIVE, opinion="dnn").second_opinion(ArchiveMeasurer(ARCHIVE).workdir(clip))
+        self.assertEqual(dnn.frames, vision.frames)
+        self.assertLessEqual(abs(dnn.median - vision.median), 0.03, (dnn.median, vision.median))
+        self.assertGreaterEqual(dnn.median, 0.9)
+        # the seed: the DNN mask on the archive's seed frame against the Vision seed the matte grew from
+        wd = ArchiveMeasurer(ARCHIVE).workdir(clip); n = int((wd / "seed_frame.txt").read_text().strip())
+        seg = SubjectSegmenter(threads=os.cpu_count() or 1)
+        m = seg.seed(cv2.imread(str(wd / "band" / f"f_{n:04d}.jpg")), read_pose(str(wd / "pose.csv"))[n - 1]) > 127
+        v = cv2.imread(str(wd / "seed_mask.png"), cv2.IMREAD_GRAYSCALE) > 128
+        self.assertGreaterEqual((m & v).sum() / (m | v).sum(), 0.9)
+        # deterministic: the same frame twice
+        a = seg.segment(cv2.imread(str(wd / "band" / f"f_{n:04d}.jpg"))); b = seg.segment(cv2.imread(str(wd / "band" / f"f_{n:04d}.jpg")))
+        self.assertTrue((a == b).all())
+
+
 if __name__ == "__main__":
     unittest.main()

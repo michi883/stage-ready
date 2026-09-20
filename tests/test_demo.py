@@ -152,10 +152,13 @@ class Recognition(unittest.TestCase):
 
     def test_live_recognize_is_refused_until_wired(self):
         from stage_ready.backends.live import LiveBackend, LiveNotWired, SubjectSegmenter
+        from stage_ready.vision import OpenCVMissing
+        from stage_ready.vision.segment import ModelMissing
         with self.assertRaises(LiveNotWired):
             LiveBackend().recognize(sha256="00" * 32)
-        with self.assertRaises(LiveNotWired):          # the planned OpenCV 5 DNN seam is not live either
-            SubjectSegmenter().segment(None)
+        # The DNN seam is live, and refuses plainly rather than guessing: no OpenCV 5, or no model file.
+        with self.assertRaises((OpenCVMissing, ModelMissing)):
+            SubjectSegmenter(model="/nonexistent/model.onnx")
 
 
 class Guardrails(unittest.TestCase):

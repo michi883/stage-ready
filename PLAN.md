@@ -75,7 +75,7 @@ project — it must pin OpenCV 5.
 **Accept:** clone into a clean directory on another machine, follow the README, get a demo with
 video playing and 17/17 tests passing.
 
-### 2. OpenCV 5 doing the seeing, inside this repo — **2a DONE 2026-09-19; 2b open** (also: Sandy moved to v4 — risk 6 decided: reshoot exit)
+### 2. OpenCV 5 doing the seeing, inside this repo — **2a and 2b DONE 2026-09-19** (also: Sandy moved to v4 — risk 6 decided: reshoot exit)
 
 **Why:** the rule is OpenCV 5 for substantive analysis, and technical execution (30%) is explicitly
 "depth of the OpenCV 5 implementation". Today the repo contains no `cv2`; the 21 OpenCV scripts live
@@ -96,6 +96,12 @@ Any disagreement with the archived second opinion is written down before the cla
 *planned* to *live*. Where a recomputed number differs, the fixture is updated, not the number.
 **2a outcome:** `python3 -m stage_ready measure` — Ethel and the reference clip reproduce on every
 finding and gate; four fixture entries corrected (no status changed); Sandy's disagreement is risk 6.
+**2b outcome:** `SubjectSegmenter` on `cv2.dnn` (U²-Net human-seg, Apache-2.0; PP-HumanSeg as the
+fast baseline), `python3 -m stage_ready segcheck`: seed IoU 0.95–0.99 vs Vision; a matte propagated
+from the DNN seed = the archived matte (Zach: IoU 0.98, head widths 1.000); `matte_extent` with the
+DNN opinion within 2.3 % of Vision's on all three; the separation edge NOT replaced (up to 0.14× off
+on Zach's upscaled picture — the matte stays the edge). Still on the laptop: BodyTrack, MatAnyone,
+Composite.
 
 ### 3. A meaningful component on AWS
 
