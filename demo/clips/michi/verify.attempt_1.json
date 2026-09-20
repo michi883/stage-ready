@@ -1,0 +1,115 @@
+{
+  "artifact": "attempt_1",
+  "gates": [
+    {
+      "id": "pose_coverage",
+      "label": "Pose on frames",
+      "status": "pass",
+      "value": 1.0,
+      "threshold": {
+        "op": ">=",
+        "value": 0.6
+      },
+      "unit": "fraction of frames",
+      "detail": "100 % of 1351 frames.",
+      "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+      "id": "one_subject",
+      "label": "One subject",
+      "status": "pass",
+      "value": 0.999,
+      "threshold": {
+        "op": ">=",
+        "value": 0.95
+      },
+      "unit": "fraction of frames",
+      "detail": "99.9 %.",
+      "tool": "vision.pose_qc"
+    },
+    {
+      "id": "matte_extent",
+      "label": "Matte extent vs second opinion",
+      "status": "pass",
+      "value": 1.002,
+      "threshold": {
+        "op": ">=",
+        "value": 0.9
+      },
+      "unit": "head width ratio, median",
+      "detail": "Matte head width 100 % of the second opinion's over 16 frames (worst frame 631: 314 px vs 316 px).",
+      "tool": "vision.matte_extent (OpenCV 5)"
+    },
+    {
+      "id": "separation",
+      "label": "Subject vs background luminance",
+      "status": "pass",
+      "value": 1.51,
+      "threshold": {
+        "op": ">=",
+        "value": 1.5
+      },
+      "unit": "edge luma ratio",
+      "detail": "Edge luma 0.092 inside / 0.139 outside — separation 1.51× over 24 frames of comp; the performer is the darker side — the silhouette is carried by the curtain being the brighter of the two; clears the 1.5× gate by 0.01×.",
+      "tool": "vision.separation (OpenCV 5)"
+    },
+    {
+      "id": "head_spread",
+      "label": "Head height spread",
+      "status": "pass",
+      "value": 0.012,
+      "threshold": {
+        "op": "<=",
+        "value": 0.02
+      },
+      "unit": "fraction of output height",
+      "detail": "2.2 % of source → 1.2 % of output.",
+      "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+      "id": "head_drift",
+      "label": "Head drift (slower than 2 s)",
+      "status": "pass",
+      "value": 1.6,
+      "threshold": {
+        "op": "<=",
+        "value": 4.0
+      },
+      "unit": "px",
+      "detail": "1.6 px of head-top motion slower than 2 s after the solve.",
+      "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+      "id": "frame_count",
+      "label": "Frame count = source",
+      "status": "pass",
+      "value": 1351,
+      "threshold": 1351,
+      "unit": "frames",
+      "detail": "1351 = 1351.",
+      "tool": "vision.frame_count (OpenCV 5)"
+    },
+    {
+      "id": "audio_md5",
+      "label": "Audio MD5 = source",
+      "status": "pass",
+      "value": "equal",
+      "threshold": "equal",
+      "unit": "",
+      "detail": "Decoded audio MD5 identical to the source.",
+      "tool": "vision.audio_md5 (ffmpeg)"
+    }
+  ],
+  "measurements": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.325,
+    "separation": 1.51,
+    "edge_luma_in": 0.092,
+    "edge_luma_out": 0.139,
+    "head_spread": 0.012,
+    "head_drift_px": 1.6,
+    "frames": 1351
+  },
+  "duration_ms": 16529,
+  "provenance": "measured: OpenCV 5 over work/midtown_michi_sample_v1, comp — python3 -m stage_ready record michi"
+}

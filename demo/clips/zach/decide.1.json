@@ -1,9 +1,0 @@
-{
-  "action": "process",
-  "strategy": "process.standard",
-  "reasoning": "Nothing outside the profile. The picture fills the file, one subject on every frame, shoulders at 36 % of the canvas (p95) against a 55 % cap, distance steady to 1.05×. Two notes, neither of which a fixer can address honestly: the face is 0.08 under target and the exposure lift is clamped at ×1.25 — that is a capture-side issue and goes in the report rather than being rescued — and the key is from the right at 1.74×, which the grade follows. Process with the standard strategy and let verification decide.",
-  "cites": ["picture_area", "one_subject", "subject_size", "distance_steady", "face_exposure"],
-  "confidence": 0.95,
-  "model": "cached",
-  "duration_ms": 2400
-}

@@ -1,0 +1,38 @@
+{
+  "note": "Derived demo inputs. Originals untouched; Ethel and Sandy run on their originals (identity). Zach not derived: see demo/derive.sh.",
+  "ffmpeg": "ffmpeg version 8.1.2 Copyright (c) 2000-2026 the FFmpeg developers",
+  "derived": {
+    "michi": {
+      "role": "ACCEPT",
+      "original": "michi.mp4",
+      "original_sha256": "e9831409dbd651caf10179e4382e2daaad5da115aa62fa77e699a0bdb0084296",
+      "output": "michi_sample_v1.mp4",
+      "output_sha256": "603ab5610076fa67d1cbfca9f91151164da450100d6bbe40381ca9282fd824a9",
+      "command": "ffmpeg -v error -y -ss 30 -t 45 -i michi.mp4 -vf fps=30 -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart michi_sample_v1.mp4",
+      "edits": [
+        "trim 30 s → 75 s",
+        "59.94 → 30 fps (frames dropped, none interpolated)",
+        "video re-encoded once (x264 crf 18, 1 thread)",
+        "audio stream copied"
+      ],
+      "derived_on": "2026-09-19"
+    },
+    "ethel": {
+      "role": "ADAPT",
+      "original": "ethel_chadwick_v2.mp4",
+      "output": "ethel_chadwick_v2.mp4",
+      "edits": [],
+      "note": "identity — the archived recording, unchanged"
+    },
+    "sandy": {
+      "role": "REFUSE",
+      "original": "sandy_hackett_v2.mp4",
+      "output": "sandy_hackett_v2.mp4",
+      "edits": [],
+      "note": "identity — the archived recording, unchanged"
+    }
+  },
+  "not_derived": {
+    "zach": "zach_sain_v2.mov measures separation 1.00x (retry at the strategy's bounds: 1.45x): the black shirt is the curtain's luminance. A passing control would need different clothing, which is altering the performer. Stopped; reported."
+  }
+}

@@ -199,6 +199,21 @@ function newRun(clip, file) {
   return run;
 }
 const label = run => `Recording ${run.n}`;
+/* The three outcomes, one rule: ACCEPT — verified on the first pass, nothing changed; ADAPT — verified
+   after the loop changed something (a fix, or a different strategy after a failed gate); REFUSE — a
+   reshoot request. The same rule labels the bench, the session view and the Details table. */
+function verdict(ev) {
+  if (!ev) return null;
+  if (ev.outcome !== "delivered") {
+    const item = ev.reshoot.items[0];
+    return { key: "refuse", word: "REFUSE", line: `Reshoot requested — ${firstSentence(item ? item.guidance : "the retry budget is spent")}` };
+  }
+  const d = ev.delivery;
+  if (d.attempts === 1 && d.fixes.length === 0) return { key: "accept", word: "ACCEPT", line: "Verified on the first pass — nothing to change." };
+  const how = d.attempts > 1 ? "the first attempt failed a gate and the strategy changed" : "the framing was fixed and re-inspected";
+  return { key: "adapt", word: "ADAPT", line: `Verified after adapting — ${how}.` };
+}
+const verdictBadge = (v, big = false) => v ? `<span class="verdict ${v.key}${big ? " big" : ""}">${v.word}</span>` : "";
 const doneRuns = () => RUNS.filter(r => r.end);
 function header() {
   const n = doneRuns().length;
@@ -364,7 +379,10 @@ const storyChips = st => st.map((x, j) => `<span class="sp">${j ? `<span class="
 function pathOf(run) {                               // the short summary of the path taken
   let st = run.story;
   const firstFail = st.findIndex(x => x.state === "fail");
-  if (firstFail > 0) st = st.slice(firstFail);      // on a retry the failure is where the story starts
+  const delivered = run.end && run.end.outcome === "delivered";
+  // On a delivered retry the failure is where the story starts. On a refusal the whole path is
+  // the story — a fix that held, then a gate the fix could not touch — so nothing is trimmed.
+  if (firstFail > 0 && (delivered || !run.end)) st = st.slice(firstFail);
   return st;
 }
 function narrateEnd(run, sentence, cls) {
@@ -495,10 +513,12 @@ function flow(ev) {
     case "run.end":
       run.end = ev;
       if (ev.outcome === "delivered") {
+        const v = verdict(ev);
         setOutput("done", "Delivered ✓");
+        $(".cap", $("#out")).innerHTML = `${verdictBadge(v)} Delivered ✓`;
         $("#bench").classList.add("done");
         const d = ev.delivery;
-        narrateEnd(run, `<b>Stage Ready.</b> ${d.attempts > 1 ? `Second attempt delivered — the first was measured, failed, and replaced.` : d.fixes.length ? `One fix, one attempt.` : `First attempt, no fixes.`} Verified against every gate in the profile.`, "pass");
+        narrateEnd(run, `${verdictBadge(v)} <b>Stage Ready.</b> ${d.attempts > 1 ? `Second attempt delivered — the first was measured, failed, and replaced.` : d.fixes.length ? `One fix, one attempt.` : `First attempt, no fixes.`} Verified against every gate in the profile.`, `pass ${v.key}`);
         syncPlayback();
       } else {
         const out = $("#out");
@@ -506,9 +526,10 @@ function flow(ev) {
         out.insertBefore(h("div", "attempt front", `<div class="frame reshoot"><b>Reshoot requested</b><span>${esc(firstSentence(item ? item.guidance : ""))}</span></div>`), $(".cap", out));
         $$(".attempt", out).forEach(a => { if (!a.classList.contains("front") || a.querySelector(".reshoot") == null) { a.classList.remove("front"); a.classList.add("behind"); } });
         setOutput("failed", "Not delivered ✗");
+        $(".cap", $("#out")).innerHTML = `${verdictBadge(verdict(ev))} Not delivered ✗`;
         $("#bench").classList.add("done");
         story("Reshoot requested", "fail");
-        narrateEnd(run, `Reshoot requested — ${esc(item ? item.guidance : "the retry budget is spent")}`, "fail");
+        narrateEnd(run, `${verdictBadge(verdict(ev))} Reshoot requested — ${esc(item ? item.guidance : "the retry budget is spent")}`, "fail refuse");
       }
       break;
     case "error": {
@@ -634,11 +655,13 @@ function reportNotes(run) {
 function buildProcessed() {
   const runs = doneRuns();
   const wrap = $("#processed-cards"); wrap.innerHTML = "";
-  $("#processed-title").textContent = `${plural(runs.length, "recording")} processed`;
+  const vs = runs.map(r => verdict(r.end));
+  $("#processed-title").innerHTML = `${plural(runs.length, "recording")} processed — ${vs.map(v => verdictBadge(v)).join(`<span class="varr">·</span>`)}`;
   wrap.dataset.n = Math.min(runs.length, 4);
   runs.forEach((run, i) => {
     const ev = run.end, clip = run.clip;
     let out, cap;
+    const v = verdict(ev);
     if (ev.outcome === "delivered") {
       const d = ev.delivery, pr = run.attempts[d.artifact];
       out = `<div class="frame">${media(run, d.artifact, outputStandIn(clip, pr))}</div>`;
@@ -648,8 +671,8 @@ function buildProcessed() {
       out = `<div class="frame reshoot"><b>Reshoot requested</b><span>${esc(firstSentence(item ? item.guidance : ""))}</span></div>`;
       cap = `<span class="ftag fail">Reshoot ✗</span>`;
     }
-    const col = h("div", "pcard", `
-      <div class="pcard-h"><b>${label(run)}</b><span class="fname">${esc(run.file.name)}</span><span class="who">${esc(clip.name)}</span></div>
+    const col = h("div", `pcard ${v.key}`, `
+      <div class="pcard-h">${verdictBadge(v, true)}<span class="vline">${esc(v.line)}</span><b>${label(run)}</b><span class="fname">${esc(run.file.name)}</span><span class="who">${esc(clip.name)}</span></div>
       <div class="fsrc">${still(run, "source", sourceSVG(clip), "frame")}</div>
       <div class="fdown"><span class="vee">↓</span><div class="story">${storyChips(pathOf(run))}</div><span class="vee">↓</span></div>
       <div class="fout ${ev.outcome}">${out}</div>
@@ -668,6 +691,7 @@ function updateNumbers() {
   const row = (k, f) => `<tr><td class="k">${k}</td>${runs.map(r => `<td>${f(r.end, r)}</td>`).join("")}</tr>`;
   const m = r => r.delivery ? r.delivery.measurements : null;
   $("tbody", table).innerHTML = [
+    row("outcome", r => verdictBadge(verdict(r))),
     row("file", (r, run) => esc(run.file.name)),
     row("source", (r, run) => esc(run.clip.brief.split(" — ")[0])),
     row("decision path", r => esc(r.path.join(" → "))),

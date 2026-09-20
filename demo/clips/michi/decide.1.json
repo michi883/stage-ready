@@ -1,0 +1,14 @@
+{
+  "action": "process",
+  "strategy": "process.standard",
+  "reasoning": "Nothing outside the profile. The picture fills the file, a body pose on every frame and the same subject on 99.9 % of them, shoulders at 32 % of the canvas at the head floor, apparent size steady to 1.11×, the crown inside the picture on every frame with 6–11 % headroom. One warning: the face is over-lit for the stage — it asked for ×0.65 and the grade's clamp holds it at ×0.80, so he will read a little brighter than the target. That is a recording note for the report, not a defect a fixer may touch: no fixer changes what was lit. Process with the standard strategy and let the gates measure the finished composite.",
+  "cites": [
+    "subject_size",
+    "distance_steady",
+    "headroom",
+    "face_exposure"
+  ],
+  "confidence": 0.93,
+  "model": "cached",
+  "duration_ms": 2700
+}

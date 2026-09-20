@@ -9,7 +9,7 @@ from stage_ready.models import Decision, VerifyResult, Gate
 from stage_ready.profile import Profile
 
 
-CLIPS = ("sandy", "ethel", "zach")
+CLIPS = ("michi", "ethel", "sandy")
 
 
 def trace(clip_id, backend=None):
@@ -18,12 +18,12 @@ def trace(clip_id, backend=None):
 
 
 class DemoPaths(unittest.TestCase):
-    EXPECTED = {   # the Midtown Show lineup, in billing order — the three exits
-        "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),
+    EXPECTED = {   # ACCEPT → ADAPT → REFUSE: the three outcomes, in lineup order
+        "michi": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),
         "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),
-        "zach": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),
+        "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),
     }
-    DELIVERED = ("ethel", "zach")
+    DELIVERED = ("michi", "ethel")
 
     def test_three_paths(self):
         for cid, (outcome, path) in self.EXPECTED.items():
@@ -92,6 +92,10 @@ class DemoPaths(unittest.TestCase):
     def test_no_number_is_ahead_of_its_measurement(self):
         # A fixture may say it is projected (the UI then tags it), but none is allowed to be:
         # Ethel's second attempt was the last one, measured 2026-09-19 at 1.52x (separation.log).
+        # And every recording's numbers are its own: no fixture carries another clip's measurements.
+        for path in sorted(FIXTURE_ROOT.glob("*/clip.json")):
+            fx = json.load(path.open()).get("fixture", "")
+            self.assertNotIn("measurements:", fx, f"{path.parent.name} substitutes another recording's numbers")
         for path in sorted(FIXTURE_ROOT.glob("*/*.json")):
             prov = json.load(path.open()).get("provenance", "")
             self.assertFalse(prov.startswith("PROJECTED"), f"{path.name} is projected: {prov[:80]}")
@@ -104,7 +108,7 @@ class Recognition(unittest.TestCase):
 
     def test_lineup_order_and_fingerprints(self):
         clips = get_backend(demo=True).clips()
-        self.assertEqual([c.name for c in clips], ["Sandy Hackett", "Ethel Chadwick", "Zach Sain"])   # midtownshow.com/2040
+        self.assertEqual([c.name for c in clips], ["Michi Yamamoto", "Ethel Chadwick", "Sandy Hackett"])   # ACCEPT → ADAPT → REFUSE
         for c in clips:
             hashes = c.recognize.get("sha256")
             for x in ([hashes] if isinstance(hashes, str) else hashes):
@@ -114,7 +118,7 @@ class Recognition(unittest.TestCase):
     def test_by_sha256_beats_name(self):
         b = get_backend(demo=True)
         sha = b.clip("sandy").recognize["sha256"]
-        c = b.recognize(sha256=sha.upper(), name="zach_sain.mp4")   # the name says Zach; the bytes say Sandy
+        c = b.recognize(sha256=sha.upper(), name="ethel_chadwick.mp4")   # the name says Ethel; the bytes say Sandy
         self.assertEqual(c.id, "sandy")
         self.assertEqual(c.recognize["matched_by"], "sha256")
 
@@ -123,11 +127,14 @@ class Recognition(unittest.TestCase):
         self.assertEqual(c.id, "ethel")
         self.assertEqual(c.recognize["matched_by"], "name")
 
-    def test_either_container_of_the_same_source_is_recognised(self):
+    def test_a_derived_input_is_recognised_by_its_own_hash_not_its_originals(self):
+        # michi_sample_v1.mp4 is derived from michi.mp4 (demo/derived.json). The demo replays the
+        # derived file's run; the original is a different recording and must not be matched to it.
         b = get_backend(demo=True)
-        mov, mp4 = b.clip("zach").recognize["sha256"]
-        self.assertEqual(b.recognize(sha256=mov).id, "zach")
-        self.assertEqual(b.recognize(sha256=mp4).id, "zach")
+        c = b.clip("michi")
+        self.assertEqual(b.recognize(sha256=c.recognize["sha256"]).id, "michi")
+        self.assertIsNone(b.recognize(sha256=c.recognize["derived_from"]["sha256"]))
+        self.assertNotIn("michi.mp4", [n.lower() for n in c.recognize["names"]])
 
     def test_unknown_is_none_not_a_guess(self):
         self.assertIsNone(get_backend(demo=True).recognize(sha256="00" * 32, name="holiday.mp4"))
@@ -155,7 +162,7 @@ class Guardrails(unittest.TestCase):
         b = self.Scripted([Decision(action="deliver", reasoning="premature"),
                            Decision(action="process", strategy="process.standard", reasoning="ok"),
                            Decision(action="deliver", reasoning="ok")])
-        evs = list(run(b.clip("zach"), Profile.load(), b))
+        evs = list(run(b.clip("michi"), Profile.load(), b))
         guards = [e for e in evs if e["type"] == "guard"]
         self.assertEqual(len(guards), 1)
         self.assertIn("nothing has been verified", guards[0]["reason"])
@@ -165,7 +172,7 @@ class Guardrails(unittest.TestCase):
         b = self.Scripted([Decision(action="process", strategy="process.magic", reasoning="?"),
                            Decision(action="process", strategy="process.standard", reasoning="ok"),
                            Decision(action="deliver", reasoning="ok")])
-        evs = list(run(b.clip("zach"), Profile.load(), b))
+        evs = list(run(b.clip("michi"), Profile.load(), b))
         self.assertIn("not in the profile", [e for e in evs if e["type"] == "guard"][0]["reason"])
 
     def test_spent_budget_ends_in_reshoot_request(self):
@@ -183,7 +190,7 @@ class Guardrails(unittest.TestCase):
     def test_missing_fixture_is_loud(self):
         b = self.Scripted([Decision(action="fix", strategy="fix.reframe", reasoning="no fixture for Zach")])
         with self.assertRaises(FixtureMissing):
-            list(run(b.clip("zach"), Profile.load(), b))
+            list(run(b.clip("michi"), Profile.load(), b))
 
 
 if __name__ == "__main__":

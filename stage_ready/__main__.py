@@ -11,6 +11,9 @@
                                     `measure` reads, in the archive's layout, with a manifest
     python -m stage_ready bundle --install <dir> | --verify <dir>
                                     in a clone: link a bundle's media into demo/clips; check one
+    python -m stage_ready record <clip> [--archive ~/mts] [--fixed] [--out DIR]
+                                    write the clip's inspect/verify/process fixtures from the
+                                    live measurement of its archived workdir (not by hand)
 """
 from __future__ import annotations
 
@@ -200,8 +203,15 @@ def main(argv: list[str] | None = None) -> int:
     m = sub.add_parser("measure"); m.add_argument("clips", nargs="*"); m.add_argument("--archive", default=None); m.add_argument("--json", action="store_true")
     b = sub.add_parser("bundle"); b.add_argument("clips", nargs="*"); b.add_argument("--out", default=None); b.add_argument("--archive", default=None)
     b.add_argument("--dry-run", action="store_true"); b.add_argument("--install", default=None); b.add_argument("--verify", default=None)
+    r_ = sub.add_parser("record"); r_.add_argument("clip"); r_.add_argument("--archive", default=None); r_.add_argument("--fixed", action="store_true"); r_.add_argument("--out", default=None)
     a = ap.parse_args(argv)
 
+    if a.cmd == "record":
+        from pathlib import Path
+        from .record import record
+        for p in record(a.clip, a.archive, a.fixed, Path(a.out) if a.out else None):
+            print(f"  wrote {p}")
+        return 0
     if a.cmd == "measure":
         return _measure(a.clips, a.archive, a.json)
     if a.cmd == "bundle":

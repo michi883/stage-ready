@@ -250,10 +250,13 @@ class ArchiveMeasurer:
                                   f"Matte head width {_pct(mq.median)} of the second opinion's over {mq.frames} frames "
                                   f"(worst frame {mq.worst_frame}: {mq.worst_matte_px} px vs {mq.worst_opinion_px} px).", "vision.matte_extent (OpenCV 5)"))
             elif gid == "separation":
+                margin = round(sep.ratio, 2) - g["value"]
+                side = "the performer is the brighter side" if sep.inside > sep.outside else "the performer is the darker side — the silhouette is carried by the curtain being the brighter of the two"
                 gates.append(gate(gid, "pass" if sep.ratio >= g["value"] else "fail", round(sep.ratio, 2),
                                   f"Edge luma {sep.inside:.3f} inside / {sep.outside:.3f} outside — separation {sep.ratio:.2f}× "
-                                  f"over {sep.frames} frames of {measured_on.name}"
-                                  + (f", decoded by {sep.decoder} (a file-sourced number moves ~1 % with the decoder; the frames are the record)." if sep.decoder else "."),
+                                  f"over {sep.frames} frames of {measured_on.name}; {side}; "
+                                  + (f"clears the {g['value']}× gate by {margin:.2f}×" if margin >= 0 else f"short of the {g['value']}× gate by {-margin:.2f}×")
+                                  + (f". Decoded by {sep.decoder}: a file-sourced number moves ~1 % with the decoder; the frames are the record." if sep.decoder else "."),
                                   "vision.separation (OpenCV 5)"))
             elif gid == "head_spread":
                 gates.append(gate(gid, "pass" if hh.spread <= g["value"] else "fail", round(hh.spread, 3),

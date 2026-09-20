@@ -193,12 +193,26 @@ small delta and we already work in measurements. Skip it the moment it competes 
   section and no evaluation.
 - **Build, deploy and test instructions with pinned dependencies** — verified from a clean clone.
 
+## The demo lineup — settled 2026-09-19: ACCEPT → ADAPT → REFUSE
+
+Measured with the live OpenCV 5 measurer over every archived recording (`demo-corpus`, memory):
+no archived recording gives "fix → verified", "direct → verified" existed only for Joel and Brian
+(footage not showable), and Zach's own recording fails separation at 1.00× (1.45× at the retry's
+bounds) — a passing control from Zach would mean changing his clothing, so he is out of the demo
+(`demo/derive.sh` records why). The lineup is now:
+
+| # | recording | path | verdict |
+|---|---|---|---|
+| 1 | **Michi Yamamoto** — `michi_sample_v1.mp4`, derived from `michi.mp4` by trim (30–75 s) + 59.94→30 fps, audio copied (`demo/derived.json`); run through the pipeline 2026-09-19 (998 s), fixtures written from the measurement (`stage_ready record`) | inspect → process → verify ✓ → deliver; separation **1.51×** (0.092/0.139, the dark way — clears by 0.01×), matte 100 %, head spread 1.2 %, over-lit warning | **ACCEPT** |
+| 2 | **Ethel Chadwick** — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **ADAPT** |
+| 3 | **Sandy Hackett** — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot (cause first: distance) | **REFUSE** |
+
 ## Video beats → what each one needs
 
 | beat | needs |
 |---|---|
 | the problem: red on red, 1.13× against 1.5× | nothing — archived and true today |
-| the loop running on a real recording | step 2 (OpenCV 5 computing it live) |
+| the loop running on a real recording | step 2 (OpenCV 5 computing it live) — INSPECT/VERIFY live since 2026-09-19; Michi's sample is the clean run |
 | Ethel's failed gate changing the agent's next action | **step 0**, then step 3 (Bedrock deciding) |
 | the delivered output with its numbers | step 0 |
 | the other exit — a reshoot request | nothing — Sandy's path is one (since 2026-09-19); `&budget=0` shows Ethel's |

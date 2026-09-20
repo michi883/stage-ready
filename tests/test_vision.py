@@ -88,7 +88,7 @@ class ReproducesTheArchive(unittest.TestCase):
         self.assertEqual([g.id for g in v.failing], ["separation"])
         g = {x.id: x for x in v.gates}["separation"]
         self.assertAlmostEqual(g.value, 1.13, delta=0.015, msg=g.detail)
-        self.assertIn("decoded by", g.detail)
+        self.assertIn("ecoded by", g.detail)
 
 
 if __name__ == "__main__":
