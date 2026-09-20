@@ -79,8 +79,8 @@
      "label": "Subject size on canvas",
      "status": "pass",
      "value": {
-      "p50": 0.345,
-      "p95": 0.356
+      "p50": 0.346,
+      "p95": 0.354
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -89,7 +89,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 35 % of the canvas (p95 36 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 35 % of the canvas (p95 35 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -112,13 +112,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.067,
       "max": 0.104
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -167,7 +170,7 @@
     "frames": 1285,
     "duration_s": 42.8
    },
-   "duration_ms": 18415,
+   "duration_ms": 18021,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_underlit and brian_underlit.mp4",
    "failing": []
@@ -203,6 +206,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -279,7 +295,7 @@
    ],
    "measurements": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.345,
+    "shoulder_span_p50": 0.346,
     "separation": 1.02,
     "edge_luma_in": 0.113,
     "edge_luma_out": 0.111,
@@ -287,7 +303,7 @@
     "head_drift_px": 1.2,
     "frames": 1285
    },
-   "duration_ms": 20785,
+   "duration_ms": 26344,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_underlit, work/midtown_brian_underlit/comp",
    "passed": false,
@@ -335,6 +351,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -411,7 +440,7 @@
    ],
    "measurements": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.345,
+    "shoulder_span_p50": 0.346,
     "separation": 1.52,
     "edge_luma_in": 0.171,
     "edge_luma_out": 0.112,
@@ -419,7 +448,7 @@
     "head_drift_px": 1.2,
     "frames": 1285
    },
-   "duration_ms": 16073,
+   "duration_ms": 20962,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_underlit, work/midtown_brian_underlit/comp_sep",
    "passed": true,
@@ -429,7 +458,7 @@
  "decisions": [
   {
    "action": "process",
-   "reasoning": "This is decision number 1, no attempts have been made yet, and the latest_verification is null — so this is the first render. All pre-flight findings pass: picture_area passes (1920×1080, no padding), pose_coverage passes (1.0 ≥ 0.6), one_subject passes (1.0 ≥ 0.95), subject_size passes (p50 0.345, p95 0.356, well under the 0.55 cap), distance_steady passes (1.05 ≤ 1.35), and headroom passes (crown inside frame on every frame, min 0.067 max 0.104 within the recommended 0.05–0.12 range). The only non-pass items are a face_exposure warning (held at ×1.25, which is the clamp boundary — a recorded-content limit, not a gate defect) and a key_direction info note (×1.74, also just informational). No gates are currently failing, so there is no reason to use a targeted fixer. The correct first action is to run the standard Red Curtain composite (process.standard), which is the standard strategy for a first attempt. If this fails a gate — most likely separation given the face_exposure warning — the fallback is process.separation_targeted, which addresses that gate and still has 2 retries in budget.",
+   "reasoning": "This is decision 1 with no prior attempts (attempts_so_far is empty, reprocesses_used is 0, latest_verification is null). All inspection findings that have pass/fail status are passing: picture_area passes (1920×1080, no padding), pose_coverage passes (1.0 ≥ 0.6), one_subject passes (1.0 ≥ 0.95), subject_size passes (p95 0.354 ≤ 0.55), distance_steady passes (1.05 ≤ 1.35), and headroom passes (crown visible on 1.0 of frames, min headroom 0.067, max 0.104, well within 0.05–0.12). The face_exposure finding is a warn (face luma 0.131, gain held at ×1.25 — the recording is under-lit), and key_direction is info only; neither is a gate-failing defect at this stage. No gates have failed in inspection, there is no latest_verification yet, and no process has been run. The correct first move per the rules is to render with the standard strategy (process.standard), which is the standard strategy for a first attempt. The retry budget is 2, so if the standard render fails a gate (most likely separation given the under-lit face, or head metrics), the separation_targeted processor is available as a follow-up. If both retries are spent without passing, reshoot is the honest exit.",
    "strategy": "process.standard",
    "cites": [
     "picture_area",
@@ -441,49 +470,46 @@
     "face_exposure",
     "key_direction"
    ],
-   "confidence": 0.9,
+   "confidence": 0.88,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6481,
+   "duration_ms": 7249,
    "cached": false
   },
   {
    "action": "process",
-   "reasoning": "The only failing gate from attempt_1 is \"separation\" (id: separation), which measured 1.02× against a required threshold of >=1.5× — short by 0.48×. The edge luma inside was 0.113 and outside 0.111, meaning the performer is barely distinguishable from the background at the edge. The strategy process.separation_targeted directly addresses the \"separation\" gate (it is listed in its \"addresses\" array), and it uses stronger rim lighting and light wrap with a bounded shadow lift to improve edge contrast without altering the performer's pixels. The retry budget shows 0 reprocesses used against a budget of 2, so there is capacity to try this. All other gates passed in the latest verification (pose_coverage 1.0, one_subject 1.0, matte_extent 1.006, head_spread 0.007, head_drift 1.2 px, frame_count 1285, audio_md5 equal). The face_exposure finding is a warning (held at ×1.25 clamp), and process.separation_targeted's fgexp_clamp bounds of [0.8, 1.25] are consistent with the current fgexp of 1.25. If this process attempt also fails separation and no budget remains, the honest exit is reshoot with guidance to avoid red/maroon clothing and improve front lighting.",
+   "reasoning": "The only failing gate is `separation`, which measured 1.02× against the required 1.5× — short by 0.48×. All other gates in the latest verification (attempt_1, `process.standard`) passed: pose_coverage 1.0, one_subject 1.0, crown_visible 1.0, matte_extent 1.006, head_spread 0.007, head_drift 1.2 px, frame_count 1285, audio_md5 equal. The `process.separation_targeted` strategy explicitly addresses the `separation` gate and reuses the existing seed, matte, track, and warp — it applies a stronger rim and light wrap plus a bounded shadow lift (rimamt_max 0.45, lwamt_max 0.7, shadow_lift_max 0.04, fgexp_clamp [0.8, 1.25]) to widen the edge luma ratio without touching the performer's pixels. The retry budget shows 0 reprocesses used with a budget of 2, so budget is available. The face_exposure finding is a warning (gain held at ×1.25), which is a recorded-content limit — not a defect the strategy changes. If this attempt still fails separation and the budget is exhausted, the honest exit is reshoot with guidance to avoid deep red clothing and improve front lighting for better subject-to-curtain separation.",
    "strategy": "process.separation_targeted",
    "cites": [
     "separation",
     "face_exposure",
-    "pose_coverage",
-    "one_subject",
-    "matte_extent",
-    "head_spread",
-    "head_drift",
-    "frame_count",
-    "audio_md5"
+    "attempts_so_far",
+    "budget"
    ],
-   "confidence": 0.85,
+   "confidence": 0.82,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 7471,
+   "duration_ms": 7366,
    "cached": false
   },
   {
    "action": "deliver",
-   "reasoning": "The latest verification (attempt_2, using process.separation_targeted) passed every gate: pose_coverage is 1.0 (≥0.6), one_subject is 1.0 (≥0.95), matte_extent is 1.006 (≥0.9), separation is 1.52 (≥1.5), head_spread is 0.007 (≤0.02), head_drift is 1.2 px (≤4.0 px). The frame_count and audio_md5 gates are marked \"info\" only because no delivered file is yet on disk — they are not failures. The face_exposure finding remains a warn, which is a recorded-content limit noted in the report, not a gate defect. All gate statuses in the latest_verification are \"pass\" or \"info\", and the overall passed flag is true. No further action is warranted.",
+   "reasoning": "The latest verification (attempt_2, using process.separation_targeted) passed every gate: pose_coverage is 1.0 (≥ 0.6), one_subject is 1.0 (≥ 0.95), crown_visible is 1.0 (≥ 0.5), matte_extent is 1.006 (≥ 0.9), separation is 1.52 (≥ 1.5), head_spread is 0.007 (≤ 0.02), and head_drift is 1.2 px (≤ 4.0 px). The frame_count and audio_md5 gates are both reported as \"info\" with no delivered file on disk yet — they are pending delivery, not failures. The face_exposure finding at ×1.25 is recorded as a warning, not a gate, and does not block delivery. All enforceable gates passed on attempt_2, so the correct action is deliver.",
    "strategy": null,
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
     "head_drift",
     "frame_count",
     "audio_md5",
-    "face_exposure"
+    "face_exposure",
+    "attempts_so_far"
    ],
    "confidence": 0.98,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 4611,
+   "duration_ms": 4435,
    "cached": false
   }
  ],
@@ -500,7 +526,7 @@
   },
   "measurements": {
    "head_target": 0.334,
-   "shoulder_span_p50": 0.345,
+   "shoulder_span_p50": 0.346,
    "separation": 1.52,
    "edge_luma_in": 0.171,
    "edge_luma_out": 0.112,
@@ -517,11 +543,11 @@
  },
  "bedrock": {
   "calls": 3,
-  "input_tokens": 13952,
-  "output_tokens": 1274,
-  "latency_ms": 18563
+  "input_tokens": 14894,
+  "output_tokens": 1309,
+  "latency_ms": 19050
  },
- "wall_s": 74.0,
+ "wall_s": 84.5,
  "score": {
   "expected": "either",
   "got": "deliver",

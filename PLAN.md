@@ -136,10 +136,12 @@ behind it.
 
 ### 5. Evaluation — **DONE 2026-09-20**: `demo/eval/set.json` (19 items, labelled before running), `python3 -m stage_ready evaluate`, `demo/eval/EVALUATION.md`
 
-Blind (no brief, no name reaches the agent): Bedrock 17/19 outcomes as labelled, the rule table 16/19; one silently wrong delivery each — the
-frozen-frames delivery no gate can see; every dropped-frame / re-encoded-audio delivery rejected; the linear pipeline alone would have shipped
-5 of 13 renders with a failing gate, 2 of them recordings the label says must not ship. Found on the way: two labels wrong (the measurement
-right), the crown-cut blind spot of the head gates, the size cap's ruler ≠ the size gate's, and label leakage through the intake brief.
+Blind (no brief, no name reaches the agent): Bedrock 17/19 outcomes as labelled, the rule table 17/19; one silently wrong delivery each — the
+frozen-frames delivery, the stated limitation; every dropped-frame / re-encoded-audio delivery rejected; the linear pipeline alone would have
+shipped 6 of 13 renders with a failing gate, 2 of them recordings the label says must not ship. Found on the way and **fixed 2026-09-20**:
+the crown-cut blind spot of the head gates (now a profile-declared evidence rule, `crown_visible_min_for_head_metrics` 0.5, enforced at
+INSPECT and VERIFY) and the size cap's ruler ≠ the size gate's (one shared ruler). Also found: two labels wrong (the measurement right)
+and label leakage through the intake brief (the evaluation runs blind). Kept as a stated limitation: no frozen-frame detection.
 
 **Why:** "evaluation evidence including limitations and failure cases" is a stated requirement and
 is named inside the 30% criterion. Three hand-picked clips is not an evaluation.
@@ -155,9 +157,11 @@ crown cropped, frames dropped, audio re-encoded. Report:
 
 ### 6. Baseline and ablation — **DONE 2026-09-20** with the evaluation: (a) the linear pipeline baseline and (b) the rule-table agent are both in `EVALUATION.md`; the model comparison (`agent-eval`: Sonnet 4.6 9/9, Nova 2 Lite 6/9, Nova Pro 21/27) is in the README
 
-The agent and the rule table tie on 18 of 19 items and differ on one (a close-up the fixer left 0.3 % over the cap: the agent processed
-it and it verified, the rule table refused). The honest answer the plan asked for: the agent ties the rule table on this set; where it
-wins is judgement at a margin, and where it can lose is reading the brief (blind, it does not).
+After the two corrections the agent and the rule table reach the same outcome on all 19 items and differ on one path (Sandy: the agent
+stops at its first decision on the crown evidence, the rule table fixes what it can first). Before them they differed on one outcome (a
+close-up the fixer had left 0.3 % over the cap: the agent processed it and it verified, the rule table refused — a ruler defect, now
+fixed). The honest answer the plan asked for: the agent ties the rule table on this set; where it wins is judgement at a margin, and where
+it can lose is reading the brief (blind, it does not).
 
 **Why:** the claims are "verification changes behaviour" and "the agent decides". Both need a control.
 **Do:** (a) run `midtown_red_curtain.sh` — fixed, linear, warns — against the same set and show where

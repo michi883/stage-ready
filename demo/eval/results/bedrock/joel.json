@@ -84,7 +84,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 45 % of the canvas (p95 52 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 45 % of the canvas (p95 52 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -107,13 +107,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.057,
       "max": 0.094
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -162,7 +165,7 @@
     "frames": 1543,
     "duration_s": 51.4
    },
-   "duration_ms": 22245,
+   "duration_ms": 22355,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_joel_pelletier_v4 and joel_pelletier_v4.mp4",
    "failing": []
@@ -198,6 +201,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -282,7 +298,7 @@
     "head_drift_px": 2.3,
     "frames": 1543
    },
-   "duration_ms": 19741,
+   "duration_ms": 25773,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_joel_pelletier_v4, work/midtown_joel_pelletier_v4/comp",
    "passed": true,
@@ -292,7 +308,7 @@
  "decisions": [
   {
    "action": "process",
-   "reasoning": "This is decision number 1 with no prior attempts, no fixes applied, and latest_verification is null — nothing has been rendered yet. All pre-render findings pass: picture_area passes (1920×1080, no padding), pose_coverage is 1.0 (gate requires ≥0.6), one_subject is 1.0 (gate requires ≥0.95), subject_size p50 is 0.454 and p95 is 0.519 (both under the 0.55 cap), distance_steady is 1.18× (under the 1.35 threshold), headroom crown_cut_frames is 0.0, and face_exposure gain is ×1.163 (within the [0.8, 1.25] clamp). No gate is currently failing, so no targeted fix or targeted process is needed. The correct first action is to render a standard attempt using process.standard, the designated standard strategy for a first attempt. The retry budget is 2 and 0 reprocesses have been used. If process.standard fails a gate, the remaining budget and targeted strategies (e.g., process.separation_targeted for the separation gate) are available as next steps; if the budget is exhausted with failures, reshoot would be the honest exit.",
+   "reasoning": "This is decision number 1 with no attempts made yet (attempts_so_far is empty, reprocesses_used is 0, latest_verification is null). All inspection findings pass: picture_area fills the 1920×1080 file, pose_coverage is 1.0 (gate requires ≥0.6), one_subject is 1.0 (gate requires ≥0.95), subject_size p95 is 0.519 under the 0.55 cap, distance_steady is 1.18× under 1.35×, headroom shows crown_visible_frames at 1.0 (gate requires ≥0.5), and face_exposure gain of 1.163 is within the [0.8, 1.25] clamp. There are no failing gates identified at this stage — no separation, matte_extent, head_spread, head_drift, frame_count, or audio_md5 failures have been flagged yet (those are verified post-render). Since no render has been attempted, the standard first-attempt strategy is process.standard, which is the standard strategy for a first attempt per the profile. The retry budget is 2 and 0 have been used. If process.standard fails on a separation gate, process.separation_targeted addresses that and is still available within budget.",
    "strategy": "process.standard",
    "cites": [
     "picture_area",
@@ -303,18 +319,19 @@
     "headroom",
     "face_exposure"
    ],
-   "confidence": 0.95,
+   "confidence": 0.92,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6180,
+   "duration_ms": 6049,
    "cached": false
   },
   {
    "action": "deliver",
-   "reasoning": "The latest verification (artifact \"attempt_1\") passed every single gate: pose_coverage 1.0 ≥ 0.6, one_subject 1.0 ≥ 0.95, matte_extent 0.988 ≥ 0.9, separation 2.98 ≥ 1.5, head_spread 0.009 ≤ 0.02, head_drift 2.3 px ≤ 4.0 px, frame_count 1543 == 1543, and audio_md5 equal. There are no failing gates and no warnings that require remediation. The retry budget has not been touched (0 of 2 reprocesses used). No further fix or process action is warranted; the output is ready to deliver.",
+   "reasoning": "The latest verification for attempt_1 (process.standard) passed every gate: pose_coverage 1.0 ≥ 0.6, one_subject 1.0 ≥ 0.95, crown_visible 1.0 ≥ 0.5, matte_extent 0.988 ≥ 0.9, separation 2.98 ≥ 1.5, head_spread 0.009 ≤ 0.02, head_drift 2.3 px ≤ 4.0 px, frame_count 1543 == 1543, and audio_md5 equal. All nine gates are green with no failures. There is nothing left to fix or reprocess — the artifact is ready to deliver.",
    "strategy": null,
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -324,7 +341,7 @@
    ],
    "confidence": 1.0,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 3839,
+   "duration_ms": 3933,
    "cached": false
   }
  ],
@@ -360,11 +377,11 @@
  },
  "bedrock": {
   "calls": 2,
-  "input_tokens": 8663,
-  "output_tokens": 757,
-  "latency_ms": 10019
+  "input_tokens": 9275,
+  "output_tokens": 768,
+  "latency_ms": 9982
  },
- "wall_s": 52.4,
+ "wall_s": 58.5,
  "score": {
   "expected": "deliver",
   "got": "deliver",

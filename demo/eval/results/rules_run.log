@@ -1,9 +1,9 @@
-[ WARN:0@22.120] global net_impl_backend.cpp:345 setPreferableTarget Targets are not supported by the new graph engine for now
+[ WARN:0@19.159] global net_impl_backend.cpp:345 setPreferableTarget Targets are not supported by the new graph engine for now
   brian                  delivered  expected deliver  ok   missed -  path inspect → process → verify ✓ → deliver
   ethel                  delivered  expected deliver  ok   missed -  path inspect → process → verify ✗ → reprocess → verify ✓ → deliver
   joel                   delivered  expected deliver  ok   missed -  path inspect → process → verify ✓ → deliver
-  sandy                  reshoot    expected reshoot  ok   missed -  path inspect → fix → inspect → process → verify ✗ → reshoot
-  zach_v2                reshoot    expected reshoot  ok   missed -  path inspect → process → verify ✗ → reprocess → verify ✗ → reshoot
+  sandy                  reshoot    expected reshoot  ok   missed ['head_moves']  path inspect → fix → inspect → reshoot
+  zach_v2                reshoot    expected reshoot  ok   missed ['wardrobe_near_plate']  path inspect → reshoot
   zach                   delivered  expected deliver  ok   missed -  path inspect → process → verify ✓ → deliver
   michi                  delivered  expected either   ok   missed -  path inspect → process → verify ✓ → deliver
   tehila_45s             refused    expected deliver  NOT ok  missed -  path prepare ✗
@@ -12,11 +12,11 @@
   two_sumitas            refused    expected reshoot  ok   missed -  path prepare ✗
   brian_padded           delivered  expected deliver  ok   missed -  path inspect → fix → inspect → process → verify ✓ → deliver
   zach_padded            delivered  expected deliver  ok   missed -  path inspect → fix → inspect → process → verify ✓ → deliver
-  brian_zoomed           reshoot    expected deliver  NOT ok  missed -  path inspect → fix → inspect → reshoot
-  brian_crown_cut        delivered  expected either   ok   missed -  path inspect → process → verify ✓ → deliver
-  brian_underlit         refused    expected either   ok   missed -  path prepare ✗
+  brian_zoomed           delivered  expected deliver  ok   missed -  path inspect → fix → inspect → process → verify ✓ → deliver
+  brian_crown_cut        reshoot    expected either   ok   missed -  path inspect → reshoot
+  brian_underlit         delivered  expected either   ok   missed -  path inspect → process → verify ✗ → reprocess → verify ✓ → deliver
   gate_frame_drop        rejected   expected reject   ok   missed -  path verify ✗
   gate_audio_reencoded   rejected   expected reject   ok   missed -  path verify ✗
   gate_frozen_frames     delivered  expected reject   NOT ok  SILENTLY WRONG  missed -  path verify ✓
-  rules: 16/19 outcomes as labelled · silently wrong 1 ['gate_frozen_frames'] · missed {'sta_30s': ['walk_in']}
+  rules: 17/19 outcomes as labelled · silently wrong 1 ['gate_frozen_frames'] · missed {'sandy': ['head_moves'], 'zach_v2': ['wardrobe_near_plate'], 'sta_30s': ['walk_in']}
 exit 0

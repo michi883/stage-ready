@@ -75,7 +75,7 @@
      "status": "pass",
      "value": {
       "p50": 0.325,
-      "p95": 0.348
+      "p95": 0.347
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -84,7 +84,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 32 % of the canvas (p95 35 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 33 % of the canvas (p95 35 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -107,13 +107,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.061,
       "max": 0.106
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -162,7 +165,7 @@
     "frames": 1351,
     "duration_s": 45.0
    },
-   "duration_ms": 18469,
+   "duration_ms": 18920,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_michi_sample_v1 and michi_sample_v1.mp4",
    "failing": []
@@ -198,6 +201,19 @@
      "unit": "fraction of frames",
      "detail": "99.9 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -282,7 +298,7 @@
     "head_drift_px": 1.6,
     "frames": 1351
    },
-   "duration_ms": 20436,
+   "duration_ms": 25386,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_michi_sample_v1, work/midtown_michi_sample_v1/comp",
    "passed": true,
@@ -292,7 +308,7 @@
  "decisions": [
   {
    "action": "process",
-   "reasoning": "This is decision 1 and no processing attempt has been made yet (attempts_so_far is empty, latest_verification is null). All pre-flight findings pass: picture_area passes (1920×1080, no padding), pose_coverage passes at 1.0 (≥ 0.6 required), one_subject passes at 0.999 (≥ 0.95 required), subject_size passes with p50 0.325 and p95 0.348 (well under the 0.55 cap), distance_steady passes at 1.11× (≤ 1.35), and headroom passes with zero crown-cut frames. The face_exposure finding is a warn (face luma 0.561, gain held at ×0.80 vs. the ×0.65 asked), and key_direction is info only — both are recorded-content warnings, not defects to fix. No gate has failed yet, so the correct first action is to run the standard Red Curtain composite (process.standard), which is the standard strategy for a first attempt. If process.standard fails any gate (e.g. separation or matte_extent), the remaining retry budget of 2 allows a targeted follow-up; if the budget is exhausted without passing, the exit would be reshoot.",
+   "reasoning": "This is decision number 1 with no attempts so far (attempts_so_far is empty, reprocesses_used is 0, retry_budget is 2). All inspection findings are passing: picture_area passes filling the 1920×1080 file, pose_coverage is 1.0 (gate requires ≥0.6), one_subject is 0.999 (gate requires ≥0.95), subject_size p95 is 0.347 (well under the 0.55 cap), distance_steady is 1.11× (under 1.35), and headroom crown_visible_frames is 1.0 on every frame. The only non-pass findings are a face_exposure warn at 0.8 gain (held at the lower clamp of 0.8, recorded as a warning not a gate defect) and a key_direction info. No gate failures are present at the inspection stage, but latest_verification is null — no render has been produced yet. The correct first action per the rules is to run the standard process strategy for a first attempt; process.standard is the designated standard strategy for a first attempt and its 'addresses' list being empty is expected for the standard render. If this fails a gate such as separation, the separation_targeted strategy remains available within the retry budget. Exit if process.standard fails: assess which gate fails and apply process.separation_targeted if separation is the culprit, or reshoot if no allowed strategy addresses the failing gate.",
    "strategy": "process.standard",
    "cites": [
     "picture_area",
@@ -301,21 +317,21 @@
     "subject_size",
     "distance_steady",
     "headroom",
-    "face_exposure",
-    "key_direction"
+    "face_exposure"
    ],
-   "confidence": 0.93,
+   "confidence": 0.9,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6208,
+   "duration_ms": 7830,
    "cached": false
   },
   {
    "action": "deliver",
-   "reasoning": "The latest verification for attempt_1 (process.standard) passed every single gate: pose_coverage 1.0 ≥ 0.6, one_subject 0.999 ≥ 0.95, matte_extent 0.997 ≥ 0.9, separation 1.51 ≥ 1.5, head_spread 0.012 ≤ 0.02, head_drift 1.6 px ≤ 4.0 px, frame_count 1351 = 1351, and audio_md5 equal. All eight gates are green. The two non-gate items (face_exposure warn at ×0.80 and key_direction info at 0.96) are recorded-content limits flagged as warnings/info, not defects requiring a fix. No gate is failing, no further action is warranted, and the retry budget remains untouched. The correct and honest action is to deliver.",
+   "reasoning": "The latest verification for attempt_1 (process.standard) passed every gate: pose_coverage 1.0 ≥ 0.6, one_subject 0.999 ≥ 0.95, crown_visible 1.0 ≥ 0.5, matte_extent 0.997 ≥ 0.9, separation 1.51 ≥ 1.5, head_spread 0.012 ≤ 0.02, head_drift 1.6 px ≤ 4.0 px, frame_count 1351 == 1351, and audio_md5 equal. All nine gates are green with no failures. The face_exposure finding is a warning (recorded-content limit), not a gate defect, and key_direction is informational only — neither requires action. There is nothing to fix, no failing gate to address, and the rules require deliver only after the latest verification passed, which it has. Delivering now is the correct and honest exit.",
    "strategy": null,
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -327,7 +343,7 @@
    ],
    "confidence": 1.0,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 4807,
+   "duration_ms": 5299,
    "cached": false
   }
  ],
@@ -363,11 +379,11 @@
  },
  "bedrock": {
   "calls": 2,
-  "input_tokens": 8687,
-  "output_tokens": 816,
-  "latency_ms": 11015
+  "input_tokens": 9292,
+  "output_tokens": 861,
+  "latency_ms": 13129
  },
- "wall_s": 50.1,
+ "wall_s": 57.6,
  "score": {
   "expected": "either",
   "got": "deliver",

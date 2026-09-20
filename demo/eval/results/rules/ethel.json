@@ -21,6 +21,7 @@
   "verify ✓",
   "deliver"
  ],
+ "blind": true,
  "inspect": [
   {
    "target": "source",
@@ -78,7 +79,7 @@
      "status": "pass",
      "value": {
       "p50": 0.339,
-      "p95": 0.35
+      "p95": 0.348
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -87,7 +88,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -110,13 +111,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.104,
       "max": 0.159
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -165,7 +169,7 @@
     "frames": 1237,
     "duration_s": 41.2
    },
-   "duration_ms": 21518,
+   "duration_ms": 17992,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2 and ethel_chadwick_v2.mp4",
    "failing": []
@@ -201,6 +205,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -285,7 +302,7 @@
     "head_drift_px": 3.1,
     "frames": 1237
    },
-   "duration_ms": 32103,
+   "duration_ms": 25641,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2, ethel_chadwick_v2_v1.mp4",
    "passed": false,
@@ -333,6 +350,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -417,7 +447,7 @@
     "head_drift_px": 3.1,
     "frames": 1237
    },
-   "duration_ms": 31138,
+   "duration_ms": 23095,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2, work/midtown_ethel_chadwick_v2/comp_sep",
    "passed": true,
@@ -454,6 +484,7 @@
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -496,7 +527,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 85.1,
+ "wall_s": 67.0,
  "score": {
   "expected": "deliver",
   "got": "deliver",

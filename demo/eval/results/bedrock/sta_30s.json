@@ -81,9 +81,8 @@
      "label": "Subject size on canvas",
      "status": "fail",
      "value": {
-      "p50": 0.563,
-      "p95": 0.583,
-      "reach": 0.754
+      "p50": 0.567,
+      "p95": 0.754
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -92,7 +91,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 56 % of the canvas (p95 58 %) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
+     "detail": "At head_target 0.334 the shoulders span 57 % of the canvas (p95 75 %, the same smoothed ruler the size cap is solved on) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -115,13 +114,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 0.98,
       "crown_cut_frames": 0.02,
       "min": 0.01,
       "max": 0.122
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -170,7 +172,7 @@
     "frames": 919,
     "duration_s": 30.6
    },
-   "duration_ms": 7314,
+   "duration_ms": 7242,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4",
    "failing": [
@@ -196,9 +198,8 @@
      "label": "Subject size on canvas",
      "status": "fail",
      "value": {
-      "p50": 0.563,
-      "p95": 0.583,
-      "reach": 0.754
+      "p50": 0.567,
+      "p95": 0.754
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -207,7 +208,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 56 % of the canvas (p95 58 %) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
+     "detail": "At head_target 0.334 the shoulders span 57 % of the canvas (p95 75 %, the same smoothed ruler the size cap is solved on) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     }
    ]
@@ -267,8 +268,8 @@
      "label": "Subject size on canvas",
      "status": "pass",
      "value": {
-      "p50": 0.41,
-      "p95": 0.425
+      "p50": 0.414,
+      "p95": 0.55
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -277,7 +278,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.514 the shoulders span 41 % of the canvas (p95 43 %) — under the 55 % cap.",
+     "detail": "At head_target 0.514 the shoulders span 41 % of the canvas (p95 55 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -300,13 +301,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 0.98,
       "crown_cut_frames": 0.02,
       "min": 0.01,
       "max": 0.122
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -355,7 +359,7 @@
     "frames": 919,
     "duration_s": 30.6
    },
-   "duration_ms": 5443,
+   "duration_ms": 5446,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4",
    "failing": []
@@ -370,7 +374,7 @@
      "id": "band",
      "label": "Crop to picture area",
      "tool": "vision.detect_band → crop",
-     "duration_ms": 3235,
+     "duration_ms": 3184,
      "cached": false,
      "reused": false,
      "summary": "crop=1080:764:0:574 — the 0 dead columns and 1156 dead rows are gone; the picture bottom is now the frame bottom.",
@@ -409,16 +413,16 @@
      "after": 0.514
     },
     "shoulder_span_p50": {
-     "before": 0.563,
-     "after": 0.41
+     "before": 0.567,
+     "after": 0.414
     },
     "shoulder_span_p95": {
-     "before": 0.583,
-     "after": 0.425
+     "before": 0.754,
+     "after": 0.55
     },
     "pixels_invented": 0
    },
-   "duration_ms": 3235,
+   "duration_ms": 3184,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
   }
@@ -452,6 +456,19 @@
      "unit": "fraction of frames",
      "detail": "99.9 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 0.98,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 98 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -528,7 +545,7 @@
    ],
    "measurements": {
     "head_target": 0.514,
-    "shoulder_span_p50": 0.41,
+    "shoulder_span_p50": 0.414,
     "separation": 1.41,
     "edge_luma_in": 0.16,
     "edge_luma_out": 0.113,
@@ -536,7 +553,7 @@
     "head_drift_px": 2.3,
     "frames": 919
    },
-   "duration_ms": 12464,
+   "duration_ms": 14531,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s, work/midtown_sta_30s/comp",
    "passed": false,
@@ -584,6 +601,19 @@
      "unit": "fraction of frames",
      "detail": "99.9 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 0.98,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 98 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -660,7 +690,7 @@
    ],
    "measurements": {
     "head_target": 0.514,
-    "shoulder_span_p50": 0.41,
+    "shoulder_span_p50": 0.414,
     "separation": 1.83,
     "edge_luma_in": 0.213,
     "edge_luma_out": 0.116,
@@ -668,7 +698,7 @@
     "head_drift_px": 2.3,
     "frames": 919
    },
-   "duration_ms": 11499,
+   "duration_ms": 12954,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s, work/midtown_sta_30s/comp_sep",
    "passed": true,
@@ -678,7 +708,7 @@
  "decisions": [
   {
    "action": "fix",
-   "reasoning": "Two findings are failing before any processing has been attempted. Finding \"picture_area\" shows the recorded picture is only 1080×764 inside a 1080×1920 file, offset at y=574 — the file is pillarboxed/letterboxed and must be cropped to the live picture area before framing. Finding \"subject_size\" shows the shoulders span 56 % of the canvas at p50 (p95 58 %), exceeding the 55 % cap defined by gate \"subject_size\"; the solver notes that holding size requires moving the head down to 0.514, well within the head_target_max of 0.55 and within the scale_tol of 0.25. The \"fix.reframe\" strategy explicitly addresses both \"picture_area\" and \"subject_size\", is cheap, has not been used yet, and the retry budget is still at 2. No other strategy addresses these two issues. All other gates either pass or carry only warnings/info (face_exposure is a warn, key_direction is info). If this fix fails to bring subject_size within the cap or cannot resolve the picture_area crop, the next step would be to inspect or, if the subject is simply too close to the camera, reshoot with guidance \"subject_size\" / \"picture_area\".",
+   "reasoning": "Two findings are failing at this first decision point. Finding \"picture_area\" reports the recorded picture is 1080×764 inside a 1080×1920 file at offset +0+574 — it is a pillarboxed/letterboxed file and the padding must be cropped before any framing can be done. Finding \"subject_size\" reports the shoulder span at p50 is 0.567 and p95 is 0.754, both over the 0.55 size cap; the solve indicates the head must move down to 0.514 to hold the cap. The fix.reframe strategy directly addresses both \"picture_area\" and \"subject_size\" (its 'addresses' list), it is cheap, has not been used yet, and the retry budget is 2 with 0 reprocesses used. No other allowed strategy addresses either of these two failing gates. If the reframe fix fails to resolve picture_area or subject_size, or if it surfaces a new unaddressable gate failure, the next honest exit is reshoot per the guidance: \"Export without padding\" and \"Stand 2–3 m from the camera.\"",
    "strategy": "fix.reframe",
    "cites": [
     "picture_area",
@@ -687,12 +717,12 @@
    ],
    "confidence": 0.95,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6587,
+   "duration_ms": 5861,
    "cached": false
   },
   {
    "action": "process",
-   "reasoning": "The fix.reframe has already been applied, and all pre-process findings are passing: pose_coverage is 0.997 (gate ≥ 0.6), one_subject is 0.999 (gate ≥ 0.95), subject_size p50 is 0.41 and p95 is 0.425 (gate ≤ 0.55), picture_area fills correctly, distance_steady is 1.33× (gate ≤ 1.35). The face_exposure finding is a warn (held at ×0.80, within the fgexp_clamp of [0.8, 1.25]) — a recorded-content limit, not a defect to fix. No verification has been run yet (latest_verification is null), so no gate results exist to fail. The correct next step is the first and mandatory render: process.standard is the standard strategy for a first attempt and must be run before any gate outcomes are known. With 0 reprocesses used and a retry budget of 2, budget is intact. If process.standard produces a failing separation gate, process.separation_targeted is available as a fallback; if budget is exhausted without passing, reshoot with separation guidance would be the honest exit.",
+   "reasoning": "The fix.reframe has been applied and all inspection findings are now passing: picture_area is clean at 1080×764, pose_coverage is 0.997 (gate ≥ 0.6), one_subject is 0.999 (gate ≥ 0.95), subject_size p95 is 0.55 (gate ≤ 0.55), distance_steady is 1.33 (gate ≤ 1.35), and headroom crown_visible_frames is 0.98 (gate ≥ 0.5). The face_exposure is a warn (held at ×0.80 against a ×0.46 target) and key_direction is info — neither is a gate failure, just recorded-content limits. No process has been attempted yet (reprocesses_used = 0, attempts_so_far is empty), so process.standard is the correct first-attempt standard strategy. The retry budget is 2. If this render fails a gate that process.separation_targeted addresses (separation), that targeted strategy remains as a fallback; if it fails a gate neither strategy addresses, reshoot would be the honest exit.",
    "strategy": "process.standard",
    "cites": [
     "picture_area",
@@ -700,36 +730,38 @@
     "one_subject",
     "subject_size",
     "distance_steady",
+    "headroom",
     "face_exposure",
     "process.standard"
    ],
-   "confidence": 0.95,
+   "confidence": 0.88,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6511,
+   "duration_ms": 5807,
    "cached": false
   },
   {
    "action": "process",
-   "reasoning": "The latest verification (attempt_1) failed on exactly one gate: `separation`, which measured 1.41× against the required ≥1.50× — short by 0.09×. All other seven gates passed, including `matte_extent` at 0.991, `head_spread` at 0.014, and `head_drift` at 2.3 px. The only allowed strategy that addresses the `separation` gate is `process.separation_targeted`, which applies stronger rim lighting, a bounded light-wrap (lwamt_max 0.70), and a shadow lift (shadow_lift_max 0.04) to widen the edge luma ratio — without touching the performer's pixels. The retry budget shows 0 reprocesses used against a budget of 2, so there is room to attempt this. The `process.standard` strategy was already used in attempt_1 and did not address separation, so it is not the right choice here. If `process.separation_targeted` still fails to lift the edge luma ratio to ≥1.50×, and the budget is spent, the honest exit is reshoot with guidance to avoid wearing deep red or maroon tones that blend with the stage curtain.",
+   "reasoning": "The latest verification (attempt_1) failed on exactly one gate: \"separation\" (id: separation), which measured 1.41× against the required ≥ 1.5× — short by 0.09×. All other eight gates passed. The only strategy in the allowed list that explicitly addresses the \"separation\" gate is \"process.separation_targeted\", which uses a stronger rim and light wrap plus a bounded shadow lift to push the edge luma ratio up, without touching the performer's own pixels. The retry budget shows 0 reprocesses used against a budget of 2, so there is room to attempt this. \"process.standard\" was already used on attempt_1 and produced the failing separation value of 1.41; using it again would not address the gate. If process.separation_targeted also fails to reach 1.5× separation, the honest exit is reshoot with guidance to avoid wearing colours close to the deep-red curtain (no red, maroon, burgundy, or hot pink).",
    "strategy": "process.separation_targeted",
    "cites": [
     "separation",
     "process.separation_targeted",
-    "attempt_1"
+    "attempts_so_far"
    ],
-   "confidence": 0.85,
+   "confidence": 0.87,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6147,
+   "duration_ms": 6040,
    "cached": false
   },
   {
    "action": "deliver",
-   "reasoning": "The latest verification (attempt_2, using process.separation_targeted) passed all 8 gates: pose_coverage at 0.997 (≥0.6), one_subject at 0.999 (≥0.95), matte_extent at 0.991 (≥0.9), separation at 1.83 (≥1.5), head_spread at 0.014 (≤0.02), head_drift at 2.3 px (≤4.0 px), frame_count at 919 (=919), and audio_md5 equal. The two remaining findings — face_exposure (warn at ×0.80) and key_direction (info) — are recorded-content limits logged as warnings, not gate failures, so they do not block delivery. Every gate is green; the rules permit deliver only after the latest verification passed, which it has. No further action is warranted.",
+   "reasoning": "The latest verification (attempt_2, strategy process.separation_targeted) passed every gate: pose_coverage 0.997 ≥ 0.6, one_subject 0.999 ≥ 0.95, crown_visible 0.98 ≥ 0.5, matte_extent 0.991 ≥ 0.9, separation 1.83 ≥ 1.5, head_spread 0.014 ≤ 0.02, head_drift 2.3 px ≤ 4.0 px, frame_count 919 == 919, and audio_md5 equal. All nine gates are green. The two non-gate findings (face_exposure at warn and key_direction at info) are recorded-content limits for the report, not defects to fix. No further action is warranted; the correct exit is deliver.",
    "strategy": null,
    "cites": [
-    "attempt_2",
+    "latest_verification",
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -741,7 +773,7 @@
    ],
    "confidence": 1.0,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 4399,
+   "duration_ms": 4439,
    "cached": false
   }
  ],
@@ -758,7 +790,7 @@
   },
   "measurements": {
    "head_target": 0.514,
-   "shoulder_span_p50": 0.41,
+   "shoulder_span_p50": 0.414,
    "separation": 1.83,
    "edge_luma_in": 0.213,
    "edge_luma_out": 0.116,
@@ -777,11 +809,11 @@
  },
  "bedrock": {
   "calls": 4,
-  "input_tokens": 17958,
-  "output_tokens": 1591,
-  "latency_ms": 23644
+  "input_tokens": 19186,
+  "output_tokens": 1502,
+  "latency_ms": 22147
  },
- "wall_s": 63.8,
+ "wall_s": 65.7,
  "score": {
   "expected": "either",
   "got": "deliver",

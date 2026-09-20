@@ -182,6 +182,14 @@ def run_item(item: dict[str, Any], backend: EvalBackend, profile: Profile, archi
         out["delivery"] = end["delivery"]
     else:
         out["reshoot"] = end["reshoot"]
+    # The linear pipeline's baseline needs the standard render's gates even when the loop never
+    # verified it (it stopped at INSPECT): measure attempt_1 once, outside the loop.
+    if not any(v["artifact"] == "attempt_1" for v in out["verify"]):
+        from .loop import RunState
+        try:
+            out["baseline_verify"] = to_dict(backend.verify(clip, "attempt_1", profile, RunState(clip=clip, profile=profile)))
+        except Exception as e:
+            out["baseline_verify_error"] = f"{type(e).__name__}: {e}"
     bd = backend.decisions()[n_before:]
     out["bedrock"] = {"calls": len(bd), "input_tokens": sum(d.get("input_tokens", 0) for d in bd), "output_tokens": sum(d.get("output_tokens", 0) for d in bd),
                       "latency_ms": sum(d.get("duration_ms", 0) for d in bd)} if bd else None
@@ -221,6 +229,11 @@ def _score(out: dict[str, Any], defect_map: dict[str, Any]) -> dict[str, Any]:
             detections[d] = {"finding": None, "status": None, "detected": False, "note": m.get("note", "")}
             continue
         recs = out.get("inspect", []) if m["phase"] == "inspect" else out.get("verify", [])
+        if not recs:
+            # the loop stopped before this phase ran (e.g. INSPECT failed on another labelled defect and no
+            # fixer addressed it): the defect was not measured — neither detected nor missed
+            detections[d] = {"finding": fid, "status": None, "detected": None, "note": f"not measured — the loop stopped before {m['phase']}"}
+            continue
         st = _status(recs, "findings" if m["phase"] == "inspect" else "gates", fid)
         detections[d] = {"finding": fid, "status": st, "detected": st is not None and st != "pass"}
     # findings flagged that no label explains (false positives), over the source inspect and the first verify
@@ -263,6 +276,28 @@ def evaluate(agent: str = "bedrock", items: list[str] | None = None, prepare_mis
     ids = [i["id"] for i in s["items"]]
     on_disk = [json.loads((out_dir / f"{i}.json").read_text()) for i in ids if (out_dir / f"{i}.json").exists()]
     summary = summarize(on_disk, s["defect_map"], agent)
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
+    return summary
+
+
+def rescore(agent: str) -> dict[str, Any] | None:
+    """Re-apply `_score` to the stored raw records of an agent's results and rewrite its summary —
+    the measurements and decisions are what they were; only the scoring rules may have changed."""
+    s = load_set()
+    out_dir = RESULTS / agent
+    if not out_dir.is_dir():
+        return None
+    results = []
+    for it in s["items"]:
+        p = out_dir / f"{it['id']}.json"
+        if not p.exists():
+            continue
+        r = json.loads(p.read_text())
+        r["labels"] = it["labels"]
+        r = _score(r, s["defect_map"])
+        p.write_text(json.dumps(r, indent=1, ensure_ascii=False, default=str) + "\n")
+        results.append(r)
+    summary = summarize(results, s["defect_map"], agent)
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
     return summary
 

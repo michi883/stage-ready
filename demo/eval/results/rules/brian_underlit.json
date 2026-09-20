@@ -22,6 +22,7 @@
   "verify ✓",
   "deliver"
  ],
+ "blind": true,
  "inspect": [
   {
    "target": "source",
@@ -78,8 +79,8 @@
      "label": "Subject size on canvas",
      "status": "pass",
      "value": {
-      "p50": 0.345,
-      "p95": 0.356
+      "p50": 0.346,
+      "p95": 0.354
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -88,7 +89,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 35 % of the canvas (p95 36 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 35 % of the canvas (p95 35 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -111,13 +112,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.067,
       "max": 0.104
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -166,7 +170,7 @@
     "frames": 1285,
     "duration_s": 42.8
    },
-   "duration_ms": 18862,
+   "duration_ms": 18598,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_underlit and brian_underlit.mp4",
    "failing": []
@@ -202,6 +206,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -278,7 +295,7 @@
    ],
    "measurements": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.345,
+    "shoulder_span_p50": 0.346,
     "separation": 1.02,
     "edge_luma_in": 0.113,
     "edge_luma_out": 0.111,
@@ -286,7 +303,7 @@
     "head_drift_px": 1.2,
     "frames": 1285
    },
-   "duration_ms": 21310,
+   "duration_ms": 26364,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_underlit, work/midtown_brian_underlit/comp",
    "passed": false,
@@ -334,6 +351,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -410,7 +440,7 @@
    ],
    "measurements": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.345,
+    "shoulder_span_p50": 0.346,
     "separation": 1.52,
     "edge_luma_in": 0.171,
     "edge_luma_out": 0.112,
@@ -418,7 +448,7 @@
     "head_drift_px": 1.2,
     "frames": 1285
    },
-   "duration_ms": 16894,
+   "duration_ms": 21796,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_underlit, work/midtown_brian_underlit/comp_sep",
    "passed": true,
@@ -455,6 +485,7 @@
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -481,7 +512,7 @@
   },
   "measurements": {
    "head_target": 0.334,
-   "shoulder_span_p50": 0.345,
+   "shoulder_span_p50": 0.346,
    "separation": 1.52,
    "edge_luma_in": 0.171,
    "edge_luma_out": 0.112,
@@ -497,7 +528,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 192.5,
+ "wall_s": 66.9,
  "score": {
   "expected": "either",
   "got": "deliver",

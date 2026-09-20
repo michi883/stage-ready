@@ -79,7 +79,7 @@
      "status": "pass",
      "value": {
       "p50": 0.339,
-      "p95": 0.35
+      "p95": 0.348
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -88,7 +88,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -111,13 +111,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.104,
       "max": 0.159
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -166,7 +169,7 @@
     "frames": 1237,
     "duration_s": 41.2
    },
-   "duration_ms": 17381,
+   "duration_ms": 17521,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2 and ethel_chadwick_v2.mp4",
    "failing": []
@@ -202,6 +205,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -286,7 +302,7 @@
     "head_drift_px": 3.1,
     "frames": 1237
    },
-   "duration_ms": 20879,
+   "duration_ms": 25670,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2, ethel_chadwick_v2_v1.mp4",
    "passed": false,
@@ -334,6 +350,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -418,7 +447,7 @@
     "head_drift_px": 3.1,
     "frames": 1237
    },
-   "duration_ms": 18374,
+   "duration_ms": 23452,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_ethel_chadwick_v2, work/midtown_ethel_chadwick_v2/comp_sep",
    "passed": true,
@@ -428,7 +457,7 @@
  "decisions": [
   {
    "action": "process",
-   "reasoning": "This is decision number 1 with no prior attempts, no fixes applied, and latest_verification is null — a clean first pass. All pre-process findings pass their gates: pose_coverage is 1.0 (gate requires ≥ 0.6), one_subject is 1.0 (gate requires ≥ 0.95), picture_area fills the 1920×1080 file, subject_size p50 is 0.339 and p95 is 0.35 (well under the 0.55 cap), distance_steady is 1.09× (under the 1.35 threshold), headroom min is 0.104 and max is 0.159 with 0.0 crown-cut frames, and face_exposure gain of 0.86 is inside the [0.8, 1.25] clamp. No gate is currently failing and no fix is required before processing. The correct action for a first attempt is to run the standard strategy (process.standard), which is the profile's standard Red Curtain composite. If the resulting verification reveals a failing separation gate, process.separation_targeted addresses that and remains available within the 2-retry budget.",
+   "reasoning": "This is decision 1 with no prior attempts. All inspection findings pass: picture_area fills the 1920×1080 file with no padding, pose_coverage is 1.0 (gate requires ≥0.6), one_subject is 1.0 (gate requires ≥0.95), subject_size p50 is 0.339 and p95 is 0.348 — well under the 0.55 cap, distance_steady is 1.09× (gate requires ≤1.35), headroom crown_visible_frames is 1.0 (gate requires ≥0.5), and face_exposure gain is 0.86 inside the [0.8, 1.25] clamp. No gate is already failing at inspection, so the correct first move is to render the standard composite (process.standard), which is the designated first-attempt processor. The retry budget is 2 reprocesses and 0 have been used. If process.standard fails the separation gate, the fallback is process.separation_targeted, which addresses that gate. If both retries are exhausted with failing gates and no remaining allowed strategy, the exit would be reshoot.",
    "strategy": "process.standard",
    "cites": [
     "picture_area",
@@ -439,33 +468,34 @@
     "headroom",
     "face_exposure"
    ],
-   "confidence": 0.95,
+   "confidence": 0.93,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 5649,
+   "duration_ms": 5934,
    "cached": false
   },
   {
    "action": "process",
-   "reasoning": "The latest verification (attempt_1) failed on exactly one gate: separation (id \"separation\"), which measured 1.13× against the required 1.5× — short by 0.37×. All other gates passed, including pose_coverage (1.0), one_subject (1.0), matte_extent (0.989), head_spread (0.013), head_drift (3.1 px), frame_count (1237), and audio_md5 (equal). The only allowed strategy that addresses the \"separation\" gate is process.separation_targeted, which applies stronger rim light and light wrap with a bounded shadow lift — all within its declared bounds (rimamt_max 0.45, lwamt_max 0.7, shadow_lift_max 0.04, fgexp_clamp [0.8, 1.25]) — and reuses the existing seed, matte, track, and warp assets without altering the performer's pixels. The retry budget shows 0 reprocesses used against a budget of 2, so one retry is available. The process.standard strategy has already been tried once and failed on separation; process.separation_targeted has not yet been attempted. If this attempt also fails the separation gate and the budget is exhausted, the honest exit is reshoot with guidance to avoid deep red/maroon clothing against the red curtain background.",
+   "reasoning": "The latest verification (attempt_1, using process.standard) failed on exactly one gate: separation (id: \"separation\"), which measured 1.13× against the required ≥ 1.5× threshold — short by 0.37×. All other eight gates passed, including pose_coverage (1.0), one_subject (1.0), crown_visible (1.0), matte_extent (0.989), head_spread (0.013), head_drift (3.1 px), frame_count (1237), and audio_md5. The profile's allowed strategy process.separation_targeted explicitly addresses \"separation\" in its addresses list, and its bounds (rimamt_max 0.45, lwamt_max 0.7, shadow_lift_max 0.04, fgexp_clamp [0.8, 1.25]) give room to strengthen the rim and light wrap beyond the standard attempt's rimamt 0.28 and lwamt 0.5, without inventing content. The retry budget shows 0 reprocesses used against a budget of 2, so this attempt is within budget. If this attempt still fails separation and no remaining budget or strategy can address it, the honest exit is reshoot with guidance to avoid deep-red clothing matching the curtain.",
    "strategy": "process.separation_targeted",
    "cites": [
     "separation",
     "attempt_1",
     "process.separation_targeted"
    ],
-   "confidence": 0.88,
+   "confidence": 0.82,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6834,
+   "duration_ms": 6410,
    "cached": false
   },
   {
    "action": "deliver",
-   "reasoning": "The latest verification (attempt_2) passed every gate: pose_coverage at 1.0 (≥ 0.6), one_subject at 1.0 (≥ 0.95), matte_extent at 0.989 (≥ 0.9), separation at 1.52 (≥ 1.5), head_spread at 0.013 (≤ 0.02), head_drift at 3.1 px (≤ 4.0 px), frame_count 1237 = 1237, and audio MD5 equal to source. All 8 gates are green with no failures. The separation gate, which failed in attempt_1 (value not reported as passing), was resolved by process.separation_targeted in attempt_2, bringing the edge luma ratio to 1.52× — clearing the 1.5× threshold by 0.02×. There is nothing left to fix or reprocess; the output is fully compliant with the Midtown Show — Red Curtain profile and is ready to deliver.",
+   "reasoning": "The latest verification (attempt_2) passed every gate: pose_coverage 1.0 ≥ 0.6, one_subject 1.0 ≥ 0.95, crown_visible 1.0 ≥ 0.5, matte_extent 0.989 ≥ 0.9, separation 1.52 ≥ 1.5, head_spread 0.013 ≤ 0.02, head_drift 3.1 px ≤ 4.0 px, frame_count 1237 = 1237, and audio_md5 equal. All nine gates are green. The process.separation_targeted strategy pushed the separation from a failing value on attempt_1 to 1.52× on attempt_2, clearing the 1.5× threshold by 0.02×. No gate is failing, the working artifact is verified, and the rules call for deliver.",
    "strategy": null,
    "cites": [
     "attempt_2",
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -475,7 +505,7 @@
    ],
    "confidence": 1.0,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 5071,
+   "duration_ms": 3987,
    "cached": false
   }
  ],
@@ -509,11 +539,11 @@
  },
  "bedrock": {
   "calls": 3,
-  "input_tokens": 13914,
-  "output_tokens": 1225,
-  "latency_ms": 17554
+  "input_tokens": 14893,
+  "output_tokens": 1188,
+  "latency_ms": 16331
  },
- "wall_s": 74.5,
+ "wall_s": 83.3,
  "score": {
   "expected": "deliver",
   "got": "deliver",

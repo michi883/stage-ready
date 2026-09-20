@@ -48,7 +48,7 @@ the agent makes is made against it.
 | Background | one fixed still: the red-curtain plate |
 | Framing rule | head on the upper third (`head_target` 0.334, a floor), body centred, size held; shoulder span capped at 55 % of canvas width |
 | Look | the Red Curtain grade — light wrap, rim, measured face exposure |
-| Verification gates (8) | pose on ≥ 60 % of frames; one subject on ≥ 95 %; segmentation extent ≥ 90 % of an independent opinion; subject-vs-background luminance separation ≥ 1.5×; head-height spread and drift in tolerance; frame count and audio MD5 equal to the source |
+| Verification gates (9) | pose on ≥ 60 % of frames; one subject on ≥ 95 %; a recorded crown on ≥ 50 % of frames (the evidence the head metrics need); segmentation extent ≥ 90 % of an independent opinion; subject-vs-background luminance separation ≥ 1.5×; head-height spread and drift in tolerance; frame count and audio MD5 equal to the source |
 | Allowed strategies (3) | crop + size-capped reframe (a fix) · standard composite · separation-targeted composite — in cost order, each with its bounds, and a retry budget of 2 |
 | Reshoot guidance | the capture rule behind each gate, from the show's `RECORDING_REQUIREMENTS.md` |
 
@@ -177,9 +177,9 @@ by one rule (`verdict()` in `web/app.js`, over the run's own end event — for t
 run's): **FIXED · VERIFIED** (a fix that held, re-inspected, then a verified render),
 **ADAPTED · RECOVERED** (a failed gate, a changed strategy, a verified second attempt),
 **VERIFIED · FIRST PASS** (every gate on the first pass, nothing changed). The red stamps —
-**FIXED · CAUGHT**, **TRIED · STOPPED** — exist for the exit the loop refuses to skip; Sandy's
-recording earns one ([`?clip=sandy`](https://d4nh99blf9f5j.cloudfront.net/?clip=sandy), below), and
-`&budget=0` shows it on Ethel. Nothing is labelled a success that was not measured as one.
+**FIXED · CAUGHT**, **TRIED · STOPPED**, **STOPPED** — exist for the exit the loop refuses to skip;
+Sandy's recording earns one ([`?clip=sandy`](https://d4nh99blf9f5j.cloudfront.net/?clip=sandy), below —
+STOPPED at INSPECT since the crown-evidence rule), and `&budget=0` shows it on Ethel. Nothing is labelled a success that was not measured as one.
 
 **Watch Brian's.** INSPECT reads the picture area off the file, not the container — 1920 × 1080
 inside 2560 × 1440 — and fails it; the agent picks the one allowed fixer; the fix reports exactly
@@ -206,13 +206,14 @@ too — is the recording that *cannot* clear the gate (1.00×, 1.45× at the ret
 stays in the evaluation corpus as exactly that.
 
 **And Sandy's, by deep link** ([`?clip=sandy`](https://d4nh99blf9f5j.cloudfront.net/?clip=sandy)):
-the fix does exactly what it promises — the padding is cropped, the size cap holds his shoulders
-at 55 % — and the render still fails, on a gate the fix could never address: with his crown
-completed from his own frames, the head the solve is holding is a real crown that walks toward the
-lens. The agent does not retry a grade change against a framing defect; it names the cause INSPECT
-already warned about and asks for the one thing that fixes it, at capture. Every attempt to make
-a Sandy input deliver failed honestly and is on record ([below](#polished-demo-vs-evaluation-corpus)),
-which is why the repair card is Brian's.
+INSPECT fails three things — the padding, the close-up, and the crown, recorded on only 24 % of
+frames. The first two the fixer addresses; the third nothing does, and without a recorded crown
+the head-height verification would be measured against a completed crown or the picture edge, not
+him. So the agent asks for a reshoot at its first decision, naming all three, with the profile's
+guidance for each. (Before the crown-evidence rule of 2026-09-20 the loop fixed what it could and
+the render then failed on head height, 2.9 % against 2 % — the number that exposed the problem;
+those records stay in his fixtures.) Every attempt to make a Sandy input deliver failed honestly
+and is on record ([below](#polished-demo-vs-evaluation-corpus)), which is why the repair card is Brian's.
 
 **The payoff**, in the session view:
 
@@ -278,22 +279,33 @@ archived render, the agent on Bedrock — and again with the agent replaced by a
 
 | | Stage Ready (agent on Bedrock, blind) | the same loop with a rule table | the linear pipeline alone |
 |---|---|---|---|
-| outcomes as labelled | **17 / 19** | 16 / 19 | — |
-| silently wrong deliveries | **1** — the frozen-frames delivery, a known blind spot | 1 — the same | **2 + 1** — Sandy's and Zach's black-shirt renders shipped with failing gates, plus the same frozen frames |
-| renders it would ship that fail a gate | 0 | 0 | 5 of 13 (the loop caught all five: 2 reshoot requests, 3 recovered by the retry) |
+| outcomes as labelled | **17 / 19** | 17 / 19 | — |
+| silently wrong deliveries | **1** — the frozen-frames delivery, the stated limitation | 1 — the same | **2 + 1** — Sandy's and Zach's black-shirt renders shipped with failing gates, plus the same frozen frames |
+| renders it would ship that fail a gate | 0 | 0 | 6 of 13 (the loop caught all six: 3 reshoot requests, 3 recovered by the retry) |
 | labelled defects missed by a finding | 1 (a short walk-in at 1.33× against the 1.35× threshold) | the same | — |
-| cost of the set | 35 Bedrock calls, 154k in / 15k out tokens, ≈ $0.65; 14 min of measurement | 0 calls; 13 min | — |
+| cost of the set | 30 Bedrock calls, 139k in / 12k out tokens, ≈ $0.60; 12 min of measurement | 0 calls; 10 min | — |
 
-Every defective delivery with a wrong frame count or re-encoded audio was rejected; the agent and the rule table differ on one
-item — a close-up the fixer landed 0.3 % over the size cap, which the agent processed (and it verified) and the rule table refused.
+Every defective delivery with a wrong frame count or re-encoded audio was rejected. The agent and the rule table reach the same
+outcome on every item and differ on one path: Sandy's — the agent stops at its first decision (no fixer addresses the crown
+evidence), the rule table fixes what it can and then stops. These are the numbers after the two corrections of 2026-09-20 below;
+the run before them is kept under `demo/eval/results/previous/` and the report lists exactly what changed: Sandy and Zach's
+black-shirt take now stop at INSPECT on the crown-evidence rule instead of after a render; the synthetic crown-cut input is a reshoot
+instead of a delivery; the close-up the size cap had left 0.3 % over the gate now re-inspects at the cap and delivers under both agents.
 
 What the set found, beyond the numbers:
 
 - **Two labels were wrong, and the measurement was right.** Tehila's take, labelled "nothing visibly wrong" from a contact sheet, starts
   with her leaning into the phone (a 1.88× size change) and the pipeline's pose QC refuses it; sta's "portrait" file is a landscape
   picture with black bars top and bottom, which INSPECT found and the label had not. Labels are set before a run and left as they were.
-- **The head-height gates go blind when the crown is cut on every frame** — the matte's top is the picture edge and cannot move, so a
-  carved crown delivers at 0.1 % spread. `headroom` is a warning; it should be a gate above some fraction of frames.
+- **The head-height gates went blind when the crown was cut on every frame** — the matte's top is the picture edge and cannot move, so
+  a carved crown delivered at 0.1 % spread. **Fixed 2026-09-20 as an evidence rule, not a framing threshold:** the profile now declares
+  `crown_visible_min_for_head_metrics: 0.5` — below a recorded crown on half of the frames, Stage Ready does not have enough genuine
+  evidence to trust the head-motion verification, so INSPECT fails `headroom` (no fixer addresses it; a reshoot) and VERIFY carries the
+  same rule as the `crown_visible` gate. Between 0.5 and 0.95 the finding warns and verification proceeds; the former hardcoded 5 %
+  warning is now `crown_visible_pass` in the profile; the 5–12 % headroom recommendation stays a recommendation. 0.5 is a conservative
+  operational threshold based on the measurement mechanism (the performer's own uncut frames must be the norm, so the crown completion
+  has references and the head metrics measure a recorded crown on most frames) — not a validated framing threshold. It changed one
+  recorded run: Sandy's (a recorded crown on 24 % of frames) now stops at INSPECT.
 - **The size cap and the size gate measured with different rulers** (a smoothed shoulder span vs the raw p95); a close-up landed 0.3 %
   over the cap after the fix. **Fixed 2026-09-20**: the gate now reads the ruler the cap is solved on — the shoulder span smoothed over
   0.5 s, the eye-to-shoulder drop standing in where the shoulders are not seen — at the floor and at the head target used, so a capped
@@ -509,7 +521,7 @@ measurements. What is left is the ground truth for one number and the live wirin
 | 1 | **Profile + inspect.** The profile as a data file; inspection emits findings against it | done — the profile is data; INSPECT is measured live with OpenCV 5 (`stage_ready/vision`, 2026-09-19) |
 | 2 | **Process + verify.** Processing toward the profile, verification against its gates, the report | verification measured live with OpenCV 5 (2026-09-19); processing live pending |
 | 3 | **Agent loop.** An agent choosing inspect / fix / process / verify / stop, every decision traced, the loop's guardrails around it | loop and guardrails live in `loop.py` (tested); the Bedrock agent pending |
-| 4 | **Reframe fixer.** Crop to the measured picture area + size-capped reframe, re-inspected | done, live on the Lambda — the controlled repair case (Brian's recording padded: inspect ✗ → crop → re-inspect ✓ → verified 2.90×); on Sandy's recording the same fix holds and the render fails on a gate the fix cannot address (`?clip=sandy`) |
+| 4 | **Reframe fixer.** Crop to the measured picture area + size-capped reframe, re-inspected | done, live on the Lambda — the controlled repair case (Brian's recording padded: inspect ✗ → crop → re-inspect ✓ → verified 2.90×); on Sandy's recording the fix is not even reached: the crown-evidence rule stops it at INSPECT (`?clip=sandy`) |
 | 5 | **Verification-driven retry.** The separation gate fails, the agent switches strategy, reprocesses, passes | done in the demo (Ethel); the pass is measured (milestone 0) |
 | 6 | **The other exit.** A failed verification with no allowed strategy left ends in a reshoot request that leads with the cause | done (Sandy — `?clip=sandy`, and live; `&budget=0` shows the spent-budget variant on Ethel in the picker) |
 | 7 | **The screen.** One recording at a time, the session view, Trace and Details | done |
@@ -668,7 +680,7 @@ Two sets, kept apart on purpose:
 | recording | demo | evaluation corpus |
 |---|---|---|
 | Brian, padded — `brian_shirley_v2_padded.mp4` | **controlled** (the left card): the untouched recording `brian_shirley_v2.mp4` — re-run through today's pipeline first, on its own: crown inside on every frame, separation **2.91×**, matte 100 %, head 0.7 % / 1.2 px, 1285 frames, audio equal, one warning (under-lit, grade held at ×1.25) — placed unscaled and centred inside a 2560 × 1440 black canvas: `pad=2560:1440:320:180`, one x264 pass, audio stream copied, no trim, no scaling, no retiming. Both band detectors read exactly 1920 × 1080 at +320+180. Run through the pipeline 2026-09-20 and the live loop: inspect ✗ picture_area only → crop, head target unchanged, 0 pixels invented → re-inspect ✓ → **2.90×**, matte 100 %, 0.7 % / 1.2 px, 1285 frames, audio equal → deliver | `brian_shirley_v2.mp4`, untouched — the reference recording (2.96× on the 2026-09-06 pipeline, 2.91× today) |
-| Sandy — `sandy_hackett_v2.mp4` | **not in the picker** (`?clip=sandy`) — the fix holds (padding cropped, shoulders capped) and the render fails on head height, 2.9 % spread / 5.3 px drift, so the agent asks for a reshoot, citing the walk-in. Every attempt at a Sandy input that ends in a delivery failed honestly and is recorded in `demo/eval/corpus/sandy_excerpts/measured.json`: two trimmed excerpts of this take (2.3 % / 2.4 % — his crown is cut on 81–86 % of frames and the completed crown jitters); and the clean-base search over his other two real takes — `sandy_hackett_v1.mov` (Apple Vision finds the seated close-up on 6 % of frames; the pipeline refuses) and `sandy_hackett_0910.mov` (crown inside, matte clean, but chest-up with the arms out of frame — pose on 58 %; a close-up; over-lit; and his own head motion, 5.6 % of the source, reads 2.3–2.4 % against the 2 % gate in the two 74 %-covered windows). No Sandy base verifies on its own, and the one pipeline knob that would make one deliver (crown completion off, the archive's old v3 look) was declined as complexity | the same recording, the natural reshoot case; live result 2026-09-20: reshoot |
+| Sandy — `sandy_hackett_v2.mp4` | **not in the picker** (`?clip=sandy`) — since the crown-evidence rule (2026-09-20) INSPECT fails `headroom`: a recorded crown on 24 % of frames, under the 50 % the head metrics need, and no fixer addresses it, so the agent asks for a reshoot at its first decision. Before the rule, the fix held (padding cropped, shoulders capped) and the render failed on head height, 2.9 % spread / 5.3 px drift — the number that exposed the crown problem; those records stay in his fixtures. Every attempt at a Sandy input that ends in a delivery failed honestly and is recorded in `demo/eval/corpus/sandy_excerpts/measured.json`: two trimmed excerpts of this take (2.3 % / 2.4 % — his crown is cut on 81–86 % of frames and the completed crown jitters); and the clean-base search over his other two real takes — `sandy_hackett_v1.mov` (Apple Vision finds the seated close-up on 6 % of frames; the pipeline refuses) and `sandy_hackett_0910.mov` (crown inside, matte clean, but chest-up with the arms out of frame — pose on 58 %; a close-up; over-lit; and his own head motion, 5.6 % of the source, reads 2.3–2.4 % against the 2 % gate in the two 74 %-covered windows). No Sandy base verifies on its own, and the one pipeline knob that would make one deliver (crown completion off, the archive's old v3 look) was declined as complexity | the same recording, the natural reshoot case; live result 2026-09-20: reshoot |
 | Ethel — `ethel_chadwick_v2.mp4` | **untouched** | the same recording |
 | Zach — `zach_sain_v1_demo.mp4` | **derived**: 15 s → 75 s of `zach_sain_v1.mov`, his other real take (mint trousers, the crown inside the picture, one distance); 30 fps unchanged, the container's 180° rotation baked into the pixels by the one re-encode, audio re-encoded AAC. Run through the pipeline 2026-09-20 (380 s): every gate passes, separation **2.37×** | `zach_sain_v2.mov`, the black-shirt take, untouched: separation **1.00×** → **1.45×** at the retry's bounds → reshoot (`demo/eval/corpus/zach_sain_v2/`, `demo/eval/live/zach_20260920T014717.jsonl`) |
 | Zach, padded — `zach_sain_v1_padded.mp4` | **controlled, not in the picker** (`?clip=zach_padded`; superseded by Brian on the left card so the picker shows three performers): the clean excerpt above (re-verified first: 2.37×, head 0.7 %, 1800 frames, audio equal) placed unscaled and centred inside a 1280 × 720 black canvas — `pad=1280:720:400:158`, one x264 pass, audio stream copied, no trim, no scaling, no retiming. Both band detectors read exactly 480 × 404 at +400+158. Run through the pipeline 2026-09-20 (308 s) and the live loop: inspect ✗ picture_area only → crop, head target unchanged, 0 pixels invented → re-inspect ✓ → **2.36×**, matte 102 %, 0.7 % / 1.9 px, 1800 frames, audio equal → deliver | — (a demonstration input, by construction; not evaluation data) |

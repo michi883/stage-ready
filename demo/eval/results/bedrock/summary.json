@@ -17,9 +17,6 @@
   ]
  },
  "unlabelled_flags": {
-  "sandy": [
-   "head_drift"
-  ],
   "michi": [
    "face_exposure"
   ],
@@ -38,7 +35,7 @@
    "recall": 1.0
   },
   "separation": {
-   "tp": 4,
+   "tp": 3,
    "fp": 0,
    "fn": 0,
    "precision": 1.0,
@@ -71,20 +68,6 @@
    "fn": 0,
    "precision": 1.0,
    "recall": 1.0
-  },
-  "head_spread": {
-   "tp": 1,
-   "fp": 0,
-   "fn": 0,
-   "precision": 1.0,
-   "recall": 1.0
-  },
-  "head_drift": {
-   "tp": 0,
-   "fp": 1,
-   "fn": 0,
-   "precision": 0.0,
-   "recall": null
   },
   "one_subject": {
    "tp": 1,
@@ -121,7 +104,7 @@
    "ok": true,
    "delivery": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.346,
+    "shoulder_span_p50": 0.347,
     "separation": 2.91,
     "edge_luma_in": 0.345,
     "edge_luma_out": 0.118,
@@ -130,12 +113,12 @@
     "frames": 1285
    },
    "reshoot": null,
-   "wall_s": 51.4,
+   "wall_s": 58.1,
    "bedrock": {
     "calls": 2,
-    "input_tokens": 8691,
-    "output_tokens": 858,
-    "latency_ms": 11949
+    "input_tokens": 9303,
+    "output_tokens": 796,
+    "latency_ms": 11528
    },
    "refusal": null,
    "error": null
@@ -163,12 +146,12 @@
     "frames": 1237
    },
    "reshoot": null,
-   "wall_s": 74.5,
+   "wall_s": 83.3,
    "bedrock": {
     "calls": 3,
-    "input_tokens": 13914,
-    "output_tokens": 1225,
-    "latency_ms": 17554
+    "input_tokens": 14893,
+    "output_tokens": 1188,
+    "latency_ms": 16331
    },
    "refusal": null,
    "error": null
@@ -194,12 +177,12 @@
     "frames": 1543
    },
    "reshoot": null,
-   "wall_s": 52.4,
+   "wall_s": 58.5,
    "bedrock": {
     "calls": 2,
-    "input_tokens": 8663,
-    "output_tokens": 757,
-    "latency_ms": 10019
+    "input_tokens": 9275,
+    "output_tokens": 768,
+    "latency_ms": 9982
    },
    "refusal": null,
    "error": null
@@ -208,26 +191,22 @@
    "outcome": "reshoot",
    "path": [
     "inspect",
-    "fix",
-    "inspect",
-    "process",
-    "verify ✗",
     "reshoot"
    ],
    "expected": "reshoot",
    "ok": true,
    "delivery": null,
    "reshoot": [
-    "distance_steady (cause)",
     "headroom (cause)",
-    "head_spread"
+    "distance_steady (cause)",
+    "picture_area (cause)"
    ],
-   "wall_s": 89.2,
+   "wall_s": 28.8,
    "bedrock": {
-    "calls": 3,
-    "input_tokens": 12691,
-    "output_tokens": 1344,
-    "latency_ms": 20773
+    "calls": 1,
+    "input_tokens": 4069,
+    "output_tokens": 437,
+    "latency_ms": 7285
    },
    "refusal": null,
    "error": null
@@ -236,26 +215,20 @@
    "outcome": "reshoot",
    "path": [
     "inspect",
-    "process",
-    "verify ✗",
-    "reprocess",
-    "verify ✗",
     "reshoot"
    ],
    "expected": "reshoot",
    "ok": true,
    "delivery": null,
    "reshoot": [
-    "headroom (cause)",
-    "face_exposure (cause)",
-    "separation"
+    "headroom (cause)"
    ],
-   "wall_s": 53.6,
+   "wall_s": 11.8,
    "bedrock": {
-    "calls": 3,
-    "input_tokens": 13873,
-    "output_tokens": 1400,
-    "latency_ms": 23046
+    "calls": 1,
+    "input_tokens": 4021,
+    "output_tokens": 377,
+    "latency_ms": 6628
    },
    "refusal": null,
    "error": null
@@ -281,12 +254,12 @@
     "frames": 1800
    },
    "reshoot": null,
-   "wall_s": 28.5,
+   "wall_s": 29.3,
    "bedrock": {
     "calls": 2,
-    "input_tokens": 8636,
-    "output_tokens": 885,
-    "latency_ms": 12130
+    "input_tokens": 9277,
+    "output_tokens": 849,
+    "latency_ms": 12066
    },
    "refusal": null,
    "error": null
@@ -312,12 +285,12 @@
     "frames": 1351
    },
    "reshoot": null,
-   "wall_s": 50.1,
+   "wall_s": 57.6,
    "bedrock": {
     "calls": 2,
-    "input_tokens": 8687,
-    "output_tokens": 816,
-    "latency_ms": 11015
+    "input_tokens": 9292,
+    "output_tokens": 861,
+    "latency_ms": 13129
    },
    "refusal": null,
    "error": null
@@ -352,7 +325,7 @@
    "ok": true,
    "delivery": {
     "head_target": 0.514,
-    "shoulder_span_p50": 0.41,
+    "shoulder_span_p50": 0.414,
     "separation": 1.83,
     "edge_luma_in": 0.213,
     "edge_luma_out": 0.116,
@@ -361,12 +334,12 @@
     "frames": 919
    },
    "reshoot": null,
-   "wall_s": 63.8,
+   "wall_s": 65.7,
    "bedrock": {
     "calls": 4,
-    "input_tokens": 17958,
-    "output_tokens": 1591,
-    "latency_ms": 23644
+    "input_tokens": 19186,
+    "output_tokens": 1502,
+    "latency_ms": 22147
    },
    "refusal": null,
    "error": null
@@ -413,7 +386,7 @@
    "ok": true,
    "delivery": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.346,
+    "shoulder_span_p50": 0.347,
     "separation": 2.9,
     "edge_luma_in": 0.344,
     "edge_luma_out": 0.119,
@@ -422,12 +395,12 @@
     "frames": 1285
    },
    "reshoot": null,
-   "wall_s": 79.6,
+   "wall_s": 84.8,
    "bedrock": {
     "calls": 3,
-    "input_tokens": 12657,
-    "output_tokens": 1205,
-    "latency_ms": 16918
+    "input_tokens": 13512,
+    "output_tokens": 1266,
+    "latency_ms": 17875
    },
    "refusal": null,
    "error": null
@@ -455,12 +428,12 @@
     "frames": 1800
    },
    "reshoot": null,
-   "wall_s": 45.1,
+   "wall_s": 44.3,
    "bedrock": {
     "calls": 3,
-    "input_tokens": 12554,
-    "output_tokens": 1256,
-    "latency_ms": 19517
+    "input_tokens": 13498,
+    "output_tokens": 1265,
+    "latency_ms": 18118
    },
    "refusal": null,
    "error": null
@@ -479,7 +452,7 @@
    "ok": true,
    "delivery": {
     "head_target": 0.481,
-    "shoulder_span_p50": 0.534,
+    "shoulder_span_p50": 0.536,
     "separation": 3.38,
     "edge_luma_in": 0.383,
     "edge_luma_out": 0.113,
@@ -488,43 +461,34 @@
     "frames": 1285
    },
    "reshoot": null,
-   "wall_s": 46.1,
+   "wall_s": 47.7,
    "bedrock": {
     "calls": 3,
-    "input_tokens": 12658,
-    "output_tokens": 1187,
-    "latency_ms": 18002
+    "input_tokens": 13496,
+    "output_tokens": 1236,
+    "latency_ms": 18339
    },
    "refusal": null,
    "error": null
   },
   "brian_crown_cut": {
-   "outcome": "delivered",
+   "outcome": "reshoot",
    "path": [
     "inspect",
-    "process",
-    "verify ✓",
-    "deliver"
+    "reshoot"
    ],
    "expected": "either",
    "ok": true,
-   "delivery": {
-    "head_target": 0.334,
-    "shoulder_span_p50": 0.359,
-    "separation": 2.75,
-    "edge_luma_in": 0.332,
-    "edge_luma_out": 0.121,
-    "head_spread": 0.001,
-    "head_drift_px": 0.0,
-    "frames": 1285
-   },
-   "reshoot": null,
-   "wall_s": 48.4,
+   "delivery": null,
+   "reshoot": [
+    "headroom (cause)"
+   ],
+   "wall_s": 23.3,
    "bedrock": {
-    "calls": 2,
-    "input_tokens": 8656,
-    "output_tokens": 836,
-    "latency_ms": 11376
+    "calls": 1,
+    "input_tokens": 4024,
+    "output_tokens": 371,
+    "latency_ms": 6300
    },
    "refusal": null,
    "error": null
@@ -543,7 +507,7 @@
    "ok": true,
    "delivery": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.345,
+    "shoulder_span_p50": 0.346,
     "separation": 1.52,
     "edge_luma_in": 0.171,
     "edge_luma_out": 0.112,
@@ -552,12 +516,12 @@
     "frames": 1285
    },
    "reshoot": null,
-   "wall_s": 74.0,
+   "wall_s": 84.5,
    "bedrock": {
     "calls": 3,
-    "input_tokens": 13952,
-    "output_tokens": 1274,
-    "latency_ms": 18563
+    "input_tokens": 14894,
+    "output_tokens": 1309,
+    "latency_ms": 19050
    },
    "refusal": null,
    "error": null
@@ -571,7 +535,7 @@
    "ok": true,
    "delivery": null,
    "reshoot": null,
-   "wall_s": 18.9,
+   "wall_s": 23.7,
    "bedrock": null,
    "refusal": null,
    "error": null
@@ -585,7 +549,7 @@
    "ok": true,
    "delivery": null,
    "reshoot": null,
-   "wall_s": 19.2,
+   "wall_s": 24.0,
    "bedrock": null,
    "refusal": null,
    "error": null
@@ -599,17 +563,17 @@
    "ok": false,
    "delivery": null,
    "reshoot": null,
-   "wall_s": 19.4,
+   "wall_s": 24.1,
    "bedrock": null,
    "refusal": null,
    "error": null
   }
  },
  "bedrock_total": {
-  "calls": 35,
-  "input_tokens": 153590,
-  "output_tokens": 14634,
-  "latency_ms": 214506
+  "calls": 30,
+  "input_tokens": 138740,
+  "output_tokens": 12225,
+  "latency_ms": 178778
  },
- "wall_s": 814.4
+ "wall_s": 749.7
 }

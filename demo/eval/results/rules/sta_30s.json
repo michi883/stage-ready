@@ -24,6 +24,7 @@
   "verify ✓",
   "deliver"
  ],
+ "blind": true,
  "inspect": [
   {
    "target": "source",
@@ -80,9 +81,8 @@
      "label": "Subject size on canvas",
      "status": "fail",
      "value": {
-      "p50": 0.563,
-      "p95": 0.583,
-      "reach": 0.754
+      "p50": 0.567,
+      "p95": 0.754
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -91,7 +91,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 56 % of the canvas (p95 58 %) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
+     "detail": "At head_target 0.334 the shoulders span 57 % of the canvas (p95 75 %, the same smoothed ruler the size cap is solved on) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -114,13 +114,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 0.98,
       "crown_cut_frames": 0.02,
       "min": 0.01,
       "max": 0.122
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -169,7 +172,7 @@
     "frames": 919,
     "duration_s": 30.6
    },
-   "duration_ms": 8107,
+   "duration_ms": 7413,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4",
    "failing": [
@@ -195,9 +198,8 @@
      "label": "Subject size on canvas",
      "status": "fail",
      "value": {
-      "p50": 0.563,
-      "p95": 0.583,
-      "reach": 0.754
+      "p50": 0.567,
+      "p95": 0.754
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -206,7 +208,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 56 % of the canvas (p95 58 %) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
+     "detail": "At head_target 0.334 the shoulders span 57 % of the canvas (p95 75 %, the same smoothed ruler the size cap is solved on) — over the 55 % cap. Holding their size means moving the head down to 0.514.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     }
    ]
@@ -266,8 +268,8 @@
      "label": "Subject size on canvas",
      "status": "pass",
      "value": {
-      "p50": 0.41,
-      "p95": 0.425
+      "p50": 0.414,
+      "p95": 0.55
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -276,7 +278,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.514 the shoulders span 41 % of the canvas (p95 43 %) — under the 55 % cap.",
+     "detail": "At head_target 0.514 the shoulders span 41 % of the canvas (p95 55 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -299,13 +301,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 0.98,
       "crown_cut_frames": 0.02,
       "min": 0.01,
       "max": 0.122
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -354,7 +359,7 @@
     "frames": 919,
     "duration_s": 30.6
    },
-   "duration_ms": 5569,
+   "duration_ms": 5548,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4",
    "failing": []
@@ -369,7 +374,7 @@
      "id": "band",
      "label": "Crop to picture area",
      "tool": "vision.detect_band → crop",
-     "duration_ms": 3262,
+     "duration_ms": 3214,
      "cached": false,
      "reused": false,
      "summary": "crop=1080:764:0:574 — the 0 dead columns and 1156 dead rows are gone; the picture bottom is now the frame bottom.",
@@ -408,16 +413,16 @@
      "after": 0.514
     },
     "shoulder_span_p50": {
-     "before": 0.563,
-     "after": 0.41
+     "before": 0.567,
+     "after": 0.414
     },
     "shoulder_span_p95": {
-     "before": 0.583,
-     "after": 0.425
+     "before": 0.754,
+     "after": 0.55
     },
     "pixels_invented": 0
    },
-   "duration_ms": 3262,
+   "duration_ms": 3214,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s and sta_30s.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
   }
@@ -451,6 +456,19 @@
      "unit": "fraction of frames",
      "detail": "99.9 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 0.98,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 98 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -527,7 +545,7 @@
    ],
    "measurements": {
     "head_target": 0.514,
-    "shoulder_span_p50": 0.41,
+    "shoulder_span_p50": 0.414,
     "separation": 1.41,
     "edge_luma_in": 0.16,
     "edge_luma_out": 0.113,
@@ -535,7 +553,7 @@
     "head_drift_px": 2.3,
     "frames": 919
    },
-   "duration_ms": 12814,
+   "duration_ms": 14400,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s, work/midtown_sta_30s/comp",
    "passed": false,
@@ -583,6 +601,19 @@
      "unit": "fraction of frames",
      "detail": "99.9 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 0.98,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 98 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -659,7 +690,7 @@
    ],
    "measurements": {
     "head_target": 0.514,
-    "shoulder_span_p50": 0.41,
+    "shoulder_span_p50": 0.414,
     "separation": 1.83,
     "edge_luma_in": 0.213,
     "edge_luma_out": 0.116,
@@ -667,7 +698,7 @@
     "head_drift_px": 2.3,
     "frames": 919
    },
-   "duration_ms": 13056,
+   "duration_ms": 13371,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_sta_30s, work/midtown_sta_30s/comp_sep",
    "passed": true,
@@ -677,7 +708,7 @@
  "decisions": [
   {
    "action": "fix",
-   "reasoning": "Rule 1: inspect fails subject_size, picture_area; fix.reframe addresses picture_area, subject_size and has not been tried.",
+   "reasoning": "Rule 1: inspect fails picture_area, subject_size; fix.reframe addresses picture_area, subject_size and has not been tried.",
    "strategy": "fix.reframe",
    "cites": [
     "picture_area",
@@ -717,6 +748,7 @@
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -743,7 +775,7 @@
   },
   "measurements": {
    "head_target": 0.514,
-   "shoulder_span_p50": 0.41,
+   "shoulder_span_p50": 0.414,
    "separation": 1.83,
    "edge_luma_in": 0.213,
    "edge_luma_out": 0.116,
@@ -761,7 +793,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 43.0,
+ "wall_s": 44.1,
  "score": {
   "expected": "either",
   "got": "deliver",

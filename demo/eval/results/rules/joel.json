@@ -17,6 +17,7 @@
   "verify ✓",
   "deliver"
  ],
+ "blind": true,
  "inspect": [
   {
    "target": "source",
@@ -83,7 +84,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 45 % of the canvas (p95 52 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 45 % of the canvas (p95 52 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -106,13 +107,16 @@
      "label": "Headroom",
      "status": "pass",
      "value": {
+      "crown_visible_frames": 1.0,
       "crown_cut_frames": 0.0,
       "min": 0.057,
       "max": 0.094
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
@@ -161,7 +165,7 @@
     "frames": 1543,
     "duration_s": 51.4
    },
-   "duration_ms": 25504,
+   "duration_ms": 22456,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_joel_pelletier_v4 and joel_pelletier_v4.mp4",
    "failing": []
@@ -197,6 +201,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -281,7 +298,7 @@
     "head_drift_px": 2.3,
     "frames": 1543
    },
-   "duration_ms": 21029,
+   "duration_ms": 25789,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_joel_pelletier_v4, work/midtown_joel_pelletier_v4/comp",
    "passed": true,
@@ -306,6 +323,7 @@
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -350,7 +368,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 46.9,
+ "wall_s": 48.6,
  "score": {
   "expected": "deliver",
   "got": "deliver",

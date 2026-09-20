@@ -43,6 +43,19 @@
      "tool": "vision.pose_qc"
     },
     {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 1.0,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 100 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
      "id": "matte_extent",
      "label": "Matte extent vs second opinion",
      "status": "pass",
@@ -117,7 +130,7 @@
    ],
    "measurements": {
     "head_target": 0.334,
-    "shoulder_span_p50": 0.346,
+    "shoulder_span_p50": 0.347,
     "separation": 2.91,
     "edge_luma_in": 0.345,
     "edge_luma_out": 0.118,
@@ -125,7 +138,7 @@
     "head_drift_px": 1.2,
     "frames": 1284
    },
-   "duration_ms": 18627,
+   "duration_ms": 23463,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_brian_shirley_v2_base, work/midtown_brian_shirley_v2_base/comp",
    "passed": false,
@@ -148,7 +161,7 @@
   "verify ✗"
  ],
  "delivery_sha256": "c2ffb36dbee9e9e325fb3144bc981dbb66bc99df84441c4f0f0db3d0ec661547",
- "wall_s": 18.9,
+ "wall_s": 23.7,
  "score": {
   "expected": "reject",
   "got": "reject",

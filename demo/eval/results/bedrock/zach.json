@@ -78,7 +78,7 @@
      "status": "pass",
      "value": {
       "p50": 0.338,
-      "p95": 0.344
+      "p95": 0.342
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -87,7 +87,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -110,18 +110,21 @@
      "label": "Headroom",
      "status": "warn",
      "value": {
+      "crown_visible_frames": 0.67,
       "crown_cut_frames": 0.33
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "The crown leaves the picture on 33 % of frames — rows that were never recorded.",
+     "detail": "The crown leaves the picture on 33 % of frames — rows that were never recorded; a recorded crown on 67 % of frames is enough evidence for the head metrics.",
      "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
@@ -163,7 +166,7 @@
     "frames": 1800,
     "duration_s": 60.0
    },
-   "duration_ms": 4158,
+   "duration_ms": 4077,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_demo and zach_sain_v1_demo.mp4",
    "failing": []
@@ -199,6 +202,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 0.67,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 67 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -283,7 +299,7 @@
     "head_drift_px": 1.9,
     "frames": 1800
    },
-   "duration_ms": 12058,
+   "duration_ms": 13023,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_demo, work/midtown_zach_sain_v1_demo/comp",
    "passed": true,
@@ -293,7 +309,7 @@
  "decisions": [
   {
    "action": "process",
-   "reasoning": "This is decision number 1 and no attempts have been made yet (attempts_so_far is empty, reprocesses_used is 0). All inspection findings that map to gates are passing: pose_coverage is 1.0 (gate requires ≥ 0.6), one_subject is 1.0 (gate requires ≥ 0.95), subject_size p50 is 0.338 and p95 is 0.344 (gate cap is 0.55), distance_steady is 1.05 (threshold ≤ 1.35), and picture_area fills the file. The two non-pass items — headroom (warn, crown cut on 33% of frames) and face_exposure (warn, held at ×0.80) — are recorded-content limits flagged as warnings, not gate defects; the rules say warnings are not defects to fix. No gate is currently failing, so process.standard is the correct first-attempt strategy. The gates for separation, matte_extent, head_spread, head_drift, frame_count, and audio_md5 have not yet been evaluated (latest_verification is null), and process.standard is the standard strategy for a first attempt. If process.standard fails on a gate that process.separation_targeted addresses (separation), that retry strategy is available within the 2-retry budget.",
+   "reasoning": "This is decision 1 with no prior attempts (reprocesses_used: 0, retry_budget: 2) and no latest_verification — so the correct first move is to render with the standard strategy. All inspection findings that could block a render are passing: picture_area passes (480×404, no padding), pose_coverage passes at 1.0 (≥0.6 gate), one_subject passes at 1.0 (≥0.95 gate), subject_size passes (p50 0.338, p95 0.342 both under the 0.55 cap), and distance_steady passes at 1.05× (≤1.35). The headroom finding is a warn, not a fail — crown is visible on 67 % of frames which meets the 0.5 evidence-sufficiency threshold required by crown_visible gate, so head metrics can be evaluated. The face_exposure finding is also a warn (recorded-content limit, not a defect to fix). No gates have failed yet; we simply need to render to get a verification result. The standard Red Curtain composite (process.standard) is the prescribed first attempt; it addresses no specific failing gate because none have failed yet — it is the standard strategy for a first attempt. If the render then fails the separation gate, process.separation_targeted is available as a follow-up within the remaining budget. If it fails any gate that no allowed strategy addresses, reshoot would be the exit.",
    "strategy": "process.standard",
    "cites": [
     "picture_area",
@@ -302,33 +318,31 @@
     "subject_size",
     "distance_steady",
     "headroom",
-    "face_exposure",
-    "process.standard"
+    "face_exposure"
    ],
-   "confidence": 0.92,
+   "confidence": 0.93,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 6874,
+   "duration_ms": 7568,
    "cached": false
   },
   {
    "action": "deliver",
-   "reasoning": "The latest verification for attempt_1 used strategy process.standard and passed every gate without exception. pose_coverage is 1.0 (gate ≥ 0.6 ✓), one_subject is 1.0 (gate ≥ 0.95 ✓), matte_extent is 1.017 (gate ≥ 0.9 ✓), separation is 2.37 (gate ≥ 1.5 ✓), head_spread is 0.007 (gate ≤ 0.02 ✓), head_drift is 1.9 px (gate ≤ 4.0 px ✓), frame_count equals source at 1800 (✓), and audio_md5 is equal (✓). The two open items — headroom (crown outside picture on 33 % of frames) and face_exposure (held at ×0.80) — are recorded as warnings, not gate failures, and the rules treat warnings as recorded-content limits for the report, not defects to fix. No gate is failing, no further action is warranted, and the rules require deliver only after the latest verification passed, which it did. Delivering now.",
+   "reasoning": "The latest verification for attempt_1 (processed with process.standard) passed every single gate: pose_coverage at 1.0 (≥ 0.6), one_subject at 1.0 (≥ 0.95), crown_visible at 0.67 (≥ 0.5), matte_extent at 1.017 (≥ 0.9), separation at 2.37 (≥ 1.5), head_spread at 0.007 (≤ 0.02), head_drift at 1.9 px (≤ 4.0 px), frame_count at 1800 = source, and audio_md5 equal to source. There are two warnings — headroom (crown cut on 33 % of frames) and face_exposure (gain held at ×0.80) — but warnings are recorded-content limits for the report, not defects to fix. All gates are green, the verification result is passed: true, and no further action is warranted.",
    "strategy": null,
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
     "head_drift",
     "frame_count",
-    "audio_md5",
-    "headroom",
-    "face_exposure"
+    "audio_md5"
    ],
    "confidence": 1.0,
    "model": "bedrock:global.anthropic.claude-sonnet-4-6",
-   "duration_ms": 5256,
+   "duration_ms": 4498,
    "cached": false
   }
  ],
@@ -364,11 +378,11 @@
  },
  "bedrock": {
   "calls": 2,
-  "input_tokens": 8636,
-  "output_tokens": 885,
-  "latency_ms": 12130
+  "input_tokens": 9277,
+  "output_tokens": 849,
+  "latency_ms": 12066
  },
- "wall_s": 28.5,
+ "wall_s": 29.3,
  "score": {
   "expected": "deliver",
   "got": "deliver",

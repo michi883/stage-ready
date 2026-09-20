@@ -24,6 +24,7 @@
   "verify ✓",
   "deliver"
  ],
+ "blind": true,
  "inspect": [
   {
    "target": "source",
@@ -81,7 +82,7 @@
      "status": "pass",
      "value": {
       "p50": 0.338,
-      "p95": 0.344
+      "p95": 0.342
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -90,7 +91,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -113,18 +114,21 @@
      "label": "Headroom",
      "status": "warn",
      "value": {
+      "crown_visible_frames": 0.66,
       "crown_cut_frames": 0.34
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded.",
+     "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded; a recorded crown on 66 % of frames is enough evidence for the head metrics.",
      "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
@@ -166,7 +170,7 @@
     "frames": 1800,
     "duration_s": 60.0
    },
-   "duration_ms": 5288,
+   "duration_ms": 4921,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded and zach_sain_v1_padded.mp4",
    "failing": [
@@ -245,7 +249,7 @@
      "status": "pass",
      "value": {
       "p50": 0.338,
-      "p95": 0.344
+      "p95": 0.342
      },
      "unit": "shoulder span / canvas width",
      "threshold": {
@@ -254,7 +258,7 @@
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
+     "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %, the same smoothed ruler the size cap is solved on) — under the 55 % cap.",
      "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
@@ -277,18 +281,21 @@
      "label": "Headroom",
      "status": "warn",
      "value": {
+      "crown_visible_frames": 0.66,
       "crown_cut_frames": 0.34
      },
-     "unit": "fraction of frames with the crown outside the picture",
+     "unit": "fraction of frames with the crown inside the picture",
      "threshold": {
-      "recommended": [
+      "min_for_head_metrics": 0.5,
+      "pass": 0.95,
+      "recommended_headroom": [
        0.05,
        0.12
       ]
      },
      "confidence": 1.0,
      "frames": "all frames",
-     "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded.",
+     "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded; a recorded crown on 66 % of frames is enough evidence for the head metrics.",
      "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
@@ -330,7 +337,7 @@
     "frames": 1800,
     "duration_s": 60.0
    },
-   "duration_ms": 3946,
+   "duration_ms": 3847,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded and zach_sain_v1_padded.mp4",
    "failing": []
@@ -345,7 +352,7 @@
      "id": "band",
      "label": "Crop to picture area",
      "tool": "vision.detect_band → crop",
-     "duration_ms": 2777,
+     "duration_ms": 2767,
      "cached": false,
      "reused": false,
      "summary": "crop=480:404:400:158 — the 800 dead columns and 316 dead rows are gone; the picture bottom is now the frame bottom.",
@@ -388,12 +395,12 @@
      "after": 0.338
     },
     "shoulder_span_p95": {
-     "before": 0.344,
-     "after": 0.344
+     "before": 0.342,
+     "after": 0.342
     },
     "pixels_invented": 0
    },
-   "duration_ms": 2777,
+   "duration_ms": 2767,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded and zach_sain_v1_padded.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
   }
@@ -427,6 +434,19 @@
      "unit": "fraction of frames",
      "detail": "100.0 %.",
      "tool": "vision.pose_qc"
+    },
+    {
+     "id": "crown_visible",
+     "label": "Crown evidence for the head metrics",
+     "status": "pass",
+     "value": 0.66,
+     "threshold": {
+      "op": ">=",
+      "value": 0.5
+     },
+     "unit": "fraction of frames with the crown inside the picture",
+     "detail": "A recorded crown on 66 % of frames — enough evidence for the head metrics (≥ 50 %).",
+     "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
      "id": "matte_extent",
@@ -511,7 +531,7 @@
     "head_drift_px": 1.9,
     "frames": 1800
    },
-   "duration_ms": 12698,
+   "duration_ms": 13406,
    "cached": false,
    "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded, work/midtown_zach_sain_v1_padded/comp",
    "passed": true,
@@ -548,6 +568,7 @@
    "cites": [
     "pose_coverage",
     "one_subject",
+    "crown_visible",
     "matte_extent",
     "separation",
     "head_spread",
@@ -594,7 +615,7 @@
   }
  },
  "bedrock": null,
- "wall_s": 24.8,
+ "wall_s": 25.0,
  "score": {
   "expected": "deliver",
   "got": "deliver",
