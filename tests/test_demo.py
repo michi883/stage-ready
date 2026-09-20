@@ -132,14 +132,14 @@ class Recognition(unittest.TestCase):
     def test_lineup_order_and_fingerprints(self):
         clips = get_backend(demo=True).clips()
         self.assertEqual([c.id for c in clips], ["sandy", "ethel", "zach", "zach_padded"])   # everything replayable, in billing order
-        # the polished demo (demo/lineup.json): three behaviours, in this order; Sandy stays replayable, not offered
+        # the polished demo (demo/lineup.json): the show's three, in this order; the padded case stays replayable, not offered
         lineup = get_backend(demo=True).clips(lineup=True)
-        self.assertEqual([c.id for c in lineup], ["zach_padded", "ethel", "zach"])
+        self.assertEqual([c.id for c in lineup], ["sandy", "ethel", "zach"])                   # the show's billing: midtownshow.com/2040
         self.assertEqual([self.EXPECTED_PATHS[c.id] for c in lineup],
-                         [["inspect", "fix", "inspect", "process", "verify ✓", "deliver"],
+                         [["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"],
                           ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"],
                           ["inspect", "process", "verify ✓", "deliver"]])
-        self.assertEqual(trace("sandy")[-1]["outcome"], "reshoot")                          # the natural failure case, unchanged
+        self.assertEqual(trace("zach_padded")[-1]["outcome"], "delivered")                    # the controlled repair case, replayable by id
         for c in lineup:
             self.assertTrue(c.provenance, c.id)                                                # every offered input says where it comes from
         self.assertIn("Controlled demo input", get_backend(demo=True).clip("zach_padded").provenance)
