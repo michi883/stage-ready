@@ -94,8 +94,11 @@
         0.05,
         0.12
       ],
-      "severity": "info",
-      "unit": "fraction of picture height above the crown"
+      "unit": "fraction of picture height above the crown",
+      "crown_visible_min_for_head_metrics": 0.5,
+      "crown_visible_pass": 0.95,
+      "severity": "evidence",
+      "note": "recommended is the 5–12 % headroom the recording requirements ask for — guidance, not a gate. crown_visible_min_for_head_metrics is an EVIDENCE-SUFFICIENCY threshold, not a framing-quality threshold: the head-motion verification (head_spread, head_drift) reads the matte's top, and where the crown is cut that top is a completed crown at best and the picture edge at worst — an edge that cannot move and so reports a stillness that was never measured. Below this fraction of frames with a recorded crown, Stage Ready does not have enough genuine evidence to trust the head metrics: the finding fails and a reshoot is required. Between it and crown_visible_pass the finding warns and verification may proceed. 0.5 is a conservative operational threshold based on that mechanism (the performer's own uncut frames must be the norm, so the crown completion has references throughout and the head metrics measure a recorded crown on most frames); it is not a scientifically validated framing threshold. crown_visible_pass carries the former hardcoded 5 %-of-frames warning into the profile."
     },
     "key_direction": {
       "id": "key_direction",
@@ -119,6 +122,14 @@
       "op": ">=",
       "value": 0.95,
       "unit": "fraction of frames"
+    },
+    {
+      "id": "crown_visible",
+      "label": "Crown evidence for the head metrics",
+      "op": ">=",
+      "value": 0.5,
+      "unit": "fraction of frames with the crown inside the picture",
+      "note": "the same evidence-sufficiency rule as inspection.headroom, enforced at verification so no render passes the head metrics on a stable crop edge"
     },
     {
       "id": "matte_extent",
@@ -243,7 +254,9 @@
     "separation": "Don't wear the stage. The curtain is deep red: no red, maroon, burgundy or hot pink. Mid-tone neutrals, blue, green or a pattern separate by about 3x.",
     "face_exposure": "One large soft light in front of you at eye level; the face must be clearly lit.",
     "head_spread": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation.",
-    "head_drift": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation."
+    "head_drift": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation.",
+    "headroom": "Leave 5–12 % of the frame height above your hair, measured when you stand up straight: a crown the camera never recorded cannot be verified, and cannot be put back.",
+    "crown_visible": "Leave 5–12 % of the frame height above your hair, measured when you stand up straight: a crown the camera never recorded cannot be verified, and cannot be put back."
   },
   "source": "RECORDING_REQUIREMENTS.md, MIDTOWN_RED_CURTAIN_PIPELINE.md"
 }

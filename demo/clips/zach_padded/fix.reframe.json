@@ -6,7 +6,7 @@
       "id": "band",
       "label": "Crop to picture area",
       "tool": "vision.detect_band → crop",
-      "duration_ms": 3184,
+      "duration_ms": 2748,
       "cached": false,
       "reused": false,
       "summary": "crop=480:404:400:158 — the 800 dead columns and 316 dead rows are gone; the picture bottom is now the frame bottom.",
@@ -54,6 +54,6 @@
     },
     "pixels_invented": 0
   },
-  "duration_ms": 3184,
+  "duration_ms": 2748,
   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded — detect_band for the crop, the size-capped dry solve for the head target (python3 -m stage_ready record zach_padded --fixed)"
 }

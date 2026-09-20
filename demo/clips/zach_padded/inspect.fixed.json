@@ -86,18 +86,21 @@
       "label": "Headroom",
       "status": "warn",
       "value": {
+        "crown_visible_frames": 0.66,
         "crown_cut_frames": 0.34
       },
-      "unit": "fraction of frames with the crown outside the picture",
+      "unit": "fraction of frames with the crown inside the picture",
       "threshold": {
-        "recommended": [
+        "min_for_head_metrics": 0.5,
+        "pass": 0.95,
+        "recommended_headroom": [
           0.05,
           0.12
         ]
       },
       "confidence": 1.0,
       "frames": "all frames",
-      "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded.",
+      "detail": "The crown leaves the picture on 34 % of frames — rows that were never recorded; a recorded crown on 66 % of frames is enough evidence for the head metrics.",
       "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
@@ -139,6 +142,6 @@
     "frames": 1800,
     "duration_s": 60.0
   },
-  "duration_ms": 4187,
+  "duration_ms": 3860,
   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_padded — python3 -m stage_ready record zach_padded (stage_ready.measure; every value computed from the archived files)"
 }

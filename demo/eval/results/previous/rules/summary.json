@@ -1,0 +1,534 @@
+{
+ "agent": "rules",
+ "n": 19,
+ "loop_items": 16,
+ "gate_items": 3,
+ "outcome_ok": 16,
+ "silently_wrong": [
+  "gate_frozen_frames"
+ ],
+ "wrong_outcome": [
+  "tehila_45s",
+  "brian_zoomed",
+  "gate_frozen_frames"
+ ],
+ "missed_defects": {
+  "sta_30s": [
+   "walk_in"
+  ]
+ },
+ "unlabelled_flags": {
+  "sandy": [
+   "head_drift"
+  ],
+  "michi": [
+   "face_exposure"
+  ],
+  "sta_30s": [
+   "face_exposure",
+   "picture_area",
+   "subject_size"
+  ]
+ },
+ "per_finding": {
+  "face_exposure": {
+   "tp": 8,
+   "fp": 2,
+   "fn": 0,
+   "precision": 0.8,
+   "recall": 1.0
+  },
+  "separation": {
+   "tp": 4,
+   "fp": 0,
+   "fn": 0,
+   "precision": 1.0,
+   "recall": 1.0
+  },
+  "picture_area": {
+   "tp": 3,
+   "fp": 1,
+   "fn": 0,
+   "precision": 0.75,
+   "recall": 1.0
+  },
+  "subject_size": {
+   "tp": 2,
+   "fp": 1,
+   "fn": 0,
+   "precision": 0.67,
+   "recall": 1.0
+  },
+  "distance_steady": {
+   "tp": 1,
+   "fp": 0,
+   "fn": 1,
+   "precision": 1.0,
+   "recall": 0.5
+  },
+  "headroom": {
+   "tp": 5,
+   "fp": 0,
+   "fn": 0,
+   "precision": 1.0,
+   "recall": 1.0
+  },
+  "head_spread": {
+   "tp": 1,
+   "fp": 0,
+   "fn": 0,
+   "precision": 1.0,
+   "recall": 1.0
+  },
+  "head_drift": {
+   "tp": 0,
+   "fp": 1,
+   "fn": 0,
+   "precision": 0.0,
+   "recall": null
+  },
+  "one_subject": {
+   "tp": 1,
+   "fp": 0,
+   "fn": 0,
+   "precision": 1.0,
+   "recall": 1.0
+  },
+  "frame_count": {
+   "tp": 1,
+   "fp": 0,
+   "fn": 0,
+   "precision": 1.0,
+   "recall": 1.0
+  },
+  "audio_md5": {
+   "tp": 1,
+   "fp": 0,
+   "fn": 0,
+   "precision": 1.0,
+   "recall": 1.0
+  }
+ },
+ "outcomes": {
+  "brian": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "deliver",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.346,
+    "separation": 2.91,
+    "edge_luma_in": 0.345,
+    "edge_luma_out": 0.118,
+    "head_spread": 0.007,
+    "head_drift_px": 1.2,
+    "frames": 1285
+   },
+   "reshoot": null,
+   "wall_s": 54.8,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "ethel": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✗",
+    "reprocess",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "deliver",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.339,
+    "separation": 1.52,
+    "edge_luma_in": 0.188,
+    "edge_luma_out": 0.123,
+    "head_spread": 0.013,
+    "head_drift_px": 3.1,
+    "frames": 1237
+   },
+   "reshoot": null,
+   "wall_s": 85.1,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "joel": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "deliver",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.454,
+    "separation": 2.98,
+    "edge_luma_in": 0.474,
+    "edge_luma_out": 0.159,
+    "head_spread": 0.009,
+    "head_drift_px": 2.3,
+    "frames": 1543
+   },
+   "reshoot": null,
+   "wall_s": 46.9,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "sandy": {
+   "outcome": "reshoot",
+   "path": [
+    "inspect",
+    "fix",
+    "inspect",
+    "process",
+    "verify ✗",
+    "reshoot"
+   ],
+   "expected": "reshoot",
+   "ok": true,
+   "delivery": null,
+   "reshoot": [
+    "head_spread",
+    "head_drift"
+   ],
+   "wall_s": 78.3,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "zach_v2": {
+   "outcome": "reshoot",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✗",
+    "reprocess",
+    "verify ✗",
+    "reshoot"
+   ],
+   "expected": "reshoot",
+   "ok": true,
+   "delivery": null,
+   "reshoot": [
+    "separation"
+   ],
+   "wall_s": 36.2,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "zach": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "deliver",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.338,
+    "separation": 2.37,
+    "edge_luma_in": 0.267,
+    "edge_luma_out": 0.113,
+    "head_spread": 0.007,
+    "head_drift_px": 1.9,
+    "frames": 1800
+   },
+   "reshoot": null,
+   "wall_s": 19.2,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "michi": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "either",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.325,
+    "separation": 1.51,
+    "edge_luma_in": 0.092,
+    "edge_luma_out": 0.139,
+    "head_spread": 0.012,
+    "head_drift_px": 1.6,
+    "frames": 1351
+   },
+   "reshoot": null,
+   "wall_s": 44.1,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "tehila_45s": {
+   "outcome": "refused",
+   "path": [
+    "prepare ✗"
+   ],
+   "expected": "deliver",
+   "ok": false,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 0.1,
+   "bedrock": null,
+   "refusal": "pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip",
+   "error": null
+  },
+  "sta_30s": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "fix",
+    "inspect",
+    "process",
+    "verify ✗",
+    "reprocess",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "either",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.514,
+    "shoulder_span_p50": 0.41,
+    "separation": 1.83,
+    "edge_luma_in": 0.213,
+    "edge_luma_out": 0.116,
+    "head_spread": 0.014,
+    "head_drift_px": 2.3,
+    "frames": 919
+   },
+   "reshoot": null,
+   "wall_s": 43.0,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "abby_9s": {
+   "outcome": "refused",
+   "path": [
+    "prepare ✗"
+   ],
+   "expected": "either",
+   "ok": true,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 0.0,
+   "bedrock": null,
+   "refusal": "pose found on only 0% of frames — the performer is not reliably visible in this recording. See RECORDING_REQUIREMENTS.md.",
+   "error": null
+  },
+  "two_sumitas": {
+   "outcome": "refused",
+   "path": [
+    "prepare ✗"
+   ],
+   "expected": "reshoot",
+   "ok": true,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 0.0,
+   "bedrock": null,
+   "refusal": "pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip",
+   "error": null
+  },
+  "brian_padded": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "fix",
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "deliver",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.346,
+    "separation": 2.9,
+    "edge_luma_in": 0.344,
+    "edge_luma_out": 0.119,
+    "head_spread": 0.007,
+    "head_drift_px": 1.2,
+    "frames": 1285
+   },
+   "reshoot": null,
+   "wall_s": 68.3,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "zach_padded": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "fix",
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "deliver",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.338,
+    "separation": 2.36,
+    "edge_luma_in": 0.267,
+    "edge_luma_out": 0.113,
+    "head_spread": 0.007,
+    "head_drift_px": 1.9,
+    "frames": 1800
+   },
+   "reshoot": null,
+   "wall_s": 24.8,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "brian_zoomed": {
+   "outcome": "reshoot",
+   "path": [
+    "inspect",
+    "fix",
+    "inspect",
+    "reshoot"
+   ],
+   "expected": "deliver",
+   "ok": false,
+   "delivery": null,
+   "reshoot": [
+    "subject_size (cause)"
+   ],
+   "wall_s": 15.1,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "brian_crown_cut": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "either",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.359,
+    "separation": 2.75,
+    "edge_luma_in": 0.332,
+    "edge_luma_out": 0.121,
+    "head_spread": 0.001,
+    "head_drift_px": 0.0,
+    "frames": 1285
+   },
+   "reshoot": null,
+   "wall_s": 38.8,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "brian_underlit": {
+   "outcome": "delivered",
+   "path": [
+    "inspect",
+    "process",
+    "verify ✗",
+    "reprocess",
+    "verify ✓",
+    "deliver"
+   ],
+   "expected": "either",
+   "ok": true,
+   "delivery": {
+    "head_target": 0.334,
+    "shoulder_span_p50": 0.345,
+    "separation": 1.52,
+    "edge_luma_in": 0.171,
+    "edge_luma_out": 0.112,
+    "head_spread": 0.007,
+    "head_drift_px": 1.2,
+    "frames": 1285
+   },
+   "reshoot": null,
+   "wall_s": 192.5,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "gate_frame_drop": {
+   "outcome": "rejected",
+   "path": [
+    "verify ✗"
+   ],
+   "expected": "reject",
+   "ok": true,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 21.9,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "gate_audio_reencoded": {
+   "outcome": "rejected",
+   "path": [
+    "verify ✗"
+   ],
+   "expected": "reject",
+   "ok": true,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 19.6,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  },
+  "gate_frozen_frames": {
+   "outcome": "delivered",
+   "path": [
+    "verify ✓"
+   ],
+   "expected": "reject",
+   "ok": false,
+   "delivery": null,
+   "reshoot": null,
+   "wall_s": 19.3,
+   "bedrock": null,
+   "refusal": null,
+   "error": null
+  }
+ },
+ "bedrock_total": null,
+ "wall_s": 808.0
+}

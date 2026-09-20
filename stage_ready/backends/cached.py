@@ -114,8 +114,10 @@ class CachedBackend:
                        cites=d.get("cites", []), confidence=d.get("confidence", 1.0),
                        model=d.get("model", "cached"), duration_ms=d.get("duration_ms", 0), cached=True)
         # A recorded decision must still be about the findings in front of it. Cheap honesty check:
-        # everything it cites has to exist in the current findings or the latest verification.
-        known = {f.id for f in state.findings}
+        # everything it cites has to exist in the current findings or the latest verification — or be
+        # one of the profile's gates, which the agent may name before a verification exists (Sandy's
+        # reshoot cites crown_visible at the first decision: the crown finding tells it the gate will fail).
+        known = {f.id for f in state.findings} | {g["id"] for g in profile.gates}
         if state.last_verify is not None:
             known |= {g.id for g in state.last_verify.gates}
         unknown = [c for c in dec.cites if c not in known]

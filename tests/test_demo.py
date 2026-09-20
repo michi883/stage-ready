@@ -19,7 +19,7 @@ def trace(clip_id, backend=None):
 
 class DemoPaths(unittest.TestCase):
     EXPECTED = {   # the lineup, in billing order — three agent behaviours, each recording's own path
-        "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),               # fix what can be fixed, then catch what cannot
+        "sandy": ("reshoot", ["inspect", "reshoot"]),                                                       # not enough recorded crown for the head metrics: nothing allowed can honestly satisfy the profile
         "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),     # adapt and recover
         "zach": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),                                # already suitable: verified on the first pass
         "zach_padded": ("delivered", ["inspect", "fix", "inspect", "process", "verify ✓", "deliver"]),       # controlled input: fix what was injected, then verified
@@ -58,12 +58,16 @@ class DemoPaths(unittest.TestCase):
         self.assertEqual(strategies, ["process.standard", "process.separation_targeted"])
         self.assertEqual(evs[-1]["delivery"]["budget"], {"reprocesses_used": 1, "retry_budget": 2})
 
-    def test_sandy_fix_resolves_without_new_defects(self):
+    def test_sandy_stops_on_crown_evidence(self):
+        # Since the crown-evidence rule (2026-09-20) his recording fails INSPECT on headroom — a recorded
+        # crown on 24 % of frames, under the 50 % the head metrics need — and no fixer addresses it, so
+        # the agent asks for a reshoot before a render is spent. The fix and the render that used to
+        # follow (and failed on head height) stay in the fixtures as measured records.
         evs = trace("sandy")
-        after = [e for e in evs if e["type"] == "inspect.result" and e["result"]["target"] == "fixed"][0]
-        self.assertEqual(after["resolved"], ["picture_area", "subject_size"])
-        self.assertEqual(after["new_defects"], [])
-        self.assertEqual([e["result"]["strategy"] for e in evs if e["type"] == "fix.result"], ["fix.reframe"])
+        src = [e for e in evs if e["type"] == "inspect.result"][0]["result"]
+        self.assertEqual([f["id"] for f in src["failing"]], ["picture_area", "subject_size", "headroom"])
+        self.assertEqual([e for e in evs if e["type"] == "fix.result"], [])
+        self.assertEqual([e for e in evs if e["type"] == "verify.result"], [])
 
     def test_zach_is_verified_on_the_first_pass(self):
         # The alternate take (zach_sain_v1, mint trousers): every gate on the first attempt, no fix,
@@ -78,15 +82,14 @@ class DemoPaths(unittest.TestCase):
         self.assertEqual(warns, ["headroom", "face_exposure"])                     # honest notes, not defects
 
     def test_sandy_reshoot_names_the_cause_first(self):
-        # The gates that fail are head height; the cause is the walk-in INSPECT warned about, and
-        # the request leads with it, so the guidance is "be at your final distance", not "tripod".
+        # The request leads with what the agent cited as the cause — the findings it named, in its
+        # order — and every item carries the profile's guidance for it.
         end = trace("sandy")[-1]
-        v = [e for e in trace("sandy") if e["type"] == "verify.result"][-1]
-        self.assertEqual([g["id"] for g in v["result"]["failing"]], ["head_spread", "head_drift"])
         items = end["reshoot"]["items"]
-        self.assertEqual([i["id"] for i in items], ["distance_steady", "head_spread", "head_drift"])
-        self.assertTrue(items[0]["cause"])
-        self.assertIn("final distance", items[0]["guidance"])
+        self.assertEqual([i["id"] for i in items][:3], ["picture_area", "headroom", "subject_size"])
+        self.assertTrue(all(i["cause"] for i in items[:3]))
+        self.assertIn("5–12 %", [i for i in items if i["id"] == "headroom"][0]["guidance"])
+        self.assertEqual(end["reshoot"]["attempts"], 0)
         self.assertEqual(end["reshoot"]["budget"], {"reprocesses_used": 0, "retry_budget": 2})
 
     def test_outputs_agree_on_the_profile(self):

@@ -1,28 +1,93 @@
 {
-  "provenance": "archive: sandy_hackett_v2_red_v4 — seed_pick.log (frame 265), crown.log, track.log, params.txt; first run 15 min 13 s, repeat 5 min 19 s with the crown completion (§11)",
+  "provenance": "recorded from the archived run: work/midtown_sandy_hackett_v2 — seed_pick.log, matte.key, track.log, crown.log, params.txt; stage durations from the workdir's file times (python3 -m stage_ready record)",
   "artifact": "attempt_1",
-  "duration_ms": 319000,
+  "duration_ms": 506006322,
   "stages": [
-    { "id": "seed", "label": "Seed mask", "tool": "PersonMatte + pick_seed.py + clean_seed.py", "duration_ms": 4000,
-      "summary": "Vision on 17 candidate frames; seed from frame 265 (crown whole, widest head 366 px, least outlying). 38 components → 1: the reflection in the glass door is dropped." },
-    { "id": "matte", "label": "Video matte", "tool": "MatAnyone 2 (local MPS)", "duration_ms": 750000, "cached": true,
-      "summary": "1436 mattes propagated both ways from frame 265 — cache hit, keyed on source SHA-256 + seed SHA-256. ≈12.5 min if regenerated." },
-    { "id": "track", "label": "Tracked reframe solve", "tool": "track_frame.py", "duration_ms": 20000,
-      "summary": "head_target 0.413 (pushed from the 0.334 floor by the size cap); scale 1.009..1.286 (median 1.038); cut off at the frame bottom on 95 % of frames. Solved on the completed picture, so the head-top anchor is the real crown on every frame.",
-      "params": { "head_target": 0.413, "scale_min": 1.009, "scale_max": 1.286, "scale_median": 1.038 } },
-    { "id": "crown", "label": "Crown completion", "tool": "complete_crown.py", "duration_ms": 153000,
-      "summary": "Crown cut on 1088 frames (76 %) — 1045 completed from 47 of his own uncut frames (219 candidates, 73 switches), 43 dome-carved; the picture extended by 134 rows on top to 1620×1214. His pixels, a different moment; nothing painted.",
-      "params": { "completed": 1045, "cut": 1088, "references": 47, "ext_top": 134 } },
-    { "id": "warp", "label": "Reframe to canvas", "tool": "warp.py", "duration_ms": 21000,
-      "summary": "1080×1920 from the cropped 1620×1080 picture; one resample." },
-    { "id": "grade", "label": "Measured grade", "tool": "auto_grade.py", "duration_ms": 1000,
-      "summary": "keydx=-1 rimdx=-6 fgexp=1.059 — key from the left (×0.90), face ×1.06 to the target.",
-      "params": { "keydx": -1, "rimdx": -6, "fgexp": 1.059 } },
-    { "id": "composite", "label": "Composite", "tool": "Composite", "duration_ms": 130000,
-      "summary": "1436 frames on the Red Curtain plate — light wrap 0.50, rim 0.28, shrink 0.8 so the hair's soft edge survives." },
-    { "id": "encode", "label": "Encode", "tool": "ffmpeg", "duration_ms": 19000,
-      "summary": "H.264 CRF 20 at 25 fps, faststart, source audio copied." }
+    {
+      "id": "seed",
+      "label": "Seed mask",
+      "tool": "PersonMatte + pick_seed.py + clean_seed.py",
+      "duration_ms": 258162088,
+      "summary": "Vision on 17 candidate frames; seed from frame 265 (crown whole, head 366 px, coverage 30.9 %)."
+    },
+    {
+      "id": "matte",
+      "label": "Video matte",
+      "tool": "MatAnyone 2 (local MPS)",
+      "duration_ms": 0,
+      "cached": true,
+      "summary": "1436 mattes propagated both ways from frame 265 — keyed on source SHA-256 + seed SHA-256 (matte.key); a repeat run is a cache hit."
+    },
+    {
+      "id": "crown",
+      "label": "Crown completion",
+      "tool": "complete_crown.py",
+      "duration_ms": 247678407,
+      "summary": "Crown cut on 1088 frames (76 %) — 1045 completed from 47 of the performer's own uncut frames; picture extended by 134 rows. Their pixels, a different moment; nothing painted."
+    },
+    {
+      "id": "track",
+      "label": "Tracked reframe solve",
+      "tool": "track_frame.py",
+      "duration_ms": 5946,
+      "summary": "head_target 0.413 (pushed from the floor by the size cap); scale 1.009..1.286 (median 1.038); head height spread 8.9 % of source → 2.9 % of output; cut off at the frame bottom on 95 % of frames.",
+      "params": {
+        "head_target": 0.413,
+        "scale_min": 1.009,
+        "scale_max": 1.286,
+        "scale_median": 1.038
+      }
+    },
+    {
+      "id": "warp",
+      "label": "Reframe to canvas",
+      "tool": "warp.py",
+      "duration_ms": 9765,
+      "summary": "1080×1920, one resample."
+    },
+    {
+      "id": "grade",
+      "label": "Measured grade",
+      "tool": "auto_grade.py",
+      "duration_ms": 803,
+      "summary": "keydx=-1 rimdx=-6 fgexp=1.059 — measured off the recording, not typed.",
+      "params": {
+        "keydx": -1.0,
+        "rimdx": -6.0,
+        "fgexp": 1.059
+      }
+    },
+    {
+      "id": "composite",
+      "label": "Composite",
+      "tool": "Composite",
+      "duration_ms": 141919,
+      "summary": "1436 frames on the Red Curtain plate — light wrap 0.5, rim 0.28."
+    },
+    {
+      "id": "encode",
+      "label": "Encode",
+      "tool": "ffmpeg",
+      "duration_ms": 7394,
+      "summary": "H.264 CRF 20, faststart, source audio copied."
+    }
   ],
-  "params": { "look": "red_curtain_grade", "keydx": -1, "rimdx": -6, "fgexp": 1.059, "rimamt": 0.28, "lwamt": 0.50, "shadow_lift": 0.0 },
-  "output": { "canvas": [1080, 1920], "frames": 1436, "fps": 25, "head_target": 0.413, "scale_median": 1.038, "shoulder_span_p50": 0.442 }
+  "params": {
+    "look": "red_curtain_grade",
+    "keydx": -1.0,
+    "rimdx": -6.0,
+    "fgexp": 1.059,
+    "rimamt": 0.28,
+    "lwamt": 0.5,
+    "shadow_lift": 0.0
+  },
+  "output": {
+    "canvas": [
+      1080,
+      1920
+    ],
+    "frames": 1436,
+    "head_target": 0.413,
+    "scale_median": 1.038
+  }
 }

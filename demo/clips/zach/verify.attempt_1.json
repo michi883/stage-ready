@@ -28,6 +28,19 @@
       "tool": "vision.pose_qc"
     },
     {
+      "id": "crown_visible",
+      "label": "Crown evidence for the head metrics",
+      "status": "pass",
+      "value": 0.67,
+      "threshold": {
+        "op": ">=",
+        "value": 0.5
+      },
+      "unit": "fraction of frames with the crown inside the picture",
+      "detail": "A recorded crown on 67 % of frames — enough evidence for the head metrics (≥ 50 %).",
+      "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
       "id": "matte_extent",
       "label": "Matte extent vs second opinion",
       "status": "pass",
@@ -110,6 +123,6 @@
     "head_drift_px": 1.9,
     "frames": 1800
   },
-  "duration_ms": 7697,
+  "duration_ms": 7867,
   "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_demo, comp — python3 -m stage_ready record zach"
 }

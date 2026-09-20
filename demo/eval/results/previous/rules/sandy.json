@@ -1,0 +1,687 @@
+{
+ "id": "sandy",
+ "name": "Sandy Hackett — untouched",
+ "kind": "real",
+ "agent": "rules",
+ "labels": {
+  "defects": [
+   "pillarbox",
+   "too_close",
+   "walk_in",
+   "crown_cut",
+   "head_moves"
+  ],
+  "expected_outcome": "reshoot",
+  "why": "a pillarboxed export of a close-up he walks into; the crown is cut on 76 % of frames and the completed crown's head top moves more than the gate allows — nothing allowed fixes that (demo/eval/corpus/sandy_excerpts)"
+ },
+ "source": "sandy_hackett_v2.mp4",
+ "source_sha256": "119f5e2b90b12ccb844302e39335b05ebc63139688c90e07ee983380e49b50cb",
+ "outcome": "reshoot",
+ "path": [
+  "inspect",
+  "fix",
+  "inspect",
+  "process",
+  "verify ✗",
+  "reshoot"
+ ],
+ "inspect": [
+  {
+   "target": "source",
+   "findings": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "fail",
+     "value": {
+      "w": 1620,
+      "h": 1080,
+      "x": 150,
+      "y": 0
+     },
+     "unit": "px",
+     "threshold": "fills the 1920×1080 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (48 of 1436)",
+     "detail": "The recorded picture is 1620×1080 inside a 1920×1080 file, at +150+0: padding the fixer must crop before framing.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+     "id": "pose_coverage",
+     "label": "Pose coverage",
+     "status": "pass",
+     "value": 0.998,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "confidence": 1.0,
+     "frames": "1433 / 1436",
+     "detail": "A body pose on 100 % of frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 0.999,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "confidence": 1.0,
+     "frames": "2 frames off-subject (2 by size, 0 by position)",
+     "detail": "The same subject, of the same size, in the same place, on 99.9 % of frames.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "subject_size",
+     "label": "Subject size on canvas",
+     "status": "fail",
+     "value": {
+      "p50": 0.501,
+      "p95": 0.622,
+      "reach": 0.624
+     },
+     "unit": "shoulder span / canvas width",
+     "threshold": {
+      "op": "<=",
+      "value": 0.55
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "At head_target 0.334 the shoulders span 50 % of the canvas (p95 62 %) — over the 55 % cap. Holding their size means moving the head down to 0.413.",
+     "tool": "vision.track.dry_solve (OpenCV 5)"
+    },
+    {
+     "id": "distance_steady",
+     "label": "Distance steady",
+     "status": "warn",
+     "value": 1.75,
+     "unit": "apparent size p95/p5",
+     "threshold": {
+      "op": "<=",
+      "value": 1.35
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "Apparent size changes by 1.75× across the take — the performer walks toward or away from the camera; perspective cannot be undone downstream.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "headroom",
+     "label": "Headroom",
+     "status": "warn",
+     "value": {
+      "crown_cut_frames": 0.76
+     },
+     "unit": "fraction of frames with the crown outside the picture",
+     "threshold": {
+      "recommended": [
+       0.05,
+       0.12
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "The crown leaves the picture on 76 % of frames — rows that were never recorded.",
+     "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
+     "id": "face_exposure",
+     "label": "Face exposure",
+     "status": "pass",
+     "value": 1.059,
+     "unit": "exposure gain toward the 0.46 target",
+     "threshold": {
+      "target": 0.46,
+      "clamp": [
+       0.8,
+       1.25
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Face luma 0.448: the grade brings it ×1.06 to the target, inside the clamp.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    },
+    {
+     "id": "key_direction",
+     "label": "Key direction",
+     "status": "info",
+     "value": 0.9,
+     "unit": "silhouette L/R luma ratio",
+     "threshold": {
+      "flat_below": 1.08
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Key from the left (L 0.114 / R 0.103, ×0.90); the stage's key and rim follow it.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    }
+   ],
+   "facts": {
+    "picture": "1620×1080 at +150+0",
+    "fps": 25.0,
+    "frames": 1436,
+    "duration_s": 57.4
+   },
+   "duration_ms": 22677,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_sandy_hackett_v2 and sandy_hackett_v2.mp4",
+   "failing": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "fail",
+     "value": {
+      "w": 1620,
+      "h": 1080,
+      "x": 150,
+      "y": 0
+     },
+     "unit": "px",
+     "threshold": "fills the 1920×1080 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (48 of 1436)",
+     "detail": "The recorded picture is 1620×1080 inside a 1920×1080 file, at +150+0: padding the fixer must crop before framing.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+     "id": "subject_size",
+     "label": "Subject size on canvas",
+     "status": "fail",
+     "value": {
+      "p50": 0.501,
+      "p95": 0.622,
+      "reach": 0.624
+     },
+     "unit": "shoulder span / canvas width",
+     "threshold": {
+      "op": "<=",
+      "value": 0.55
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "At head_target 0.334 the shoulders span 50 % of the canvas (p95 62 %) — over the 55 % cap. Holding their size means moving the head down to 0.413.",
+     "tool": "vision.track.dry_solve (OpenCV 5)"
+    }
+   ]
+  },
+  {
+   "target": "fixed",
+   "findings": [
+    {
+     "id": "picture_area",
+     "label": "Picture area",
+     "status": "pass",
+     "value": {
+      "w": 1620,
+      "h": 1080,
+      "x": 0,
+      "y": 0
+     },
+     "unit": "px",
+     "threshold": "fills the 1920×1080 file",
+     "confidence": 1.0,
+     "frames": "sampled every 30th frame (48 of 1436)",
+     "detail": "The recorded picture is 1620×1080 inside a 1920×1080 file, at +150+0 — cropped to the picture.",
+     "tool": "vision.detect_band (OpenCV 5)"
+    },
+    {
+     "id": "pose_coverage",
+     "label": "Pose coverage",
+     "status": "pass",
+     "value": 0.998,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "confidence": 1.0,
+     "frames": "1433 / 1436",
+     "detail": "A body pose on 100 % of frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 0.999,
+     "unit": "fraction of frames",
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "confidence": 1.0,
+     "frames": "2 frames off-subject (2 by size, 0 by position)",
+     "detail": "The same subject, of the same size, in the same place, on 99.9 % of frames.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "subject_size",
+     "label": "Subject size on canvas",
+     "status": "pass",
+     "value": {
+      "p50": 0.442,
+      "p95": 0.548
+     },
+     "unit": "shoulder span / canvas width",
+     "threshold": {
+      "op": "<=",
+      "value": 0.55
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "At head_target 0.413 the shoulders span 44 % of the canvas (p95 55 %) — under the 55 % cap.",
+     "tool": "vision.track.dry_solve (OpenCV 5)"
+    },
+    {
+     "id": "distance_steady",
+     "label": "Distance steady",
+     "status": "warn",
+     "value": 1.75,
+     "unit": "apparent size p95/p5",
+     "threshold": {
+      "op": "<=",
+      "value": 1.35
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "Apparent size changes by 1.75× across the take — the performer walks toward or away from the camera; perspective cannot be undone downstream.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "headroom",
+     "label": "Headroom",
+     "status": "warn",
+     "value": {
+      "crown_cut_frames": 0.76
+     },
+     "unit": "fraction of frames with the crown outside the picture",
+     "threshold": {
+      "recommended": [
+       0.05,
+       0.12
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "all frames",
+     "detail": "The crown leaves the picture on 76 % of frames — rows that were never recorded.",
+     "tool": "vision.crown_cut (OpenCV 5)"
+    },
+    {
+     "id": "face_exposure",
+     "label": "Face exposure",
+     "status": "pass",
+     "value": 1.059,
+     "unit": "exposure gain toward the 0.46 target",
+     "threshold": {
+      "target": 0.46,
+      "clamp": [
+       0.8,
+       1.25
+      ]
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Face luma 0.448: the grade brings it ×1.06 to the target, inside the clamp.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    },
+    {
+     "id": "key_direction",
+     "label": "Key direction",
+     "status": "info",
+     "value": 0.9,
+     "unit": "silhouette L/R luma ratio",
+     "threshold": {
+      "flat_below": 1.08
+     },
+     "confidence": 1.0,
+     "frames": "median over the take",
+     "detail": "Key from the left (L 0.114 / R 0.103, ×0.90); the stage's key and rim follow it.",
+     "tool": "vision.grade_qc (OpenCV 5)"
+    }
+   ],
+   "facts": {
+    "picture": "1620×1080 at +150+0",
+    "fps": 25.0,
+    "frames": 1436,
+    "duration_s": 57.4
+   },
+   "duration_ms": 15690,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_sandy_hackett_v2 and sandy_hackett_v2.mp4",
+   "failing": []
+  }
+ ],
+ "fixes": [
+  {
+   "strategy": "fix.reframe",
+   "artifact": "fixed",
+   "stages": [
+    {
+     "id": "band",
+     "label": "Crop to picture area",
+     "tool": "vision.detect_band → crop",
+     "duration_ms": 9013,
+     "cached": false,
+     "reused": false,
+     "summary": "crop=1620:1080:150:0 — the 300 dead columns and 0 dead rows are gone; the picture bottom is now the frame bottom.",
+     "params": {
+      "crop": [
+       1620,
+       1080,
+       150,
+       0
+      ]
+     }
+    },
+    {
+     "id": "size_cap",
+     "label": "Size-capped reframe solve",
+     "tool": "vision.track.dry_solve (SIZE_CAP, HEAD_TARGET_MAX)",
+     "duration_ms": 0,
+     "cached": false,
+     "reused": false,
+     "summary": "Performer reaches 62 % of canvas width at head_target 0.334 (cap 55 %) — holding their size by moving the head down to 0.413 of frame height. One value for the whole clip; one-sided.",
+     "params": {
+      "head_target_floor": 0.334,
+      "head_target": 0.413,
+      "head_target_max": 0.55,
+      "size_cap": 0.55
+     }
+    }
+   ],
+   "changes": {
+    "picture": {
+     "before": "1620×1080 at +150+0 in a 1920×1080 file",
+     "after": "1620×1080, the whole picture"
+    },
+    "head_target": {
+     "before": 0.334,
+     "after": 0.413
+    },
+    "shoulder_span_p50": {
+     "before": 0.501,
+     "after": 0.442
+    },
+    "shoulder_span_p95": {
+     "before": 0.622,
+     "after": 0.548
+    },
+    "pixels_invented": 0
+   },
+   "duration_ms": 9013,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_sandy_hackett_v2 and sandy_hackett_v2.mp4 — detect_band for the crop, the size-capped dry solve for the head target"
+  }
+ ],
+ "verify": [
+  {
+   "artifact": "attempt_1",
+   "gates": [
+    {
+     "id": "pose_coverage",
+     "label": "Pose on frames",
+     "status": "pass",
+     "value": 0.998,
+     "threshold": {
+      "op": ">=",
+      "value": 0.6
+     },
+     "unit": "fraction of frames",
+     "detail": "100 % of 1436 frames.",
+     "tool": "BodyTrack + vision.pose_qc"
+    },
+    {
+     "id": "one_subject",
+     "label": "One subject",
+     "status": "pass",
+     "value": 0.999,
+     "threshold": {
+      "op": ">=",
+      "value": 0.95
+     },
+     "unit": "fraction of frames",
+     "detail": "99.9 %.",
+     "tool": "vision.pose_qc"
+    },
+    {
+     "id": "matte_extent",
+     "label": "Matte extent vs second opinion",
+     "status": "pass",
+     "value": 1.003,
+     "threshold": {
+      "op": ">=",
+      "value": 0.9
+     },
+     "unit": "head width ratio, median",
+     "detail": "Matte head width 100 % of the OpenCV 5 DNN opinion's over 17 frames (worst frame 1095: 480 px vs 622 px).",
+     "tool": "vision.segment.SubjectSegmenter + vision.matte_extent (OpenCV 5 DNN)"
+    },
+    {
+     "id": "separation",
+     "label": "Subject vs background luminance",
+     "status": "pass",
+     "value": 1.72,
+     "threshold": {
+      "op": ">=",
+      "value": 1.5
+     },
+     "unit": "edge luma ratio",
+     "detail": "Edge luma 0.227 inside / 0.132 outside — separation 1.72× over 24 frames of comp; the performer is the brighter side; clears the 1.5× gate by 0.22×.",
+     "tool": "vision.separation (OpenCV 5)"
+    },
+    {
+     "id": "head_spread",
+     "label": "Head height spread",
+     "status": "fail",
+     "value": 0.029,
+     "threshold": {
+      "op": "<=",
+      "value": 0.02
+     },
+     "unit": "fraction of output height",
+     "detail": "8.9 % of source → 2.9 % of output.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "head_drift",
+     "label": "Head drift (slower than 2 s)",
+     "status": "fail",
+     "value": 5.3,
+     "threshold": {
+      "op": "<=",
+      "value": 4.0
+     },
+     "unit": "px",
+     "detail": "5.3 px of head-top motion slower than 2 s after the solve.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "frame_count",
+     "label": "Frame count = source",
+     "status": "pass",
+     "value": 1436,
+     "threshold": 1436,
+     "unit": "frames",
+     "detail": "1436 = 1436.",
+     "tool": "vision.frame_count (OpenCV 5)"
+    },
+    {
+     "id": "audio_md5",
+     "label": "Audio MD5 = source",
+     "status": "pass",
+     "value": "equal",
+     "threshold": "equal",
+     "unit": "",
+     "detail": "Decoded audio MD5 identical to the source.",
+     "tool": "vision.audio_md5 (ffmpeg)"
+    }
+   ],
+   "measurements": {
+    "head_target": 0.414,
+    "shoulder_span_p50": 0.442,
+    "separation": 1.72,
+    "edge_luma_in": 0.227,
+    "edge_luma_out": 0.132,
+    "head_spread": 0.029,
+    "head_drift_px": 5.3,
+    "frames": 1436
+   },
+   "duration_ms": 30680,
+   "cached": false,
+   "provenance": "measured: OpenCV 5 over work/midtown_sandy_hackett_v2, work/midtown_sandy_hackett_v2/comp",
+   "passed": false,
+   "failing": [
+    {
+     "id": "head_spread",
+     "label": "Head height spread",
+     "status": "fail",
+     "value": 0.029,
+     "threshold": {
+      "op": "<=",
+      "value": 0.02
+     },
+     "unit": "fraction of output height",
+     "detail": "8.9 % of source → 2.9 % of output.",
+     "tool": "vision.head_height (OpenCV 5)"
+    },
+    {
+     "id": "head_drift",
+     "label": "Head drift (slower than 2 s)",
+     "status": "fail",
+     "value": 5.3,
+     "threshold": {
+      "op": "<=",
+      "value": 4.0
+     },
+     "unit": "px",
+     "detail": "5.3 px of head-top motion slower than 2 s after the solve.",
+     "tool": "vision.head_height (OpenCV 5)"
+    }
+   ]
+  }
+ ],
+ "decisions": [
+  {
+   "action": "fix",
+   "reasoning": "Rule 1: inspect fails subject_size, picture_area; fix.reframe addresses picture_area, subject_size and has not been tried.",
+   "strategy": "fix.reframe",
+   "cites": [
+    "picture_area",
+    "subject_size"
+   ],
+   "confidence": 1.0,
+   "model": "rules",
+   "duration_ms": 0,
+   "cached": false
+  },
+  {
+   "action": "process",
+   "reasoning": "Rule 2: every inspected finding is inside the profile; process with the standard strategy first.",
+   "strategy": "process.standard",
+   "cites": [],
+   "confidence": 1.0,
+   "model": "rules",
+   "duration_ms": 0,
+   "cached": false
+  },
+  {
+   "action": "reshoot",
+   "reasoning": "Rule 4b: verify fails head_spread, head_drift and no untried strategy addresses it within the budget (0/2); reshoot.",
+   "strategy": null,
+   "cites": [
+    "head_spread",
+    "head_drift"
+   ],
+   "confidence": 1.0,
+   "model": "rules",
+   "duration_ms": 0,
+   "cached": false
+  }
+ ],
+ "guards": [],
+ "reshoot": {
+  "items": [
+   {
+    "id": "head_spread",
+    "label": "Head height spread",
+    "value": 0.029,
+    "threshold": {
+     "op": "<=",
+     "value": 0.02
+    },
+    "unit": "fraction of output height",
+    "detail": "8.9 % of source → 2.9 % of output.",
+    "guidance": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation.",
+    "cause": false
+   },
+   {
+    "id": "head_drift",
+    "label": "Head drift (slower than 2 s)",
+    "value": 5.3,
+    "threshold": {
+     "op": "<=",
+     "value": 4.0
+    },
+    "unit": "px",
+    "detail": "5.3 px of head-top motion slower than 2 s after the solve.",
+    "guidance": "Lock the camera off on a tripod; no auto-reframe, no digital stabilisation.",
+    "cause": false
+   }
+  ],
+  "attempts": 1,
+  "budget": {
+   "reprocesses_used": 0,
+   "retry_budget": 2
+  }
+ },
+ "bedrock": null,
+ "wall_s": 78.3,
+ "score": {
+  "expected": "reshoot",
+  "got": "reshoot",
+  "outcome_ok": true,
+  "silently_wrong": false,
+  "detections": {
+   "pillarbox": {
+    "finding": "picture_area",
+    "status": "fail",
+    "detected": true
+   },
+   "too_close": {
+    "finding": "subject_size",
+    "status": "fail",
+    "detected": true
+   },
+   "walk_in": {
+    "finding": "distance_steady",
+    "status": "warn",
+    "detected": true
+   },
+   "crown_cut": {
+    "finding": "headroom",
+    "status": "warn",
+    "detected": true
+   },
+   "head_moves": {
+    "finding": "head_spread",
+    "status": "fail",
+    "detected": true
+   }
+  },
+  "unlabelled_flags": [
+   "head_drift"
+  ],
+  "missed": [],
+  "fix": {
+   "strategy": "fix.reframe",
+   "expected": null,
+   "resolved": true
+  }
+ }
+}

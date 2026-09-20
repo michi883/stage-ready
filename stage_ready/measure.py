@@ -176,16 +176,26 @@ class ArchiveMeasurer:
 
         a = self.anchors(wd)
         cut = crown_cut(str(wd / "matte"))
+        visible = 1.0 - cut
         hr = insp["headroom"]
+        # Evidence, not framing quality: the head metrics read the matte's top, and a cut crown gives them a
+        # completed crown at best and the picture edge at worst. Below the profile's minimum there is not
+        # enough recorded crown to trust them — the finding fails and no fixer addresses it.
+        min_ev, pass_at = float(hr["crown_visible_min_for_head_metrics"]), float(hr["crown_visible_pass"])
+        status = "pass" if visible >= pass_at else "warn" if visible >= min_ev else "fail"
         top = [t / a.picture_h for t in a.top]
-        hr_val: dict[str, Any] = {"crown_cut_frames": round(cut, 2)}
+        hr_val: dict[str, Any] = {"crown_visible_frames": round(visible, 2), "crown_cut_frames": round(cut, 2)}
         if cut < 0.05:
             hr_val |= {"min": round(min(top), 3), "max": round(max(top), 3)}
-        findings.append(Finding(id="headroom", label=hr["label"], status="pass" if cut < 0.05 else "warn",
-                                value=hr_val, unit="fraction of frames with the crown outside the picture", threshold={"recommended": hr["recommended"]},
+        findings.append(Finding(id="headroom", label=hr["label"], status=status,
+                                value=hr_val, unit="fraction of frames with the crown inside the picture",
+                                threshold={"min_for_head_metrics": min_ev, "pass": pass_at, "recommended_headroom": hr["recommended"]},
                                 frames="all frames",
                                 detail=(f"The crown is inside the picture on every frame." if cut == 0 else
-                                        f"The crown leaves the picture on {_pct(cut)} of frames — rows that were never recorded."),
+                                        f"The crown leaves the picture on {_pct(cut)} of frames — rows that were never recorded"
+                                        + (f"; a recorded crown on {_pct(visible)} of frames is enough evidence for the head metrics." if status == "warn" else
+                                           f"; a recorded crown on only {_pct(visible)} of frames, under the {_pct(min_ev)} the head metrics need to be trusted — "
+                                           f"head height would be measured against a completed crown or the picture edge, not the performer." if status == "fail" else ".")),
                                 tool="vision.crown_cut (OpenCV 5)"))
 
         g = grade_qc(str(wd / "band"), str(wd / "matte"), self.pose(wd), face_target=profile.data["look"]["face_target"],
@@ -299,8 +309,10 @@ class ArchiveMeasurer:
         fps = probe(str(src)).fps or 30.0
         th = {g["id"]: g for g in profile.gates}
 
+        from .vision import crown_cut
         q = pose_qc(self.pose(wd))
         mq = self.second_opinion(wd)
+        visible = 1.0 - crown_cut(str(wd / "matte"))
         sep = separation(str(measured_on), str(wd / "mt"))
         hh = head_height(str(self._pick(wd, "matte_ext", "matte")), self.pose(wd, ext=True), read_affine(str(wd / "affine.csv")), canvas_h, fps)
         n_src = self.frames(src)
@@ -324,6 +336,12 @@ class ArchiveMeasurer:
             elif gid == "one_subject":
                 gates.append(gate(gid, "pass" if q.one_subject >= g["value"] else "fail", round(q.one_subject, 3),
                                   f"{q.one_subject * 100:.1f} %.", "vision.pose_qc"))
+            elif gid == "crown_visible":
+                gates.append(gate(gid, "pass" if visible >= g["value"] else "fail", round(visible, 2),
+                                  f"A recorded crown on {_pct(visible)} of frames"
+                                  + (f" — enough evidence for the head metrics (≥ {_pct(g['value'])})." if visible >= g["value"] else
+                                     f" — under the {_pct(g['value'])} the head metrics need: head height would be measured against a completed crown or the picture edge, not the performer."),
+                                  "vision.crown_cut (OpenCV 5)"))
             elif gid == "matte_extent":
                 who = "the OpenCV 5 DNN opinion's" if self.opinion == "dnn" else "the second opinion's"
                 gates.append(gate(gid, "pass" if mq.median >= g["value"] else "fail", round(mq.median, 3),
