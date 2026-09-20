@@ -1,59 +1,59 @@
 {
-  "provenance": "recorded from the archived run: work/midtown_zach_sain_v2 — seed_pick.log, matte.key, track.log, crown.log, params.txt (python3 -m stage_ready record zach); the run was made in pieces on 2026-09-11, so stage durations are the archive's §11 timings (MatAnyone 85 s on a 480×412 picture; crown completion +29 s) with warp/composite/encode re-measured 2026-09-19",
+  "provenance": "recorded from the archived run: work/midtown_zach_sain_v1_demo — seed_pick.log, matte.key, track.log, crown.log, params.txt; stage durations from the workdir's file times (python3 -m stage_ready record)",
   "artifact": "attempt_1",
-  "duration_ms": 358200,
+  "duration_ms": 368356,
   "stages": [
     {
       "id": "seed",
       "label": "Seed mask",
       "tool": "PersonMatte + pick_seed.py + clean_seed.py",
-      "duration_ms": 4000,
-      "summary": "Vision on 16 candidate frames; seed from frame 565 — no candidate has the crown whole (it leaves the picture on 78 % of frames), so the widest head, least outlying: 216 px, coverage 32.8 %."
+      "duration_ms": 901,
+      "summary": "Vision on 17 candidate frames; seed from frame 834 (crown whole, head 212 px, coverage 31.4 %)."
     },
     {
       "id": "matte",
       "label": "Video matte",
       "tool": "MatAnyone 2 (local MPS)",
-      "duration_ms": 85000,
+      "duration_ms": 70858,
       "cached": true,
-      "summary": "2116 mattes propagated both ways from frame 565 — keyed on source SHA-256 + seed SHA-256 (matte.key); a repeat run is a cache hit."
+      "summary": "1800 mattes propagated both ways from frame 834 — keyed on source SHA-256 + seed SHA-256 (matte.key); a repeat run is a cache hit."
     },
     {
       "id": "crown",
       "label": "Crown completion",
       "tool": "complete_crown.py",
-      "duration_ms": 29000,
-      "summary": "Crown cut on 1655 frames (78 %) — 1407 completed from 33 of the performer's own uncut frames; picture extended by 38 rows. Their pixels, a different moment; nothing painted."
+      "duration_ms": 11272,
+      "summary": "Crown cut on 595 frames (33 %) — 590 completed from 39 of the performer's own uncut frames; picture extended by 10 rows. Their pixels, a different moment; nothing painted."
     },
     {
       "id": "track",
       "label": "Tracked reframe solve",
       "tool": "track_frame.py",
-      "duration_ms": 1300,
-      "summary": "head_target 0.334 — the floor, unchanged; scale 3.083..3.128 (median 3.112); head height spread 1.8 % of source → 0.6 % of output; cut off at the frame bottom on 100 % of frames.",
+      "duration_ms": 1077,
+      "summary": "head_target 0.334 — the floor, unchanged; scale 3.174..3.238 (median 3.200); head height spread 2.4 % of source → 0.7 % of output; cut off at the frame bottom on 100 % of frames.",
       "params": {
         "head_target": 0.334,
-        "scale_min": 3.083,
-        "scale_max": 3.128,
-        "scale_median": 3.112
+        "scale_min": 3.174,
+        "scale_max": 3.238,
+        "scale_median": 3.2
       }
     },
     {
       "id": "warp",
       "label": "Reframe to canvas",
       "tool": "warp.py",
-      "duration_ms": 15100,
+      "duration_ms": 12856,
       "summary": "1080×1920, one resample."
     },
     {
       "id": "grade",
       "label": "Measured grade",
       "tool": "auto_grade.py",
-      "duration_ms": 200,
-      "summary": "keydx=1 rimdx=6 fgexp=0.8 — measured off the recording, not typed.",
+      "duration_ms": 205,
+      "summary": "keydx=-1 rimdx=-6 fgexp=0.8 — measured off the recording, not typed.",
       "params": {
-        "keydx": 1.0,
-        "rimdx": 6.0,
+        "keydx": -1.0,
+        "rimdx": -6.0,
         "fgexp": 0.8
       }
     },
@@ -61,21 +61,21 @@
       "id": "composite",
       "label": "Composite",
       "tool": "Composite",
-      "duration_ms": 215100,
-      "summary": "2116 frames on the Red Curtain plate — light wrap 0.5, rim 0.28."
+      "duration_ms": 263612,
+      "summary": "1800 frames on the Red Curtain plate — light wrap 0.5, rim 0.28."
     },
     {
       "id": "encode",
       "label": "Encode",
       "tool": "ffmpeg",
-      "duration_ms": 8500,
+      "duration_ms": 7575,
       "summary": "H.264 CRF 20, faststart, source audio copied."
     }
   ],
   "params": {
     "look": "red_curtain_grade",
-    "keydx": 1.0,
-    "rimdx": 6.0,
+    "keydx": -1.0,
+    "rimdx": -6.0,
     "fgexp": 0.8,
     "rimamt": 0.28,
     "lwamt": 0.5,
@@ -86,8 +86,8 @@
       1080,
       1920
     ],
-    "frames": 2116,
+    "frames": 1800,
     "head_target": 0.334,
-    "scale_median": 3.112
+    "scale_median": 3.2
   }
 }

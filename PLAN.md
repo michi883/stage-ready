@@ -214,7 +214,9 @@ near-threshold pass at 1.51×) is kept in the evaluation corpus, not the demo (`
 |---|---|---|---|
 | 1 | **Sandy Hackett** — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot (cause first: distance) | **fix what can be fixed, then catch what cannot** |
 | 2 | **Ethel Chadwick** — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **adapt and recover** |
-| 3 | **Zach Sain** — archived, untouched; attempt 2 rendered 2026-09-19 | inspect (warn: crown cut 78 %, over-lit) → process → verify ✗ **1.00×** → separation-targeted at bounds → verify ✗ **1.45×** → reshoot ("don't wear the stage"), one retry unused | **stop when further processing cannot honestly satisfy the profile** |
+| 3 | **Zach Sain** — a derived excerpt (15–75 s) of his other real take `zach_sain_v1.mov` (mint trousers); `demo/derive.sh`, 2026-09-20 | inspect (warn: crown cut 33 %, over-lit) → process → verify ✓ separation **2.37×**, head 0.7 %, 1800 frames → deliver | **already suitable, verified on the first pass** |
+
+The untouched black-shirt take (1.00× → 1.45× → reshoot) and Sandy's two trimmed excerpts (2.3 % / 2.4 % head spread — no stable section clears the gate, his crown is cut on 80 %+ of frames) are the evaluation corpus (`demo/eval/corpus/`, README "Polished demo vs evaluation corpus"). Sandy's demo input stays untouched.
 
 ## Video beats → what each one needs
 

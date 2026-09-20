@@ -1,0 +1,76 @@
+{
+ "note": "Sandy: two contiguous excerpts of the untouched recording, derived by trimming only (demo/derive.sh) and run through the real pipeline 2026-09-20, to test whether a stable section could pass the head-height gates after the reframe fix. Neither did; Sandy's polished-demo input stays the untouched recording (fix holds → verify fails → reshoot).",
+ "candidates": [
+  {
+   "time_range": "00:00:04 → 00:00:34 (30 s)",
+   "output": "sandy_hackett_v2_demo30.mp4",
+   "workdir": "work/midtown_sandy_hackett_v2_demo30",
+   "inspect": {
+    "failing": [
+     "picture_area"
+    ],
+    "subject_size_p95": 0.518,
+    "distance_steady": 1.13,
+    "crown_cut_frames": 0.86
+   },
+   "fix_reframe": {
+    "picture": "1620×1080 at +150+0 → the whole picture",
+    "head_target": [
+     0.334,
+     0.334
+    ]
+   },
+   "reinspect": {
+    "failing": []
+   },
+   "verify": {
+    "failing": [
+     "head_spread"
+    ],
+    "head_spread": 0.023,
+    "head_drift_px": 3.6,
+    "separation": 1.77,
+    "matte_extent": 1.03,
+    "frames": 750,
+    "audio_md5": "equal"
+   }
+  },
+  {
+   "time_range": "00:00:04 → 00:00:25 (21 s)",
+   "output": "sandy_hackett_v2_demo.mp4",
+   "workdir": "work/midtown_sandy_hackett_v2_demo",
+   "inspect": {
+    "failing": [
+     "picture_area"
+    ],
+    "subject_size_p95": 0.512,
+    "distance_steady": 1.11,
+    "crown_cut_frames": 0.81
+   },
+   "fix_reframe": {
+    "picture": "1620×1080 at +150+0 → the whole picture",
+    "head_target": [
+     0.334,
+     0.334
+    ]
+   },
+   "reinspect": {
+    "failing": []
+   },
+   "verify": {
+    "failing": [
+     "head_spread",
+     "head_drift"
+    ],
+    "head_spread": 0.024,
+    "head_drift_px": 4.0,
+    "separation": 1.95,
+    "matte_extent": 1.008,
+    "frames": 525,
+    "audio_md5": "equal"
+   }
+  }
+ ],
+ "why": "His crown leaves the picture on 81–86 % of frames in every stable section, so the head-top anchor the solve holds is a completed crown, rebuilt from reference frames; its switches move the anchor more than the performer does. Under the 21-s run's own solve, even the steadiest 10 s reads a 2.28 % canvas spread against the 2 % gate. Trimming cannot change that, and stabilising, synthesising or re-anchoring is not allowed.",
+ "kept": "the untouched sandy_hackett_v2.mp4 in both the polished demo (as the fix → caught → reshoot recording) and the evaluation corpus"
+}

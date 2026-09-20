@@ -1,14 +1,14 @@
 {
   "action": "process",
   "strategy": "process.standard",
-  "reasoning": "Nothing outside the profile's gates: the picture fills its small file, a pose on every frame, the same subject throughout, shoulders at 34 % of the canvas, steady to 1.16×. Two warnings, both recorded-content limits no fixer may touch: the crown leaves the picture on 78 % of frames — the completion will fill those rows from his own uncut frames — and the room is over-lit, held at the grade's clamp. One thing no pre-composite measure can settle: a black shirt on a red wall, going onto a red curtain. Process with the standard strategy and let the gate that can see it measure the finished composite.",
+  "reasoning": "Nothing outside the profile's gates: the picture fills its small file, a pose on every frame and the same subject throughout, shoulders at 34 % of the canvas, apparent size steady to 1.05×. Two warnings, both recorded-content limits no fixer may touch: the crown leaves the 480-pixel picture on 34 % of frames — the completion fills those rows from his own uncut frames — and the room is over-lit, held at the grade's clamp. A black shirt on a red wall, going onto a red curtain, is the one thing no pre-composite measure can settle; the trousers are not red. Process with the standard strategy and let the gate that can see it measure the finished composite.",
   "cites": [
     "subject_size",
     "distance_steady",
     "headroom",
     "face_exposure"
   ],
-  "confidence": 0.88,
+  "confidence": 0.9,
   "model": "cached",
-  "duration_ms": 2900
+  "duration_ms": 2800
 }

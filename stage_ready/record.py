@@ -128,6 +128,10 @@ def record(clip_id: str, archive: str | None = None, fixed: bool = False, out: P
         rec = _clean(to_dict(m.inspect(clip, target, profile)))
         rec["provenance"] = f"measured: OpenCV 5 over {wd.relative_to(m.root)} — python3 -m stage_ready record {clip_id} (stage_ready.measure; every value computed from the archived files)"
         p = out / f"inspect.{target}.json"; _dump(p, rec); written.append(p)
+    if fixed:                                            # the reframe fixer's record, measured the same way
+        rec = _clean(to_dict(m.fix(clip, "fix.reframe", profile)))
+        rec["provenance"] = f"measured: OpenCV 5 over {wd.relative_to(m.root)} — detect_band for the crop, the size-capped dry solve for the head target (python3 -m stage_ready record {clip_id} --fixed)"
+        p = out / "fix.reframe.json"; _dump(p, rec); written.append(p)
     for art, spec in clip.archive.get("artifacts", {}).items():
         rec = _clean(to_dict(m.verify(clip, art, profile)))
         rec["provenance"] = f"measured: OpenCV 5 over {wd.relative_to(m.root)}, {spec.get('composite') or spec.get('video')} — python3 -m stage_ready record {clip_id}"

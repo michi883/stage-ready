@@ -7,15 +7,15 @@
       "status": "pass",
       "value": {
         "w": 480,
-        "h": 412,
+        "h": 404,
         "x": 0,
         "y": 0
       },
       "unit": "px",
-      "threshold": "fills the 480×412 file",
+      "threshold": "fills the 480×404 file",
       "confidence": 1.0,
-      "frames": "sampled every 30th frame (71 of 2116)",
-      "detail": "The recorded picture fills the file: 480x412+0+0, no padding.",
+      "frames": "sampled every 30th frame (60 of 1800)",
+      "detail": "The recorded picture fills the file: 480x404+0+0, no padding.",
       "tool": "vision.detect_band (OpenCV 5)"
     },
     {
@@ -29,7 +29,7 @@
         "value": 0.6
       },
       "confidence": 1.0,
-      "frames": "2116 / 2116",
+      "frames": "1800 / 1800",
       "detail": "A body pose on 100 % of frames.",
       "tool": "BodyTrack + vision.pose_qc"
     },
@@ -54,7 +54,7 @@
       "status": "pass",
       "value": {
         "p50": 0.338,
-        "p95": 0.345
+        "p95": 0.344
       },
       "unit": "shoulder span / canvas width",
       "threshold": {
@@ -63,14 +63,14 @@
       },
       "confidence": 1.0,
       "frames": "all frames",
-      "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 35 %) — under the 55 % cap.",
+      "detail": "At head_target 0.334 the shoulders span 34 % of the canvas (p95 34 %) — under the 55 % cap.",
       "tool": "vision.track.dry_solve (OpenCV 5)"
     },
     {
       "id": "distance_steady",
       "label": "Distance steady",
       "status": "pass",
-      "value": 1.16,
+      "value": 1.05,
       "unit": "apparent size p95/p5",
       "threshold": {
         "op": "<=",
@@ -78,7 +78,7 @@
       },
       "confidence": 1.0,
       "frames": "all frames",
-      "detail": "Apparent size steady to 1.16×.",
+      "detail": "Apparent size steady to 1.05×.",
       "tool": "vision.pose_qc"
     },
     {
@@ -86,7 +86,7 @@
       "label": "Headroom",
       "status": "warn",
       "value": {
-        "crown_cut_frames": 0.78
+        "crown_cut_frames": 0.33
       },
       "unit": "fraction of frames with the crown outside the picture",
       "threshold": {
@@ -97,7 +97,7 @@
       },
       "confidence": 1.0,
       "frames": "all frames",
-      "detail": "The crown leaves the picture on 78 % of frames — rows that were never recorded.",
+      "detail": "The crown leaves the picture on 33 % of frames — rows that were never recorded.",
       "tool": "vision.crown_cut (OpenCV 5)"
     },
     {
@@ -115,30 +115,30 @@
       },
       "confidence": 1.0,
       "frames": "median over the take",
-      "detail": "Face luma 0.727 asked for ×0.37 and was held at ×0.80 — the recording is over-lit for the stage.",
+      "detail": "Face luma 0.729 asked for ×0.36 and was held at ×0.80 — the recording is over-lit for the stage.",
       "tool": "vision.grade_qc (OpenCV 5)"
     },
     {
       "id": "key_direction",
       "label": "Key direction",
       "status": "info",
-      "value": 1.23,
+      "value": 1.0,
       "unit": "silhouette L/R luma ratio",
       "threshold": {
         "flat_below": 1.08
       },
       "confidence": 1.0,
       "frames": "median over the take",
-      "detail": "Key from the right (L 0.156 / R 0.191, ×1.23); the stage's key and rim follow it.",
+      "detail": "Flat-lit (L 0.285 / R 0.284); the stage convention stands.",
       "tool": "vision.grade_qc (OpenCV 5)"
     }
   ],
   "facts": {
-    "picture": "480×412 at +0+0",
-    "fps": 29.999,
-    "frames": 2116,
-    "duration_s": 70.5
+    "picture": "480×404 at +0+0",
+    "fps": 30.0,
+    "frames": 1800,
+    "duration_s": 60.0
   },
-  "duration_ms": 6104,
-  "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v2 — python3 -m stage_ready record zach (stage_ready.measure; every value computed from the archived files)"
+  "duration_ms": 8153,
+  "provenance": "measured: OpenCV 5 over work/midtown_zach_sain_v1_demo — python3 -m stage_ready record zach (stage_ready.measure; every value computed from the archived files)"
 }

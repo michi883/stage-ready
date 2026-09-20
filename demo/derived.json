@@ -15,12 +15,60 @@
         "video re-encoded once (x264 crf 18, 1 thread)",
         "audio stream copied"
       ],
-      "derived_on": "2026-09-19"
+      "derived_on": "2026-09-20"
+    },
+    "sandy_demo": {
+      "role": "polished demo candidate (Sandy)",
+      "original": "sandy_hackett_v2.mp4",
+      "original_sha256": "119f5e2b90b12ccb844302e39335b05ebc63139688c90e07ee983380e49b50cb",
+      "output": "sandy_hackett_v2_demo.mp4",
+      "output_sha256": "4e4a6de60cdedf9c2d25ae26f1536cd34b6685cbf0786a0448d290b394b341ad",
+      "time_range": "00:00:04 → 00:00:25 (21 s)",
+      "command": "ffmpeg -v error -y -ss 4 -t 21 -i sandy_hackett_v2.mp4 -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a copy -movflags +faststart sandy_hackett_v2_demo.mp4",
+      "edits": [
+        "trim 4 s → 25 s (from the first steady moment; the walk-in at 0–4.5 s and the bobbing from 19 s on excluded)",
+        "25 fps unchanged",
+        "video re-encoded once (x264 crf 18, 1 thread)",
+        "audio stream copied",
+        "pillarbox and framing untouched"
+      ],
+      "rejected_candidate": {
+        "time_range": "00:00:04 → 00:00:34 (30 s)",
+        "measured": "after the fix and the pipeline's own solve: head spread 2.3 % on the canvas against the 2 % gate (drift 3.6 px, separation 1.77×, matte 103 %) — failed honestly, not used"
+      },
+      "derived_on": "2026-09-20"
+    },
+    "zach_demo": {
+      "role": "polished demo candidate (Zach)",
+      "original": "zach_sain_v1.mov",
+      "original_sha256": "d20abd43ed3b9bb6515a84e8be8ef9946b04c234b985f5a7e31b3d9333116c9c",
+      "output": "zach_sain_v1_demo.mp4",
+      "output_sha256": "f4eee6dd5534b694b5b804a584a3577b52f4f76da389df53304d05b1fe9a409c",
+      "time_range": "00:00:15 → 00:01:15 (60 s)",
+      "command": "ffmpeg -v error -y -ss 15 -t 60 -i zach_sain_v1.mov -vf setpts=PTS-STARTPTS -af asetpts=PTS-STARTPTS -c:v libx264 -crf 18 -preset medium -threads 1 -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart zach_sain_v1_demo.mp4",
+      "edits": [
+        "alternate real take (zach_sain_v1.mov, mint trousers, crown inside the picture)",
+        "trim 15 s → 75 s",
+        "30 fps unchanged; timestamps zeroed (setpts/asetpts) so the frame count is unambiguous — 1800 by the container, by decoding, and by the pipeline's demux",
+        "container rotation (180°) baked into the pixels by the re-encode — the picture is unchanged",
+        "video re-encoded once (x264 crf 18, 1 thread)",
+        "audio re-encoded AAC 160k (the .mov audio is not MP4-compatible as-is)"
+      ],
+      "rejected_candidate": {
+        "note": "the same excerpt without the timestamp zeroing: the source decodes to 1800 frames but the pipeline's demux emitted 1801 (a duplicate at t=0), so the render had 1801 — caught by the live frame-count gate on AWS (FFmpeg decoder: 1801 ≠ 1800) while the local check, which counts through AVFoundation, read 1801 = 1801. Not used."
+      },
+      "derived_on": "2026-09-20"
     }
   },
   "demo_lineup": {
-    "sandy": "archived recording, unchanged",
+    "sandy": "sandy_hackett_v2_demo.mp4 (derived: see derived.sandy_demo) — pending the pipeline run",
     "ethel": "archived recording, unchanged",
-    "zach": "archived recording, unchanged — attempt 2 rendered 2026-09-19 at the strategy's bounds (1.45×)"
+    "zach": "zach_sain_v1_demo.mp4 (derived: see derived.zach_demo) — pending the pipeline run"
+  },
+  "evaluation_corpus": {
+    "sandy_hackett_v2.mp4": "untouched — walks into a close-up; live result 2026-09-20: fix holds, verify fails head spread 2.9 % / drift 5.3 px → reshoot",
+    "zach_sain_v2.mov": "untouched — black shirt on the red wall; live result 2026-09-20: separation 1.00× → 1.45× at the bounds → reshoot",
+    "ethel_chadwick_v2.mp4": "untouched — the demo's Ethel is this recording",
+    "michi_sample_v1.mp4": "derived — the near-threshold pass (1.51×)"
   }
 }

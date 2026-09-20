@@ -21,9 +21,9 @@ class DemoPaths(unittest.TestCase):
     EXPECTED = {   # the lineup, in billing order — three agent behaviours, each recording's own path
         "sandy": ("reshoot", ["inspect", "fix", "inspect", "process", "verify ✗", "reshoot"]),               # fix what can be fixed, then catch what cannot
         "ethel": ("delivered", ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"]),     # adapt and recover
-        "zach": ("reshoot", ["inspect", "process", "verify ✗", "reprocess", "verify ✗", "reshoot"]),         # stop when processing cannot honestly satisfy the profile
+        "zach": ("delivered", ["inspect", "process", "verify ✓", "deliver"]),                                # already suitable: verified on the first pass
     }
-    DELIVERED = ("ethel",)
+    DELIVERED = ("ethel", "zach")
 
     def test_three_paths(self):
         for cid, (outcome, path) in self.EXPECTED.items():
@@ -63,18 +63,17 @@ class DemoPaths(unittest.TestCase):
         self.assertEqual(after["new_defects"], [])
         self.assertEqual([e["result"]["strategy"] for e in evs if e["type"] == "fix.result"], ["fix.reframe"])
 
-    def test_zach_retry_reaches_the_bounds_and_stops(self):
-        # The retry is the same strategy that recovered Ethel; on Zach it moves 1.00x to 1.45x and is
-        # still short, so the loop stops with one retry unused — the strategy has nowhere further to go.
+    def test_zach_is_verified_on_the_first_pass(self):
+        # The alternate take (zach_sain_v1, mint trousers): every gate on the first attempt, no fix,
+        # no retry — the trousers carry the outline the black shirt does not (separation 2.37x).
         evs = trace("zach")
-        seps = [g["value"] for e in evs if e["type"] == "verify.result" for g in e["result"]["gates"] if g["id"] == "separation"]
-        self.assertEqual(seps, [1.0, 1.45])
-        self.assertEqual([e["result"]["strategy"] for e in evs if e["type"] == "process.result"], ["process.standard", "process.separation_targeted"])
-        end = evs[-1]
-        self.assertEqual(end["outcome"], "reshoot")
-        self.assertEqual([i["id"] for i in end["reshoot"]["items"]], ["separation"])
-        self.assertIn("wear the stage", end["reshoot"]["items"][0]["guidance"])
-        self.assertEqual(end["reshoot"]["budget"], {"reprocesses_used": 1, "retry_budget": 2})
+        v = [e for e in evs if e["type"] == "verify.result"]
+        self.assertEqual(len(v), 1); self.assertTrue(v[0]["passed"])
+        m = evs[-1]["delivery"]["measurements"]
+        self.assertEqual((m["separation"], m["frames"]), (2.37, 1800))
+        self.assertEqual(evs[-1]["delivery"]["budget"], {"reprocesses_used": 0, "retry_budget": 2})
+        warns = [f["id"] for f in [e for e in evs if e["type"] == "inspect.result"][0]["result"]["findings"] if f["status"] == "warn"]
+        self.assertEqual(warns, ["headroom", "face_exposure"])                     # honest notes, not defects
 
     def test_sandy_reshoot_names_the_cause_first(self):
         # The gates that fail are head height; the cause is the walk-in INSPECT warned about, and
@@ -109,6 +108,15 @@ class DemoPaths(unittest.TestCase):
         for path in sorted(FIXTURE_ROOT.glob("*/clip.json")):
             fx = json.load(path.open()).get("fixture", "")
             self.assertNotIn("measurements:", fx, f"{path.parent.name} substitutes another recording's numbers")
+        # every derived demo input names its original, hash, time range and edits (demo/derived.json)
+        import pathlib
+        derived = json.load(open(pathlib.Path(FIXTURE_ROOT).parent / "derived.json"))["derived"]
+        for path in sorted(FIXTURE_ROOT.glob("*/clip.json")):
+            rec = json.load(path.open())["recognize"]
+            if "derived_from" in rec:
+                d = rec["derived_from"]
+                self.assertTrue(d.get("file") and d.get("sha256") and d.get("time_range") and d.get("edits"), path.parent.name)
+                self.assertTrue(any(x["original_sha256"] == d["sha256"] for x in derived.values()), f"{path.parent.name}: derivation not in demo/derived.json")
         for path in sorted(FIXTURE_ROOT.glob("*/*.json")):
             prov = json.load(path.open()).get("provenance", "")
             self.assertFalse(prov.startswith("PROJECTED"), f"{path.name} is projected: {prov[:80]}")
@@ -140,11 +148,14 @@ class Recognition(unittest.TestCase):
         self.assertEqual(c.id, "ethel")
         self.assertEqual(c.recognize["matched_by"], "name")
 
-    def test_either_container_of_the_same_source_is_recognised(self):
+    def test_a_derived_input_is_recognised_by_its_own_hash_not_its_originals(self):
+        # zach_sain_v1_demo.mp4 is derived from zach_sain_v1.mov (demo/derived.json): the demo replays
+        # the derived file's run; the original take is a different file and is not matched to it.
         b = get_backend(demo=True)
-        mov, mp4 = b.clip("zach").recognize["sha256"]
-        self.assertEqual(b.recognize(sha256=mov).id, "zach")
-        self.assertEqual(b.recognize(sha256=mp4).id, "zach")
+        c = b.clip("zach")
+        self.assertEqual(b.recognize(sha256=c.recognize["sha256"]).id, "zach")
+        self.assertIsNone(b.recognize(sha256=c.recognize["derived_from"]["sha256"]))
+        self.assertNotIn("zach_sain_v1.mov", [n.lower() for n in c.recognize["names"]])
 
     def test_unknown_is_none_not_a_guess(self):
         self.assertIsNone(get_backend(demo=True).recognize(sha256="00" * 32, name="holiday.mp4"))

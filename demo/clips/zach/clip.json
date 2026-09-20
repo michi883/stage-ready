@@ -2,72 +2,68 @@
   "id": "zach",
   "name": "Zach Sain",
   "order": 3,
-  "brief": "Wearing the stage, in black — recorded to spec except for the shirt, on a red wall, in a small picture.",
+  "brief": "Already suitable — one performer, one distance, a black shirt on a red wall but mint trousers to carry the outline; a small picture the stage magnifies.",
   "source": {
     "width": 480,
-    "height": 412,
+    "height": 404,
     "fps": 30.0,
-    "duration_s": 70.5,
-    "frames": 2116,
+    "duration_s": 60.0,
+    "frames": 1800,
     "room": "red wall, bright",
-    "wardrobe": "black shirt, black trousers",
-    "framing": "head to knee, crown tight to the top",
-    "audio": "48 kHz AAC",
-    "container": "zach_sain_v2.mov — 480×412 with a 180° display matrix; the browser honours it, and stills/source.mp4 is a stream-copied remux registered under its own hash"
+    "wardrobe": "black shirt, mint trousers",
+    "framing": "head to shin, crown tight to the top",
+    "audio": "48 kHz AAC"
   },
-  "fixture": "zach_sain_v2 (Red Curtain archive) — his own recording and runs: zach_sain_v2_v2 (attempt 1, 2026-09-11) and zach_sain_v2_v3 (attempt 2, the separation-targeted grade at its bounds, 2026-09-19)",
+  "fixture": "zach_sain_v1_demo (derived from zach_sain_v1.mov — demo/derived.json; Red Curtain archive run 2026-09-20)",
   "stills": {
     "source": "source.jpg",
-    "attempt_1": "attempt_1.jpg",
-    "attempt_2": "attempt_2.jpg"
+    "attempt_1": "attempt_1.jpg"
   },
   "videos": {
     "source": "source.mp4",
-    "attempt_1": "attempt_1.mp4",
-    "attempt_2": "attempt_2.mp4"
+    "attempt_1": "attempt_1.mp4"
   },
   "recognize": {
-    "sha256": [
-      "1c204e79c86e0a7a7ad1a8110bbfd5065bd1ce38b4220aedffaa415d12c6a09a",
-      "f56090c58c80226798c60f262d2db6c368319d07c19b0f29a486e7d9ae432d7b"
-    ],
+    "sha256": "f4eee6dd5534b694b5b804a584a3577b52f4f76da389df53304d05b1fe9a409c",
     "names": [
-      "zach_sain_v2.mov",
-      "zach_sain_v2.mp4",
-      "zach_sain.mov",
-      "zach_sain.mp4",
-      "zach.mov",
-      "zach.mp4"
+      "zach_sain_v1_demo.mp4"
     ],
-    "note": "SHA-256 of zach_sain_v2.mov (work/midtown_zach_sain_v2/source.key, the matte-cache key) and of its stream-copied .mp4 remux (stills/source.mp4)"
+    "derived_from": {
+      "file": "zach_sain_v1.mov",
+      "sha256": "d20abd43ed3b9bb6515a84e8be8ef9946b04c234b985f5a7e31b3d9333116c9c",
+      "time_range": "00:00:15 → 00:01:15 (60 s)",
+      "edits": [
+        "alternate real take (zach_sain_v1.mov, mint trousers, crown inside the picture)",
+        "trim 15 s → 75 s",
+        "30 fps unchanged; timestamps zeroed (setpts/asetpts) so the frame count is unambiguous — 1800 by the container, by decoding, and by the pipeline's demux",
+        "container rotation (180°) baked into the pixels by the re-encode — the picture is unchanged",
+        "video re-encoded once (x264 crf 18, 1 thread)",
+        "audio re-encoded AAC 160k (the .mov audio is not MP4-compatible as-is)"
+      ]
+    },
+    "note": "SHA-256 of the derived source (work/midtown_zach_sain_v1_demo/source.key, the matte-cache key). The original take is a different file and is not recognised; the black-shirt recording zach_sain_v2.mov is the evaluation corpus (demo/eval/corpus/zach_sain_v2)."
   },
   "archive": {
-    "workdir": "work/midtown_zach_sain_v2",
-    "source": "zach_sain_v2.mov",
+    "workdir": "work/midtown_zach_sain_v1_demo",
+    "source": "zach_sain_v1_demo.mp4",
     "artifacts": {
       "attempt_1": {
-        "video": "zach_sain_v2_v2.mp4",
-        "composite": "comp",
-        "note": "the crown-completion render (2026-09-11), the standard grade"
-      },
-      "attempt_2": {
-        "video": "zach_sain_v2_v3.mp4",
-        "composite": "comp_sep",
-        "note": "the separation-targeted grade at its bounds (rim 0.45, wrap 0.70, lift +0.040), rendered and measured 2026-09-19 — params_sep.txt"
+        "video": "zach_sain_v1_demo_red_v1.mp4",
+        "composite": "comp"
       }
     }
   },
   "visual": {
     "pillars": 0.0,
-    "head_y": 0.0,
-    "shoulder_span": 0.216,
+    "head_y": 0.012,
+    "shoulder_span": 0.227,
     "subject_height": 0.28,
-    "wardrobe": "#423f40",
-    "wardrobe_luma": 0.241,
-    "skin": "#dda090",
-    "hair": "#443c3b",
-    "room": "#ac2c31",
-    "room_accent": "#da6868",
-    "key_side": "right"
+    "wardrobe": "#2b2726",
+    "wardrobe_luma": 0.173,
+    "skin": "#e8b19e",
+    "hair": "#473f3c",
+    "room": "#a53436",
+    "room_accent": "#dac9b5",
+    "key_side": "left"
   }
 }

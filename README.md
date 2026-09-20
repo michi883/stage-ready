@@ -160,22 +160,22 @@ The three sample recordings are the show's lineup, in billing order — and thre
 behaviours, each the path the recording's own measurements produce, through the same profile with
 no per-recording settings (see [Performers and numbers](#performers-and-numbers)):
 
-| | **Sandy Hackett** — fix what can be fixed, then catch what cannot | **Ethel Chadwick** — adapt and recover | **Zach Sain** — stop when processing cannot honestly satisfy the profile |
+| | **Sandy Hackett** — fix what can be fixed, then catch what cannot | **Ethel Chadwick** — adapt and recover | **Zach Sain** — already suitable, verified |
 |---|---|---|---|
-| What came in | a 3:2 picture pillarboxed inside 16:9, 25 fps; walks into a close-up 4.5 s in | recorded to spec — in a red trouser suit, for a red curtain | a 480 × 412 picture, 30 fps; a black shirt against a red wall, the crown tight to the top |
-| Inspect finds | picture area smaller than the file; shoulder span over the 55 % cap; a warning — apparent size changes 1.75× across the take | nothing outside the profile (one low-confidence note: wardrobe close to the plate) | nothing outside the profile's gates; two warnings — the crown leaves the picture on 78 % of frames, and the room is over-lit (face ×0.37 wanted, clamped at ×0.80) |
+| What came in | a 3:2 picture pillarboxed inside 16:9, 25 fps; walks into a close-up 4.5 s in (untouched) | recorded to spec — in a red trouser suit, for a red curtain (untouched) | a 60 s excerpt of his other take: a 480 × 404 picture, 30 fps; a black shirt on a red wall, mint trousers, one distance ([derived](#polished-demo-vs-evaluation-corpus)) |
+| Inspect finds | picture area smaller than the file; shoulder span over the 55 % cap; a warning — apparent size changes 1.75× across the take | nothing outside the profile (one low-confidence note: wardrobe close to the plate) | nothing outside the profile's gates; two warnings — the crown leaves the picture on 34 % of frames, and the room is over-lit (face ×0.36 wanted, clamped at ×0.80) |
 | Agent decides | **fix**: crop to the measured picture, size-capped reframe → re-inspect → process | process | process |
-| Verify | **fail** — head height moves 2.9 % of the output (2 % allowed) and drifts 5.3 px (4 allowed); matte 98 %, separation 1.72×, frames and audio pass | **fail** — separation 1.13× against 1.5×; every other gate passes | **fail** — separation **1.00×**: inside 0.116, outside 0.116, the shirt and the curtain are the same luminance; every other gate passes (matte 101 %, head held to 0.6 %, crown completed from his own frames) |
-| Agent decides | **reshoot**: no allowed strategy moves where he stood; the cause is the walk-in INSPECT warned about → *be at your final distance before the take starts* | **change strategy**: separation-targeted composite, matte and tracking reused → reprocess | **change strategy**: the same separation-targeted composite → reprocess |
-| Verify | — | pass — 1.52×, with the grade at its bounds | **fail** — 1.45×, with the grade at its bounds: the retry moved the edge 0.116 → 0.173 and is still short |
-| Agent decides | — | deliver | **reshoot**: the strategy has nowhere further to go; a second retry would be the same knobs at the same bounds → *don't wear the stage* |
-| On screen | Framing needs adjustment → Reframe → **Fails ✗** → Ask for a reshoot | Already suitable → Standard process → **Fails ✗** ⟲ Try safer processing → Reprocess → Verified ✓ | Already suitable → Standard process → **Fails ✗** ⟲ Try safer processing → Reprocess → **Fails ✗** → Ask for a reshoot |
+| Verify | **fail** — head height moves 2.9 % of the output (2 % allowed) and drifts 5.3 px (4 allowed); matte 98 %, separation 1.72×, frames and audio pass | **fail** — separation 1.13× against 1.5×; every other gate passes | **pass** — separation **2.37×** (the trousers, the face and the hands carry the outline the shirt does not), matte 101 %, head held to 0.7 %, drift 1.9 px, 1800 frames, audio identical |
+| Agent decides | **reshoot**: no allowed strategy moves where he stood; the cause is the walk-in INSPECT warned about → *be at your final distance before the take starts* | **change strategy**: separation-targeted composite, matte and tracking reused → reprocess | deliver, with two capture notes: headroom for the crown, a stop less light |
+| Verify | — | pass — 1.52×, with the grade at its bounds | — |
+| Agent decides | — | deliver | — |
+| On screen | Framing needs adjustment → Reframe → **Fails ✗** → Ask for a reshoot | Already suitable → Standard process → **Fails ✗** ⟲ Try safer processing → Reprocess → Verified ✓ | Already suitable → Standard process → Verified ✓ |
 
 The session view and the Details table stamp each recording with what the agent did, by one rule
 (`verdict()` in `web/app.js`): **FIXED · CAUGHT** (a fix that held, then a gate the fix could not
 touch), **ADAPTED · RECOVERED** (a failed gate, a changed strategy, a verified second attempt),
-**TRIED · STOPPED** (a retry measured and still short — the loop stops rather than deliver).
-Nothing is labelled a success that was not measured as one.
+**VERIFIED** (every gate on the first pass, nothing changed). Nothing is labelled a success that
+was not measured as one.
 
 **Watch Ethel's.** The Verify cell turns red, the first output is stamped ✗ and thrown behind, a
 retry arc draws back to Decide, the agent explains why in one sentence and changes strategy, and
@@ -184,13 +184,13 @@ Curtain script that failure was a warning in a log; in the profile it is a gate,
 changed the agent's next action. Had the second strategy not cleared it inside those bounds, the
 exit would have been the reshoot request — `&budget=0` shows that path for her.
 
-**And watch Zach's**, because it is Ethel's story with the other ending. The same gate fails, the
-agent reaches for the same strategy, the retry is rendered and measured — and it comes back at
-1.45× against 1.5. Every knob of the strategy is at its bound; a second retry would be the same
-grade again. The loop does not spend it. It stops, says why in one sentence, and asks for the one
-thing that would fix it: a shirt that is not the colour of the stage. The difference between Ethel
-and Zach is 0.07× at the edge, and the loop lands on the right side of it both times because it
-measured, not because it hoped.
+**Zach's is the control**, and it earns that from a number: his other take, in the same black
+shirt on the same red wall but with mint trousers, separates at 2.37× — the trousers, the face and
+the hands carry the outline in luminance. The report still carries two notes, because the
+measurements say so: the crown leaves the small picture on a third of frames (completed from his
+own uncut frames), and the room is over-lit for the stage. The take he sent first — black trousers
+too — is the recording that *cannot* clear the gate (1.00×, 1.45× at the retry's bounds), and it
+stays in the evaluation corpus as exactly that ([below](#polished-demo-vs-evaluation-corpus)).
 
 **And watch Sandy's.** The fix does exactly what it promises — the padding is cropped, the size cap
 holds his shoulders at 55 % — and the render still fails, on a gate the fix could never address:
@@ -203,9 +203,9 @@ picture edge — which is the argument for measuring the delivery, not the log.
 **The payoff**, in the session view:
 
 ```
-3 inconsistent raw recordings  ─▶  3 different agent behaviours  ─▶  1 delivery, 2 reshoot requests
-   padded+walk-in / red-on-red /      fix → catch  /  adapt → recover  /   each with the number behind it — the delivery verified
-   black-on-red, small picture         try → stop                          against every gate, the requests naming the capture change
+3 inconsistent raw recordings  ─▶  3 different agent behaviours  ─▶  2 deliveries, 1 reshoot request
+   padded+walk-in / red-on-red /      fix → catch  /  adapt → recover  /   each with the number behind it — the deliveries verified
+   small picture, black shirt          verified first pass                  against every gate, the request naming the capture change
 ```
 
 **Trace** (per recording) opens the full record — every finding, every decision with its reasoning
@@ -222,16 +222,16 @@ Judges should know exactly what they are looking at:
   `provenance` line naming the archived run and file it was measured from. A dropped file is
   recognised by fingerprint and its cached run replayed; an unknown file is told so, not guessed at.
 - **The numbers are real, and each recording's own.** Sandy's, Ethel's and Zach's measurements
-  are their own archived runs — Zach's inspect and verify fixtures written from the live OpenCV 5
-  measurement by `python3 -m stage_ready record zach`, his retry rendered and measured on
-  2026-09-19. No fixture borrows another clip's numbers; a test checks.
+  are their own runs — Zach's on a curated excerpt of his other real take, its inspect and verify
+  fixtures written from the live OpenCV 5 measurement by `python3 -m stage_ready record zach`
+  ([Polished demo vs evaluation corpus](#polished-demo-vs-evaluation-corpus)). No fixture borrows
+  another clip's numbers; a test checks.
 - **Every number is measured.** The last projected one — Ethel's second attempt — was measured on
   2026-09-19: the separation-targeted grade clears the gate at **1.52×**, and only with every knob
   at its bound. The earlier projection (1.58× at softer settings) measured 1.43× and was wrong; the
   fixture's `provenance` says so. Sandy's run is the archive's v4 render, and it fails — see
-  [What is measured](#what-is-measured). Zach's retry is 1.45× — short by 0.05×, and the loop stops.
-  A fixture that were projected would say so and the UI would tag it *projected*; none is, and a
-  test keeps it that way.
+  [What is measured](#what-is-measured). A fixture that were projected would say so and the UI
+  would tag it *projected*; none is, and a test keeps it that way.
 - **INSPECT and VERIFY run live, with OpenCV 5, on AWS.** `stage_ready/vision/` ports the Red
   Curtain measurements (picture area, pose QC, the dry framing solve, crown, exposure and key,
   matte extent, separation, head spread and drift, frame count, audio MD5), and
@@ -539,7 +539,7 @@ moment before and after; the linked videos are these same archive files:
 | sample | source frame | delivered frame |
 |---|---|---|
 | Sandy Hackett | `sandy_hackett_v2.mp4` frame 716 — chosen from the 24 % of frames where the crown is inside the picture, after the walk-in | `sandy_hackett_v2_red_v4.mp4` frame 716 — the crown-completion render, the run the workdir holds (fails head height; the still is the render the reshoot request is about) |
-| Zach Sain | `zach_sain_v2.mov` frame 1058 (480 × 412, 180° display matrix — the browser honours it; `stills/source.mp4` is a stream-copied remux, registered under its own hash) | attempt 1: `zach_sain_v2_v2.mp4` — the crown-completion render, 1.00×; attempt 2: `zach_sain_v2_v3.mp4` — the separation-targeted grade at its bounds, 1.45× |
+| Zach Sain | `zach_sain_v1_demo.mp4` frame 901 (the derived excerpt — `demo/derived.json`) | `zach_sain_v1_demo_red_v1.mp4` frame 901 — the archive run of 2026-09-20, measured 2.37× |
 | Ethel Chadwick | `ethel_chadwick_v2.mp4` frame 900 | attempt 1: `ethel_chadwick_v2_v1.mp4` frame 900; attempt 2: `ethel_chadwick_v2_v3.mp4` frame 900 — the separation-targeted render, measured 1.52× (`ethel_chadwick_v2_v2.mp4` is the intermediate shadow-lift-only render, 1.37×) |
 
 The stills directory is git-ignored (performer footage). **Judges get it as a bundle.** The
@@ -567,36 +567,42 @@ passes with OpenCV 5 against the bundle.
 The visible demo is the lineup of [midtownshow.com/2040](https://midtownshow.com/2040) — Sandy
 Hackett, Ethel Chadwick, Zach Sain — the recordings we have the right to show, and every one of
 them carries **its own** measurements; a test forbids a fixture that borrows another clip's numbers.
-All three are archived recordings, untouched: Sandy's (`sandy_hackett_v2`, run `_red_v4`), Ethel's
-(`ethel_chadwick_v2`, runs `_v1` and `_v3`) and Zach's (`zach_sain_v2`, runs `_v2` and `_v3`).
+Sandy's and Ethel's inputs are archived recordings, untouched (`sandy_hackett_v2`, run `_red_v4`;
+`ethel_chadwick_v2`, runs `_v1` and `_v3`). Zach's is a curated excerpt of his other real take —
+see the next section, which is the rule for the whole demo.
 
-**Zach's own numbers, and what they made the demo say.** An earlier version of this demo showed
-Zach's footage over the reference clip's measurements, labelled as such, because his own recording
-was known not to clear the profile. Measured with the live OpenCV 5 measurer, that is exactly the
-story worth telling: every INSPECT gate passes (two warnings — the crown leaves the 480 × 412
-picture on 78 % of frames and is completed from his own uncut frames; the room is over-lit), the
-delivery fails separation at **1.00×** — the black shirt is the curtain's luminance — the agent
-reaches for the same strategy that recovered Ethel, the retry is rendered at the strategy's bounds
-and measures **1.45×**, still short, and the loop stops. No threshold moved, nothing about him was
-altered to make a pass; his run is the third behaviour, not a substitute for someone else's first.
+### Polished demo vs evaluation corpus
 
-**Not in the lineup: a fourth, derived recording.** `demo/derive.sh` cuts a 45 s, 30 fps input from
-a club recording of the author (`michi_sample_v1.mp4`; exact command, ffmpeg version and hashes in
-`demo/derived.json`) and it was run through the pipeline and measured: every gate passes, with
-separation 1.51× — by 0.01×, the shirt darker than the curtain. It is kept in the evaluation corpus
-as the near-threshold pass; it is not in the polished demo, whose three recordings are the show's.
+Two sets, kept apart on purpose:
+
+- **The polished demo** uses real performer footage curated to show one Stage Ready behaviour
+  clearly. A demo input may be an untouched recording or a **derived** one — a contiguous excerpt,
+  a remux, a frame-rate normalisation — and every derivation is recorded in `demo/derived.json`
+  (`demo/derive.sh` makes it): original file and SHA-256, exact time range, exact command, output
+  SHA-256, the edits applied. Nothing is ever synthesised, stabilised, recoloured or retouched, and
+  no threshold moves. A derived input is recognised by its own hash; its original is not matched to
+  it. The fixtures are written from the derived input's own pipeline run (`stage_ready record`).
+- **The evaluation corpus** is the untouched archival recordings, with their real failure modes,
+  measured and kept: `demo/eval/corpus/`, `demo/eval/live/` (the live AWS traces), and the
+  archive's workdirs.
+
+| recording | demo | evaluation corpus |
+|---|---|---|
+| Sandy — `sandy_hackett_v2.mp4` | **untouched.** Two trimmed excerpts (4–34 s and 4–25 s, the steadiest stretches) were derived and run through the real pipeline to see whether a stable section could pass the head-height gates after the reframe; they read **2.3 %** and **2.4 %** against the 2 % gate (`demo/eval/corpus/sandy_excerpts/measured.json`). The cause is his crown, cut on 81–86 % of frames in every stable section: the head-top anchor is a completed crown that jitters as reference frames switch, and trimming cannot change that. So the demo keeps the untouched take and its honest outcome — the fix holds, the render fails, the agent asks for a reshoot | the same recording; live result 2026-09-20: reshoot |
+| Ethel — `ethel_chadwick_v2.mp4` | **untouched** | the same recording |
+| Zach — `zach_sain_v1_demo.mp4` | **derived**: 15 s → 75 s of `zach_sain_v1.mov`, his other real take (mint trousers, the crown inside the picture, one distance); 30 fps unchanged, the container's 180° rotation baked into the pixels by the one re-encode, audio re-encoded AAC. Run through the pipeline 2026-09-20 (380 s): every gate passes, separation **2.37×** | `zach_sain_v2.mov`, the black-shirt take, untouched: separation **1.00×** → **1.45×** at the retry's bounds → reshoot (`demo/eval/corpus/zach_sain_v2/`, `demo/eval/live/zach_20260920T014717.jsonl`) |
+| Michi — `michi_sample_v1.mp4` | not in the demo | derived from a club recording of the author (45 s at 30 fps); the near-threshold pass, 1.51× |
 
 ### What is measured
 
 Every number for Sandy's recording and Ethel's first attempt is an archived measurement from the
 Red Curtain pipeline (`sandy_hackett_v2`, `ethel_chadwick_v2`), re-derived from the workdirs on
-2026-09-10 where the doc did not record it. **Zach's numbers were measured on 2026-09-19** on his
-own archived run (`work/midtown_zach_sain_v2`, the crown-completion render of 2026-09-11): his
-inspect and verify fixtures are written from `stage_ready.measure` by `python3 -m stage_ready
-record zach`, and his second attempt — the separation-targeted grade at its bounds — was rendered
-in full (`zach_sain_v2_v3.mp4`, 2116 frames, audio MD5 equal to the source) and measured at
-**1.45×** (0.173 / 0.119; `work/midtown_zach_sain_v2/separation.log`), from **1.00×** (0.116 /
-0.116). **Ethel's second attempt was measured on 2026-09-19** on the cached matte and tracking, with
+2026-09-10 where the doc did not record it. **Zach's numbers were measured on 2026-09-20** by
+running the derived excerpt of his other take through the pipeline (`work/midtown_zach_sain_v1_demo`,
+358 s) and writing the fixtures from `stage_ready.measure` with `python3 -m stage_ready record
+zach`: separation **2.37×** (0.267 / 0.113), matte 101 %, head held to 0.7 % with 1.9 px of drift,
+1800 frames, audio MD5 equal to the source. His black-shirt take's numbers (1.00× → 1.45×) are the
+evaluation corpus's, measured on 2026-09-19 and live on 2026-09-20. **Ethel's second attempt was measured on 2026-09-19** on the cached matte and tracking, with
 only the grade changed: the archived shadow lift alone took separation 1.13× → 1.37×, and a grid
 over the strategy's three bounded knobs (`work/midtown_ethel_chadwick_v2/separation.log`) shows
 the gate clears only with all three at their bounds — rim 0.45, wrap 0.70, lift +0.040 — at
