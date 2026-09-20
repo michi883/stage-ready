@@ -43,7 +43,11 @@ BUCKET = os.environ.get("STAGE_READY_BUCKET", "stage-ready-videos")
 FUNCTION = os.environ.get("STAGE_READY_LAMBDA", "stage-ready-measure")
 LAYER = "stage-ready-opencv5"
 ROLE = "stage-ready-lambda-role"
-BEDROCK_MODEL = os.environ.get("STAGE_READY_BEDROCK_MODEL", "global.anthropic.claude-sonnet-4-6")   # Opus 5 / Sonnet 5 are listed but not enabled for this account (AccessDenied); Sonnet 4.6 is
+# The agent. Claude Sonnet 4.6: 9/9 of the trusted DECIDE states, twice (`agent-eval`, 2026-09-20).
+# Amazon Nova 2 Lite measured 6/9 — right on every routine state, wrong on the stopping decisions
+# (Sandy #3, Zach #3) and one strategy choice (Zach #1) — so it is not the default. Opus 5 / Sonnet 5
+# are listed for the account but not enabled (AccessDenied). One variable swaps the model.
+BEDROCK_MODEL = os.environ.get("STAGE_READY_BEDROCK_MODEL", "global.anthropic.claude-sonnet-4-6")
 ROOT = Path(__file__).resolve().parent.parent
 RUNS_DIR = ROOT / ".stage_ready" / "runs"
 

@@ -1,0 +1,417 @@
+{
+ "summary": {
+  "model": "global.anthropic.claude-sonnet-4-6",
+  "states": 9,
+  "repeat": 1,
+  "calls": 9,
+  "pass": 9,
+  "action_ok": 9,
+  "strategy_ok": 9,
+  "cites_ok": 9,
+  "schema_ok": 9,
+  "errors": 0,
+  "latency_ms_mean": 7336,
+  "latency_ms_max": 8704,
+  "input_tokens": 42313,
+  "output_tokens": 3988,
+  "tool_choice": [
+   "tool"
+  ]
+ },
+ "rows": [
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "fix.reframe"
+    ],
+    "confidence": 0.92,
+    "reasoning": "Two findings are failing: picture_area (a 1620×1080 picture pillarboxed into a 1920×1080 file, with 150 dead columns on each side) and subject_size (shoulders reaching p50 0.501 and p95 0.622 of canvas width against the 0.55 cap, with a reach of 0.624). Both are directly addressed by the fix.reframe strategy, which crops to the actual picture area and applies a size-capped reframe within the profile's bounds (head_target_max 0.55, scale_tol 0.25). No other gates are currently failing — pose_coverage is 0.998, one_subject is 0.999, face_exposure passes at ×1.059, and the remaining gates have no"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 7441,
+   "input_tokens": 4041,
+   "output_tokens": 425,
+   "tool_choice": "tool",
+   "request_id": "14865576-0a3f-45cf-91f5-276ef02c190a",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "face_exposure",
+     "distance_steady",
+     "headroom"
+    ],
+    "confidence": 0.92,
+    "reasoning": "After applying fix.reframe, all measurable gates are now in a passing state: picture_area passes (1620×1080 at +0+0), pose_coverage passes at 0.998 (threshold 0.6), one_subject passes at 0.999 (threshold 0.95), subject_size passes with p50 0.442 and p95 0.548 (cap 0.55), face_exposure passes at 1.059. The two remaining items — distance_steady (1.75× vs threshold 1.35) and headroom (crown cut on 0.76 of frames) — are both recorded as warnings, not gate failures, meaning they are recorded-content limits for the report and not defects to fix. No gate is currently failing. The latest_verification "
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 6315,
+   "input_tokens": 3936,
+   "output_tokens": 419,
+   "tool_choice": "tool",
+   "request_id": "4d42f348-a90f-42dc-8c0a-4fef542d4c03",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "head_spread",
+     "head_drift",
+     "distance_steady",
+     "subject_size",
+     "picture_area"
+    ],
+    "confidence": 0.98,
+    "reasoning": "The latest verification (attempt_1, process.standard) failed on two gates: head_spread measured 0.029 against a ceiling of 0.02, and head_drift measured 5.3 px against a ceiling of 4.0 px. Both failures trace directly to the performer walking into a close-up 4.5 s into the take — the brief confirms this. The reframe fix (fix.reframe) already spent its only shot at taming subject size and picture-area padding; it cannot undo physical camera-to-subject motion, and neither can any other fix (fixers may only reframe, regrade, clean or reprocess — they cannot invent or remove the walk). The only re"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 8550,
+   "input_tokens": 5170,
+   "output_tokens": 470,
+   "tool_choice": "tool",
+   "request_id": "8589dade-ebed-49b6-beda-f155742e8a98",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure",
+     "wardrobe_vs_plate",
+     "separation"
+    ],
+    "confidence": 0.78,
+    "reasoning": "This is decision 1 with no prior attempts (attempts_so_far is empty, reprocesses_used is 0, retry_budget is 2). All pre-composite findings pass their gates: picture_area passes, pose_coverage is 1.0 against a 0.6 threshold, one_subject is 1.0 against a 0.95 threshold, subject_size p95 is 0.35 against a 0.55 cap, distance_steady is 1.09 against a 1.35 threshold, headroom shows 0.0 crown-cut frames, and face_exposure at 0.86 is within the [0.8, 1.25] clamp. The wardrobe_vs_plate finding (id: wardrobe_vs_plate) is flagged as \"info\" with a predicted_separation of 1.44 — below the gate threshold of"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 8704,
+   "input_tokens": 4090,
+   "output_tokens": 499,
+   "tool_choice": "tool",
+   "request_id": "35545e89-eb46-4ff6-ba9f-13ea65837a92",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "wardrobe_vs_plate",
+     "attempt_1"
+    ],
+    "confidence": 0.72,
+    "reasoning": "The latest verification (attempt_1) failed on exactly one gate: \"separation\" (id: separation), which measured 1.13× against the required ≥ 1.50× edge luma ratio. All other gates passed, including pose_coverage (1.0), one_subject (1.0), matte_extent (1.0), head_spread (0.013), head_drift (3.1 px), frame_count (1237) and audio_md5. The wardrobe_vs_plate finding (id: wardrobe_vs_plate) explains the root cause: a red suit against a red curtain yields only 12° of hue separation, 14% luma difference, and an RGB distance of 42, with a predicted separation of 1.44× that the composite confirmed as 1.13"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 7640,
+   "input_tokens": 5256,
+   "output_tokens": 502,
+   "tool_choice": "tool",
+   "request_id": "a386f9b7-e7d1-439c-a5a4-9410069e5efe",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "matte_extent",
+     "separation",
+     "head_spread",
+     "head_drift",
+     "frame_count",
+     "audio_md5"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The latest verification (attempt_2) passed every gate: pose_coverage 1.0 >= 0.6, one_subject 1.0 >= 0.95, matte_extent 1.0 >= 0.9, separation 1.52 >= 1.5, head_spread 0.013 <= 0.02, head_drift 3.1 <= 4.0, frame_count 1237 == 1237, and audio_md5 equal. All eight gates show \"pass\". No gate is failing, so no further fix or process is warranted. Delivery is the correct and only honest action here."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 3303,
+   "input_tokens": 5472,
+   "output_tokens": 289,
+   "tool_choice": "tool",
+   "request_id": "0d9188e1-4e47-4edd-81de-32bc140d360d",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ],
+    "confidence": 0.88,
+    "reasoning": "This is decision 1 with no prior attempts and no latest_verification, so the correct move is to run the standard first-pass render. All pre-flight findings either pass or are warnings/info: picture_area passes (480×412, no padding), pose_coverage passes at 1.0 (gate requires ≥0.6), one_subject passes at 1.0 (gate requires ≥0.95), subject_size passes with p50 0.338 and p95 0.345 (gate cap 0.55), and distance_steady passes at 1.16× (gate ≤1.35). The headroom finding (crown cut on 78% of frames) is a warn — a recorded-content limit, not a defect to fix. Face exposure is a warn held at ×0.80 withi"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 7792,
+   "input_tokens": 3924,
+   "output_tokens": 490,
+   "tool_choice": "tool",
+   "request_id": "43558960-6f72-41c0-be16-994b2b7c6319",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "attempt_1",
+     "process.separation_targeted",
+     "budget"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The only failing gate from attempt_1 is \"separation\" (gate id: separation), which measured 1.0× against a required ≥1.5×, falling short by 0.50×. All other gates passed: pose_coverage at 1.0, one_subject at 1.0, matte_extent at 1.006, head_spread at 0.006, head_drift at 1.5 px, frame_count at 2116, and audio_md5 equal. The strategy process.separation_targeted explicitly addresses \"separation\" in its addresses list, and its bounds (rimamt_max 0.45, lwamt_max 0.7, shadow_lift_max 0.04, fgexp_clamp [0.8, 1.25]) give room to strengthen the rim and light wrap beyond the standard attempt_1 params (r"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 7579,
+   "input_tokens": 5090,
+   "output_tokens": 444,
+   "tool_choice": "tool",
+   "request_id": "f205201e-f700-41fd-b61a-30aac860720a",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "process.separation_targeted",
+     "process.standard"
+    ],
+    "confidence": 0.99,
+    "reasoning": "The only failing gate is `separation`, which requires an edge luma ratio >= 1.5; attempt_2 measured 1.45, still 0.05× short. The `process.separation_targeted` strategy was already used at its absolute bounds (rimamt 0.45, lwamt 0.7, shadow_lift 0.04) and still could not reach the gate — there is literally no headroom left within the allowed parameters. `process.standard` was also tried and failed at 1.45 (attempt_1). No other strategy in the profile addresses `separation`. The retry budget shows 1 reprocess used against a budget of 2, but both allowed process strategies have been exhausted on "
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 8703,
+   "input_tokens": 5334,
+   "output_tokens": 450,
+   "tool_choice": "tool",
+   "request_id": "05d04e1e-de21-4f23-9f3f-1235aed0b90b",
+   "error": null
+  }
+ ]
+}

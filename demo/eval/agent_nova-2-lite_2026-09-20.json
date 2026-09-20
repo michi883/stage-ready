@@ -1,0 +1,1121 @@
+{
+ "summary": {
+  "model": "us.amazon.nova-2-lite-v1:0",
+  "states": 9,
+  "repeat": 3,
+  "calls": 27,
+  "pass": 18,
+  "action_ok": 21,
+  "strategy_ok": 24,
+  "cites_ok": 27,
+  "schema_ok": 27,
+  "errors": 0,
+  "latency_ms_mean": 1265,
+  "latency_ms_max": 1675,
+  "input_tokens": 119271,
+  "output_tokens": 4797,
+  "tool_choice": [
+   "tool"
+  ]
+ },
+ "rows": [
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The picture is pillarboxed (picture_area fail) and the subject is too close (subject_size fail). The fix.reframe strategy addresses both by cropping to the picture area and applying a size-capped reframe, which is allowed and fits within the bounds. This is the first attempt and uses a cheap cost strategy, preserving the retry budget. If this fails, we may need to reshoot as distance_steady is a warning and cannot be fixed post-recording."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1675,
+   "input_tokens": 3857,
+   "output_tokens": 172,
+   "tool_choice": "tool",
+   "request_id": "0f111000-81d6-4125-9388-a1881030e7d6",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 1,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The recording fails picture_area (pillarboxed) and subject_size (shoulders reach 62% of canvas width, exceeding the 55% cap). The fix.reframe strategy addresses both issues by cropping to the picture area and applying a size-capped reframe. This is the first attempt and fits within the retry budget. If this fails, reshoot would be required as no other strategies address these core issues."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1124,
+   "input_tokens": 3857,
+   "output_tokens": 160,
+   "tool_choice": "tool",
+   "request_id": "3bf2a057-d28d-48e7-921b-6718a5033455",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 2,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The recording fails on picture_area (pillarboxed padding) and subject_size (shoulders reach 62% of canvas width, exceeding the 55% cap). The fix.reframe strategy is allowed and addresses both: it crops to the 1620×1080 picture area and applies a size-capped reframe to bring the subject within the 55% shoulder-span limit. This is the first attempt, no budget has been spent, and the fix does not require new content. If this fails, the next step would be to reshoot with proper framing and distance."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1532,
+   "input_tokens": 3857,
+   "output_tokens": 192,
+   "tool_choice": "tool",
+   "request_id": "9eedb96c-546c-4526-9f61-cc5f72ee4ff1",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "face_exposure",
+     "key_direction"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The current findings show that the pose coverage, one subject, subject size, face exposure, and key direction are all passing or within acceptable limits. The only remaining concern is the distance steady warning, but this is a recorded-content limit that cannot be fixed through processing. The standard Red Curtain composite process is appropriate here as it addresses no specific failing gates but is the standard strategy for a first attempt. If this processing fails, the next step would be to reshoot due to the distance steady issue."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1232,
+   "input_tokens": 3761,
+   "output_tokens": 190,
+   "tool_choice": "tool",
+   "request_id": "f3bc9a02-3769-4937-a5fc-9c881689d0e4",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "face_exposure"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The picture area now fills the frame and subject size is acceptable, so the only remaining step is to render the standard composite for the Red Curtain profile. All essential gates pass (pose coverage, one subject, subject size, face exposure), and the standard processor does not require any special targeting. This is the logical next step after fixing the framing issues."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1125,
+   "input_tokens": 3761,
+   "output_tokens": 157,
+   "tool_choice": "tool",
+   "request_id": "6a1ecb97-6b68-4c64-9b55-fb47a168c4c0",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "subject_size"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The current findings show that the pose coverage, one subject, and subject size gates are all passing. The standard Red Curtain composite process is the appropriate next step to render an attempt, as it addresses no specific failing gate but is the standard strategy for a first attempt. The retry budget is still available, and no disallowed strategies have been attempted yet. If this process fails, the next step would be to reshoot due to the warnings about distance steadiness and headroom."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1229,
+   "input_tokens": 3761,
+   "output_tokens": 177,
+   "tool_choice": "tool",
+   "request_id": "257fd5c4-8a1d-4ad6-9e89-c4c4cb2d63ac",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "inspect",
+    "strategy": null,
+    "cites": [
+     "head_spread",
+     "head_drift"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The latest verification failed two gates: head_spread at 0.029 (threshold 0.02) and head_drift at 5.3 px (threshold 4.0 px). These failures stem from the performer walking into a close-up during the take, which causes motion that the solve cannot fully stabilize. No current strategy addresses these issues directly, as the existing fixes and processes do not correct for physical camera or performer movement. The next step is to inspect the working picture to assess the extent of the motion and determine whether a targeted fix or a different processing strategy could mitigate these failures, or "
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1646,
+   "input_tokens": 4814,
+   "output_tokens": 226,
+   "tool_choice": "tool",
+   "request_id": "f59f168e-7242-4dc6-8e01-95cc3b9a6dc8",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 1,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "inspect",
+    "strategy": null,
+    "cites": [
+     "head_spread",
+     "head_drift"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The latest verification failed gates head_spread (0.029 > 0.02) and head_drift (5.3 > 4.0). The failure is due to the performer walking into a close-up 4.5 seconds in, causing head movement that exceeds the allowed spread and drift thresholds. To decide the next action, I need to inspect the working picture to see the actual head movement and determine if a fix or process can address this, or if a reshoot is needed. The inspect action will allow me to examine the head movement in detail and decide whether a reframe or other fix can stabilize the image, or if the movement is too severe and requ"
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1328,
+   "input_tokens": 4814,
+   "output_tokens": 218,
+   "tool_choice": "tool",
+   "request_id": "aaa57162-5164-43ac-afe2-374f82f1258a",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 2,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "inspect",
+    "strategy": null,
+    "cites": [
+     "head_spread",
+     "head_drift"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The verification failed on gates head_spread and head_drift. Both are related to motion and framing stability. The current fix.reframe addressed the picture area and subject size but did not resolve the motion issues. To decide the next action, we need to inspect the working picture to understand the nature of the motion and how the reframe affected it. Specifically, we need to look at the head movement over time and see if the reframe introduced any new issues or if the motion was inherent in the original recording. This will help determine whether a process strategy can stabilize the motion "
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1324,
+   "input_tokens": 4814,
+   "output_tokens": 199,
+   "tool_choice": "tool",
+   "request_id": "e33266b7-961e-4ea2-bb54-323f59fac36d",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "wardrobe_vs_plate"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The only unresolved gate is separation, which cannot be fixed at this stage and requires a processor that addresses it. The standard Red Curtain composite is the first attempt and does not address any gates, so it is allowed. If this fails, the next step will be to use a separation-targeted composite. If that also fails, the retry budget will be spent and a reshoot will be required."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1329,
+   "input_tokens": 3896,
+   "output_tokens": 154,
+   "tool_choice": "tool",
+   "request_id": "4ce1ac69-4e47-4ad4-bb44-4a7dba9d3a98",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "wardrobe_vs_plate"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The only gate not yet verified is separation, which the wardrobe_vs_plate finding notes cannot be predicted reliably. The standard Red Curtain composite is the correct first attempt, and it addresses no failing gates, so it is allowed. If this fails separation, the next action will be to try process.separation_targeted. If the budget is spent and separation still fails, the honest exit is reshoot."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1161,
+   "input_tokens": 3896,
+   "output_tokens": 155,
+   "tool_choice": "tool",
+   "request_id": "2af2c01f-46dc-432e-bd92-4b4de4b1d3e4",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "wardrobe_vs_plate"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The wardrobe is red and the plate is red, which is why the predictor cannot discriminate separation. The standard Red Curtain composite is the correct next step to finish the video, as the other gates pass and the standard strategy does not require any specific addressing. If this fails, the next step would be to reshoot with a different wardrobe as per the guidance."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1091,
+   "input_tokens": 3896,
+   "output_tokens": 147,
+   "tool_choice": "tool",
+   "request_id": "c15578ea-4703-48ba-b3bf-34e80a82de3b",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The only failing gate is separation, which measures 1.13× against a threshold of 1.5×. The current attempt used the standard composite, which did not improve separation enough. The separation-targeted composite strategy is designed to address this exact failure by increasing rim and light wrap, and bounded shadow lift, all of which can improve the edge luma ratio without altering the performer's pixels. This is the only allowed strategy that directly addresses the failing gate, and we still have retry budget left."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1290,
+   "input_tokens": 4885,
+   "output_tokens": 178,
+   "tool_choice": "tool",
+   "request_id": "968bb4f6-0fae-4a97-b079-e80ef6d8306f",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The only failing gate is separation, which measures 1.13× against a required minimum of 1.5×. The process.separation_targeted strategy is designed to address separation issues by adjusting rim and light wrap, shadow lift, and exposure clamp. This is the first and only allowed strategy that directly targets the failing gate, and the retry budget of 2 allows for this attempt. If this fails, the next honest exit would be to reshoot because no other allowed strategies address separation."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1269,
+   "input_tokens": 4885,
+   "output_tokens": 177,
+   "tool_choice": "tool",
+   "request_id": "bb287b97-8a68-4bad-97a8-dda05797f66c",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The only failing gate is separation (1.13×, needs 1.5×). The standard composite did not fix it. The separation-targeted composite is designed to address separation and is allowed. It reuses existing seeds, mattes, tracks, and warps, so it is a valid next step. If this fails, the only remaining option is to reshoot because the retry budget is 2 and we have used 0 reprocesses so far."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1229,
+   "input_tokens": 4885,
+   "output_tokens": 170,
+   "tool_choice": "tool",
+   "request_id": "3cfc6cae-e3d3-4fb8-83d4-edc9ff9d2996",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "matte_extent",
+     "separation",
+     "head_spread",
+     "head_drift",
+     "frame_count",
+     "audio_md5"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The latest verification passed all gates: pose coverage (1.0), one subject (1.0), matte extent (1.0), separation (1.52), head spread (0.013), head drift (3.1), frame count (1237), and audio MD5 (equal). All required thresholds are met, and there are no failing gates. The retry budget is still available, but since the verification passed, delivery is appropriate."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1228,
+   "input_tokens": 5075,
+   "output_tokens": 196,
+   "tool_choice": "tool",
+   "request_id": "e6032e7b-9f13-4bcc-a3e3-7cac7c08b716",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 1,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "matte_extent",
+     "separation",
+     "head_spread",
+     "head_drift",
+     "frame_count",
+     "audio_md5"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The latest verification for attempt 2 passed all gates: pose_coverage (1.0), one_subject (1.0), matte_extent (1.0), separation (1.52), head_spread (0.013), head_drift (3.1), frame_count (1237), and audio_md5 (equal). There are no failing gates and the retry budget is not exhausted, so the clip can be delivered."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1125,
+   "input_tokens": 5075,
+   "output_tokens": 193,
+   "tool_choice": "tool",
+   "request_id": "2f30a33b-0c51-42de-bead-7a3ff00a019a",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 2,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "matte_extent",
+     "separation",
+     "head_spread",
+     "head_drift",
+     "frame_count",
+     "audio_md5"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The latest verification passed every gate: pose coverage (100%), one subject (100%), matte extent (100%), separation (1.52×), head spread (0.013), head drift (3.1 px), frame count matches source (1237), and audio MD5 matches source. All required conditions for delivery are satisfied with no failing gates."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1125,
+   "input_tokens": 5075,
+   "output_tokens": 176,
+   "tool_choice": "tool",
+   "request_id": "5f279f30-08f3-4976-a14d-ac9956f2e593",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "face_exposure"
+    ],
+    "confidence": 0.85,
+    "reasoning": "The recording is over-lit for the stage (face_exposure warn), with face luma at 0.727 when the target is 0.46. The separation-targeted composite process is designed to address separation issues and includes bounded parameters that can adjust edge luminance without altering the performer's pixels. This is the only allowed strategy that can correct the exposure mismatch while respecting the profile constraints. If this fails, reshoot will be needed due to the retry budget and the nature of the exposure problem."
+   },
+   "action_ok": true,
+   "strategy_ok": false,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1321,
+   "input_tokens": 3756,
+   "output_tokens": 177,
+   "tool_choice": "tool",
+   "request_id": "a0ad2418-359b-443c-8bcb-179321a359dc",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "face_exposure"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The recording is over-lit for the stage (face exposure warning), which may affect the separation between the subject and the red background. The separation-targeted composite strategy is designed to address separation issues by adjusting rim and light wrap, shadow lift, and exposure clamping. This strategy is appropriate because it specifically targets the separation gate and can help correct the over-lit condition. If this fails, reshoot will be necessary as no other strategies address this issue."
+   },
+   "action_ok": true,
+   "strategy_ok": false,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1241,
+   "input_tokens": 3756,
+   "output_tokens": 166,
+   "tool_choice": "tool",
+   "request_id": "e46c3235-89f9-437c-ac12-09889c585711",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "face_exposure"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The face exposure is over-lit (0.8 gain toward target 0.46) and the stage lighting is too bright, which will affect the separation gate. The separation-targeted composite strategy addresses separation issues and can adjust the edge luminance without changing the performer's pixels. This is a moderate-cost strategy that can correct the over-lit face and improve the separation between the subject and the background. If this fails, reshoot will be necessary as the lighting setup is not suitable."
+   },
+   "action_ok": true,
+   "strategy_ok": false,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1432,
+   "input_tokens": 3756,
+   "output_tokens": 173,
+   "tool_choice": "tool",
+   "request_id": "aaae5811-4cfc-46cf-98a9-43637fcf687e",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The latest verification failed the separation gate, which requires a subject vs background luminance edge luma ratio of at least 1.5. The current value is 1.0, indicating insufficient contrast between the performer and the red background. The process.separation_targeted strategy is designed to address this by increasing rim and light wrap, and applying a bounded shadow lift, which can enhance the edge contrast without altering the performer's pixels. This is the only failing gate, and the strategy directly targets it. If this fails, the next honest exit is to reshoot because the retry budget i"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1330,
+   "input_tokens": 4752,
+   "output_tokens": 204,
+   "tool_choice": "tool",
+   "request_id": "9686d777-4dcd-4e79-ad75-669c9f50946d",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The only failing gate is separation (edge luma ratio 1.00× vs required 1.5×). The recording is over-lit for the stage, and the performer is the brighter side against a red background. The separation-targeted composite strategy is designed to address separation failures by applying stronger rim and light wrap effects, a bounded shadow lift, and changes to edge luma without altering the performer's pixels. This is the only allowed strategy that directly addresses the failing gate. If this fails, the next step would be to reshoot because the retry budget is limited and no other strategies address"
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1331,
+   "input_tokens": 4752,
+   "output_tokens": 198,
+   "tool_choice": "tool",
+   "request_id": "b015d996-8e9f-4c6a-b2c3-72f78d9cd7db",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The only failing gate is separation (1.0 vs required 1.5). The separation-targeted composite is designed to address this by increasing rim and light wrap, and bounded shadow lift. This is the only allowed strategy that addresses the failing gate, and the retry budget (2) allows this attempt. If this fails, the next step would be to reshoot because no further allowed strategies address separation."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1024,
+   "input_tokens": 4752,
+   "output_tokens": 158,
+   "tool_choice": "tool",
+   "request_id": "08b2df40-c605-4cb9-abbf-7a81b81ba79c",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The latest verification failed only on the separation gate (1.45 vs required 1.5). The process.separation_targeted strategy was used in attempt 2 but failed; however, the retry budget still allows another attempt, and this is the only remaining strategy that addresses separation. If this fails again, the honest exit will be reshoot because no other allowed strategy addresses the separation gate and the retry budget will be exhausted."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1117,
+   "input_tokens": 4961,
+   "output_tokens": 163,
+   "tool_choice": "tool",
+   "request_id": "1940b8b0-2ad9-4344-84e8-838d71cb8803",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 1,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The latest verification failed the separation gate (1.45 < 1.5). The separation-targeted composite strategy was already used in attempt 2, but it failed due to insufficient separation. However, the strategy has bounds that allow further adjustment of rimamt, lwamt, and shadow_lift. Since the retry budget is 2 and no strategies have been exhausted, a second attempt with the same strategy but adjusted parameters within bounds is warranted to try to meet the separation requirement."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1238,
+   "input_tokens": 4961,
+   "output_tokens": 173,
+   "tool_choice": "tool",
+   "request_id": "fb814a88-a8c7-483a-aa2e-4631aac5fc9d",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 2,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The only failing gate is separation at 1.45, short of the 1.5 requirement. The separation-targeted processor is the only strategy that addresses separation, and it has not been exhausted as only one attempt was made within its bounds. Reprocessing with the same strategy may achieve the needed separation boost if parameters can be adjusted within their allowed ranges."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1054,
+   "input_tokens": 4961,
+   "output_tokens": 148,
+   "tool_choice": "tool",
+   "request_id": "0fa810f0-213e-4353-9931-36ca16403e3a",
+   "error": null
+  }
+ ]
+}

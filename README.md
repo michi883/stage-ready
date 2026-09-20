@@ -287,6 +287,21 @@ the one failing gate → re-composite at the bounds, a cache hit → VERIFY: **p
 ≈ $0.06 of Bedrock at list prices. `python3 -m stage_ready aws status | sync <clip> | deploy`
 operate it; `STAGE_READY_LIVE_LOCAL=1` runs the same backend on the laptop's measurer without AWS.
 
+**Which model decides, measured.** `python3 -m stage_ready agent-eval --model <id>` replays the nine
+trusted DECIDE states (three per performer, the exact prompt the live backend sends, nothing
+adjusted) through a Bedrock model and scores action, strategy, citations, schema, latency and
+tokens (`demo/eval/agent_*.json`, 2026-09-20):
+
+| model | states right | schema · cites | latency | tokens per call | where it goes wrong |
+|---|---|---|---|---|---|
+| **Claude Sonnet 4.6** (default) | **9/9**, twice | 9/9 · 9/9 | 7.3 s | 4.7k in / 450 out | — |
+| Amazon Nova 2 Lite | 6/9 (18/27 over three repeats, the same three wrong every time) | 27/27 · 27/27 | 1.3 s | 4.4k in / 180 out | Sandy #3: *inspect* instead of *reshoot* after the head gates failed with no strategy for them; Zach #1: the separation-targeted retry as the *first* attempt, reasoning from the over-lit warning; Zach #3: a second retry at the same bounds instead of stopping — "the budget still allows another attempt" |
+
+Nova is five times faster and about a tenth of the cost, and it gets every routine state right;
+what it misses are the three stopping decisions and one strategy choice — the judgement the loop
+exists for. So Sonnet 4.6 stays the agent; the model is one environment variable
+(`STAGE_READY_BEDROCK_MODEL`), and the eval is how a replacement earns the job.
+
 `CachedBackend` answers each call from a file keyed on what a live run would cache on, so a hybrid
 — cached matte, live agent — is the same interface with a different mix behind it:
 

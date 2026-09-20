@@ -19,6 +19,9 @@
     python -m stage_ready segcheck [clips] [--archive ~/mts] [--no-crop] [--json] [--model pphumanseg|u2net_human_seg]
                                     the OpenCV 5 DNN SubjectSegmenter against the archive's Apple
                                     Vision opinions: seed, matte-extent second opinion, separation
+    python -m stage_ready agent-eval [--model ID] [--repeat N] [--clips …] [--json]
+                                    replay the nine trusted DECIDE states through a Bedrock model and
+                                    score action, strategy, citations, schema, latency and tokens
     python -m stage_ready models [list | fetch <name>]
                                     the DNN segmentation models: registered names, sources, hashes;
                                     fetch downloads one into models/ and verifies its SHA-256
@@ -263,12 +266,22 @@ def main(argv: list[str] | None = None) -> int:
     b.add_argument("--dry-run", action="store_true"); b.add_argument("--install", default=None); b.add_argument("--verify", default=None)
     r_ = sub.add_parser("record"); r_.add_argument("clip"); r_.add_argument("--archive", default=None); r_.add_argument("--fixed", action="store_true"); r_.add_argument("--out", default=None)
     aw = sub.add_parser("aws"); aw.add_argument("what", choices=["status", "sync", "deploy"]); aw.add_argument("clips", nargs="*"); aw.add_argument("--layer", default=None); aw.add_argument("--archive", default=None)
+    ae = sub.add_parser("agent-eval"); ae.add_argument("--model", default=None); ae.add_argument("--repeat", type=int, default=1); ae.add_argument("--clips", nargs="*"); ae.add_argument("--json", action="store_true")
     mo = sub.add_parser("models"); mo.add_argument("what", nargs="?", default="list", choices=["list", "fetch"]); mo.add_argument("name", nargs="?", default=None)
     sc = sub.add_parser("segcheck"); sc.add_argument("clips", nargs="*"); sc.add_argument("--archive", default=None); sc.add_argument("--no-crop", action="store_true"); sc.add_argument("--json", action="store_true"); sc.add_argument("--model", default=None)
     a = ap.parse_args(argv)
 
     if a.cmd == "aws":
         return _aws(a)
+    if a.cmd == "agent-eval":
+        from .agent_eval import evaluate, print_report
+        from .aws import BEDROCK_MODEL
+        res = evaluate(a.model or BEDROCK_MODEL, a.repeat, a.clips or None)
+        if a.json:
+            print(json.dumps(res, ensure_ascii=False, indent=1))
+        else:
+            print_report(res)
+        return 0 if res["summary"]["pass"] == res["summary"]["calls"] else 1
     if a.cmd == "models":
         from .vision.segment import DEFAULT_MODEL, MODELS, MODELS_DIR, fetch, sha256_of
         if a.what == "fetch":

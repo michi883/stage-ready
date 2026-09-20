@@ -148,7 +148,7 @@ crown cropped, frames dropped, audio re-encoded. Report:
 
 **Accept:** a table in the report and a script that regenerates it.
 
-### 6. Baseline and ablation
+### 6. Baseline and ablation — agent model comparison started 2026-09-20 (`agent-eval`: Sonnet 4.6 9/9, Nova 2 Lite 6/9 on the nine trusted DECIDE states)
 
 **Why:** the claims are "verification changes behaviour" and "the agent decides". Both need a control.
 **Do:** (a) run `midtown_red_curtain.sh` — fixed, linear, warns — against the same set and show where
