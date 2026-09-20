@@ -21,6 +21,7 @@ and Lambda inside the free tiers; S3 storage of the media and workdirs ≈ $0.03
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import mimetypes
@@ -67,7 +68,11 @@ def publish_static(aws: AWS) -> dict[str, int]:
             raise FileNotFoundError(f"{src} (a dangling still?)")
         ctype = mimetypes.guess_type(str(key))[0] or ("video/quicktime" if key.endswith(".mov") else "application/octet-stream")
         h = aws.head(key)
-        if h and h.get("ContentLength") == src.stat().st_size and h.get("ContentType") == ctype:
+        # unchanged = same bytes, not same size: a one-character edit keeps the length. S3's ETag is the
+        # MD5 of a single-part upload (everything published here; the stills and videos are small)
+        etag = (h or {}).get("ETag", "").strip('"')
+        same = ("-" in etag and h.get("ContentLength") == src.stat().st_size) if h else False   # a multipart upload (a video): size only
+        if h and h.get("ContentType") == ctype and (same or ("-" not in etag and etag == hashlib.md5(src.read_bytes()).hexdigest())):
             n_skip += 1
             continue
         aws.s3().upload_file(str(src), aws.bucket, key, ExtraArgs={"ContentType": ctype, "CacheControl": CACHE.get(src.suffix.lower(), "public, max-age=300")})

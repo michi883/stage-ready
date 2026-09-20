@@ -203,20 +203,27 @@ small delta and we already work in measurements. Skip it the moment it competes 
   section and no evaluation.
 - **Build, deploy and test instructions with pinned dependencies** — verified from a clean clone.
 
-## The demo lineup — settled 2026-09-19: Sandy, Ethel, Zach, on their own measured paths
+## The demo lineup — revised 2026-09-20: three behaviours (controlled repair, adaptive recovery, first-pass success)
 
 Measured with the live OpenCV 5 measurer over every archived recording (`demo-corpus`, memory).
-The lineup is the show's, and each recording's path is the one its own numbers produce — three
-agent behaviours, not a forced triad. A fourth, derived recording (`michi_sample_v1`, a
-near-threshold pass at 1.51×) is kept in the evaluation corpus, not the demo (`demo/derive.sh`).
+The polished demo is three *behaviours*, named first in the picker, the performer second
+(`demo/lineup.json`). Each path is the one its input's own numbers produce — no forced triad, no
+threshold moved. Sandy left the picker on 2026-09-20 (reviewer's decision) and is the evaluation
+corpus's natural reshoot case, fixtures and evidence unchanged, still replayable by id.
 
-| # | recording | path | behaviour |
-|---|---|---|---|
-| 1 | **Sandy Hackett** — archived, untouched (v4) | inspect ✗ → fix.reframe → inspect ✓ → process → verify ✗ head spread 2.9 %, drift 5.3 px → reshoot (cause first: distance) | **fix what can be fixed, then catch what cannot** |
-| 2 | **Ethel Chadwick** — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **adapt and recover** |
-| 3 | **Zach Sain** — a derived excerpt (15–75 s) of his other real take `zach_sain_v1.mov` (mint trousers); `demo/derive.sh`, 2026-09-20 | inspect (warn: crown cut 33 %, over-lit) → process → verify ✓ separation **2.37×**, head 0.7 %, 1800 frames → deliver | **already suitable, verified on the first pass** |
+| # | case | input | path | behaviour |
+|---|---|---|---|---|
+| 1 | **Controlled repair** | `zach_sain_v1_padded.mp4` — Zach's clean excerpt (re-verified first: 2.37×) placed unscaled inside a 1280×720 black canvas; one injected defect, provenance on the card, the source card and Details (`demo/derived.json`) | inspect ✗ picture_area → fix.reframe (crop 480:404:400:158, head target unchanged, 0 px invented) → inspect ✓ → process → verify ✓ **2.36×**, 0.7 %, 1800 frames → deliver | **FIXED · VERIFIED** |
+| 2 | **Adaptive recovery** | `ethel_chadwick_v2.mp4` — archived, untouched | inspect → process → verify ✗ 1.13× → separation-targeted at bounds → verify ✓ 1.52× → deliver | **ADAPTED · RECOVERED** |
+| 3 | **Straightforward success** | `zach_sain_v1_demo.mp4` — a derived excerpt (15–75 s) of `zach_sain_v1.mov` (mint trousers) | inspect (warn: crown cut 33 %, over-lit) → process → verify ✓ **2.37×** → deliver | **VERIFIED · FIRST PASS** |
 
-The untouched black-shirt take (1.00× → 1.45× → reshoot) and Sandy's two trimmed excerpts (2.3 % / 2.4 % head spread — no stable section clears the gate, his crown is cut on 80 %+ of frames) are the evaluation corpus (`demo/eval/corpus/`, README "Polished demo vs evaluation corpus"). Sandy's demo input stays untouched.
+Why not Sandy for the repair case: no Sandy source verifies on its own. v1 — Apple Vision finds
+the seated close-up on 6 % of frames (the pipeline refuses); v2 — the crown is cut on 76 %, the
+completed crown jitters (2.9 %; excerpts 2.3 % / 2.4 %); 0910 — crown inside and matte clean, but
+chest-up with the arms out of frame (pose 58 %; best 10-s windows 74 %), a close-up, over-lit, and
+his own head motion reads 2.3–2.4 % against the 2 % gate. All measured, all in
+`demo/eval/corpus/sandy_excerpts/measured.json`. The black-shirt Zach take (1.00× → 1.45× →
+reshoot) and Michi's near-threshold sample (1.51×) are in the corpus too.
 
 ## Video beats → what each one needs
 
@@ -226,7 +233,7 @@ The untouched black-shirt take (1.00× → 1.45× → reshoot) and Sandy's two t
 | the loop running on a real recording | step 2 (OpenCV 5 computing it live) — INSPECT/VERIFY live since 2026-09-19; Michi's sample is the clean run |
 | Ethel's failed gate changing the agent's next action | **step 0**, then step 3 (Bedrock deciding) |
 | the delivered output with its numbers | step 0 |
-| the other exit — a reshoot request | nothing — Sandy's path is one (since 2026-09-19); `&budget=0` shows Ethel's |
+| the other exit — a reshoot request | the evaluation corpus: `run sandy` (and live, 2026-09-20); `&budget=0` shows Ethel's in the demo |
 | "a second destination is a second JSON file" | step 7 |
 | architecture: OpenCV 5 + AWS | steps 2, 3, diagram |
 | results and limitations | steps 5, 6 |
