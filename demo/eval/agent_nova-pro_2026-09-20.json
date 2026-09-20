@@ -1,0 +1,1119 @@
+{
+ "summary": {
+  "model": "us.amazon.nova-pro-v1:0",
+  "states": 9,
+  "repeat": 3,
+  "calls": 27,
+  "pass": 21,
+  "action_ok": 21,
+  "strategy_ok": 25,
+  "cites_ok": 27,
+  "schema_ok": 27,
+  "errors": 0,
+  "latency_ms_mean": 1288,
+  "latency_ms_max": 1741,
+  "input_tokens": 110961,
+  "output_tokens": 2934,
+  "tool_choice": [
+   "tool"
+  ]
+ },
+ "rows": [
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size"
+    ],
+    "confidence": 0.7,
+    "reasoning": "The current recording has failed the 'picture_area' and 'subject_size' gates. The 'fix.reframe' strategy is designed to address these issues by cropping to the picture area and applying a size-capped reframe. This is the first attempt, so we have the full retry budget available."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1611,
+   "input_tokens": 3525,
+   "output_tokens": 106,
+   "tool_choice": "tool",
+   "request_id": "a73b22a8-1ed9-431a-8247-3ba0641d9ea7",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 1,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The picture area and subject size are failing gates. The fix.reframe strategy addresses these issues by cropping to the picture area and applying a size-capped reframe. This is a cheap fix that should help resolve the framing issues."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1089,
+   "input_tokens": 3525,
+   "output_tokens": 90,
+   "tool_choice": "tool",
+   "request_id": "4e5f09f9-1be7-4a16-a90d-55b04d6c44c3",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 1,
+   "rep": 2,
+   "expected": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady"
+    ]
+   },
+   "relevant": [
+    "picture_area",
+    "subject_size"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "picture_area",
+     "subject_size"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The recording is misframed and the subject size is too large. The fix.reframe strategy addresses both of these issues by cropping to the picture area and applying a size-capped reframe. This is the first attempt, so we can use the cheap fix.reframe strategy."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1163,
+   "input_tokens": 3525,
+   "output_tokens": 100,
+   "tool_choice": "tool",
+   "request_id": "4d6076ce-9f23-4dec-bd99-41c29456a8e4",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "picture_area",
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure",
+     "key_direction"
+    ],
+    "confidence": 1.0,
+    "reasoning": "All gates have passed, and no further action is needed. The subject size is within the acceptable range, and the picture area has been corrected. The only warnings are for distance steady and headroom, which are noted but do not require further action. Therefore, the video can be delivered."
+   },
+   "action_ok": false,
+   "strategy_ok": false,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1535,
+   "input_tokens": 3404,
+   "output_tokens": 122,
+   "tool_choice": "tool",
+   "request_id": "1404f59b-9431-4343-acc1-ad351156bf37",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "picture_area",
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "face_exposure"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The current findings show that all critical gates have passed, and the fixes applied have addressed the issues with picture area and subject size. The warnings for distance steady and headroom are recorded as limits for the report but do not prevent delivery. The reframe fix has been applied, and no further actions are needed. Delivering as the latest verification passed every gate."
+   },
+   "action_ok": false,
+   "strategy_ok": false,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1329,
+   "input_tokens": 3404,
+   "output_tokens": 121,
+   "tool_choice": "tool",
+   "request_id": "98379a85-e4d8-4212-8ba9-814bce87a007",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 2,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "picture_area",
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom"
+    ],
+    "confidence": 0.85,
+    "reasoning": "The current findings indicate that the picture area, pose coverage, and one subject gates have passed, and the subject size is within the allowed bounds. However, the distance steady and headroom gates have warnings. The next action is to process the video using the standard Red Curtain composite to address these warnings and ensure the final output meets the profile requirements. If this action fails, the exit will be to reshoot as no allowed action can honestly satisfy the profile."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1433,
+   "input_tokens": 3404,
+   "output_tokens": 137,
+   "tool_choice": "tool",
+   "request_id": "ada6a828-efbf-4432-b8c4-54c8bad5318a",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "head_spread",
+     "head_drift"
+    ],
+    "confidence": 0.7,
+    "reasoning": "The latest verification shows that 'head_spread' and 'head_drift' failed with values of 0.029 and 5.3 respectively. The 'process.separation_targeted' strategy addresses these issues by providing a stronger rim and light wrap, and a bounded shadow lift, which can help improve the subject's separation from the background and reduce head movement. This is the next best action to take to try and pass the failing gates."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1537,
+   "input_tokens": 4547,
+   "output_tokens": 136,
+   "tool_choice": "tool",
+   "request_id": "f6faa393-4c4b-4ac4-ba2d-bab15216f4da",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 1,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "head_spread",
+     "head_drift"
+    ],
+    "confidence": 0.7,
+    "reasoning": "The latest verification failed the 'head_spread' and 'head_drift' gates. The 'process.separation_targeted' strategy addresses the 'separation' gate, which is related to the 'head_spread' and 'head_drift' issues. This strategy has not been tried yet and is within the retry budget. If this action fails, the exit will be a reshoot."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1741,
+   "input_tokens": 4547,
+   "output_tokens": 122,
+   "tool_choice": "tool",
+   "request_id": "f573ce98-8ba6-4e4f-8799-dd0e73f0e824",
+   "error": null
+  },
+  {
+   "clip": "sandy",
+   "ordinal": 3,
+   "rep": 2,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "distance_steady",
+     "head_spread",
+     "head_drift",
+     "matte_extent",
+     "separation"
+    ]
+   },
+   "relevant": [
+    "head_spread",
+    "head_drift"
+   ],
+   "got": {
+    "action": "inspect",
+    "strategy": null,
+    "cites": [
+     "head_spread",
+     "head_drift"
+    ],
+    "confidence": 0.7,
+    "reasoning": "The latest verification failed on head_spread and head_drift. Before deciding on further action, it is necessary to inspect the working picture again to determine if any adjustments can be made to address these issues. The focus will be on the head_spread and head_drift measurements to see if any manual adjustments can be made to improve the results."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1228,
+   "input_tokens": 4547,
+   "output_tokens": 108,
+   "tool_choice": "tool",
+   "request_id": "6b914be1-3488-4d4f-ba16-bac1f7df5bb4",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "current_findings",
+     "profile"
+    ],
+    "confidence": 1.0,
+    "reasoning": "All findings are passed or informative. We start with the standard strategy 'process.standard' as per profile."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1022,
+   "input_tokens": 3540,
+   "output_tokens": 62,
+   "tool_choice": "tool",
+   "request_id": "06ccab90-fa42-4adc-a719-da411541905e",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "pose_coverage",
+     "one_subject"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The subject size, pose coverage, and one subject gates have passed. The standard Red Curtain composite is the next step to process the video."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1024,
+   "input_tokens": 3540,
+   "output_tokens": 74,
+   "tool_choice": "tool",
+   "request_id": "28582a37-93ca-4302-95e8-18fc63afcfdb",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 1,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "one_subject",
+     "distance_steady",
+     "wardrobe_vs_plate"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ],
+    "confidence": 1.0,
+    "reasoning": "All gates have passed or are informational. The first attempt will be the standard Red Curtain composite."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1023,
+   "input_tokens": 3540,
+   "output_tokens": 79,
+   "tool_choice": "tool",
+   "request_id": "dbd79aa8-c2e6-4b3b-a833-b3531eee7335",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The latest verification failed the 'separation' gate with a value of 1.13, which is below the threshold of 1.5. The 'process.separation_targeted' strategy is designed to address this issue by applying a stronger rim and light wrap, along with a bounded shadow lift. This strategy has not been tried yet and is within the retry budget."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1331,
+   "input_tokens": 4606,
+   "output_tokens": 111,
+   "tool_choice": "tool",
+   "request_id": "e3a955f8-fc5f-4cb7-b73f-5d498d696592",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "wardrobe_vs_plate"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The 'separation' gate failed with a value of 1.13, which is below the required threshold of 1.5. The 'process.separation_targeted' strategy specifically addresses the 'separation' gate and can help improve the subject vs background luminance. The 'wardrobe_vs_plate' finding indicates that the wardrobe is similar to the plate, which may contribute to the low separation value. Applying the 'process.separation_targeted' strategy can potentially enhance the separation and improve the overall quality of the video."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1566,
+   "input_tokens": 4606,
+   "output_tokens": 151,
+   "tool_choice": "tool",
+   "request_id": "95f74e4b-e48d-48a5-ae9c-f87199864555",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 2,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.7,
+    "reasoning": "The latest verification failed the 'separation' gate with a value of 1.13, which is below the required threshold of 1.5. The 'process.separation_targeted' strategy specifically addresses the 'separation' gate and has not been tried yet. This strategy will attempt to improve the separation between the subject and the background luminance."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1240,
+   "input_tokens": 4606,
+   "output_tokens": 106,
+   "tool_choice": "tool",
+   "request_id": "281f1fd6-7814-439a-a8da-b16c49dcc291",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "latest_verification"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The latest verification passed all gates with no failures. This is the honest exit, as all criteria have been met and the recording is ready for delivery."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 889,
+   "input_tokens": 4791,
+   "output_tokens": 60,
+   "tool_choice": "tool",
+   "request_id": "e1fc7ad9-0a3c-4008-99cd-d58445749849",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 1,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "latest_verification",
+     "attempts_so_far"
+    ],
+    "confidence": 1.0,
+    "reasoning": "The latest verification passed all gates with the 'process.separation_targeted' strategy. The 'separation' gate cleared by 0.02× with every knob at its bound, and there is no third attempt in this strategy. The 'frame_count' and 'audio_md5' gates also passed, confirming the frame count and audio integrity. Therefore, the recording is ready for delivery."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1319,
+   "input_tokens": 4791,
+   "output_tokens": 124,
+   "tool_choice": "tool",
+   "request_id": "145e99da-3f50-4456-aeb2-45d53cd1de7d",
+   "error": null
+  },
+  {
+   "clip": "ethel",
+   "ordinal": 3,
+   "rep": 2,
+   "expected": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "deliver",
+    "strategy": null,
+    "cites": [
+     "latest_verification"
+    ],
+    "confidence": 1.0,
+    "reasoning": "All gates have been passed, including the separation gate with a value of 1.52 which exceeds the required 1.5. The retry budget is not yet spent. Therefore, the latest verification passed and nothing else is warranted. No further action is needed."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 939,
+   "input_tokens": 4791,
+   "output_tokens": 84,
+   "tool_choice": "tool",
+   "request_id": "581c26aa-91ec-4974-ab32-aa2e57a52f55",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "current_findings"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The current findings show that the recording passes all the necessary gates. The 'process.standard' strategy is the standard strategy for a first attempt, and it does not address any specific failing gate. Therefore, we can proceed with processing the recording using the standard strategy."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1081,
+   "input_tokens": 3407,
+   "output_tokens": 90,
+   "tool_choice": "tool",
+   "request_id": "6eade8d4-0f3d-4c95-ae9e-7e58ae65cb18",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "pose_coverage",
+     "one_subject",
+     "subject_size",
+     "distance_steady"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The current findings show that all gates are passed or have warnings that do not require immediate action. The pose coverage, one subject, subject size, and distance steady gates have passed. There are warnings for headroom and face exposure, but these do not prevent processing. The standard Red Curtain composite is the appropriate next action as it is the standard strategy for a first attempt. If this process fails, the next action will be to inspect the working picture focusing on headroom and face exposure."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1449,
+   "input_tokens": 3407,
+   "output_tokens": 148,
+   "tool_choice": "tool",
+   "request_id": "f7519791-c3a6-4ff4-8a97-bed79f63fe5e",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 1,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "subject_size",
+     "distance_steady",
+     "headroom",
+     "face_exposure"
+    ]
+   },
+   "relevant": [],
+   "got": {
+    "action": "process",
+    "strategy": "process.standard",
+    "cites": [
+     "current_findings"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The recording has passed all gates except for two warnings: headroom and face exposure. The headroom is a recorded-content limit, and the face exposure is over-lit for the stage. The process.standard strategy is the standard strategy for a first attempt and will address these issues."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1138,
+   "input_tokens": 3407,
+   "output_tokens": 95,
+   "tool_choice": "tool",
+   "request_id": "8bb52d56-d93c-45c9-9468-f456cfbfc895",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 0,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.7,
+    "reasoning": "The 'separation' gate failed with a value of 1.0, short of the 1.5 threshold. The 'process.separation_targeted' strategy addresses this issue by enhancing the separation between the subject and the background. This is the second attempt, and we have one retry left in the budget."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1227,
+   "input_tokens": 4475,
+   "output_tokens": 99,
+   "tool_choice": "tool",
+   "request_id": "f583676f-1b96-474b-bb65-548f306c5c86",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 1,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "latest_verification"
+    ],
+    "confidence": 0.75,
+    "reasoning": "The latest verification shows that the separation gate failed with a value of 1.0, which is below the required threshold of 1.5. The process.separation_targeted strategy specifically addresses the separation gate, so it is the appropriate choice for this attempt. If this attempt also fails, we will need to reshoot the recording according to the reshoot guidance provided in the profile."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": false,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1535,
+   "input_tokens": 4475,
+   "output_tokens": 120,
+   "tool_choice": "tool",
+   "request_id": "1f1a12c8-b417-4717-9152-6de8880d1797",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 2,
+   "rep": 2,
+   "expected": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "process",
+    "strategy": "process.separation_targeted",
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The latest verification failed the 'separation' gate with a value of 1.0, which is below the required threshold of 1.5. The 'process.separation_targeted' strategy is designed to address this issue by applying a stronger rim and light wrap, as well as a bounded shadow lift. This strategy has not been tried yet and is within the retry budget."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1217,
+   "input_tokens": 4475,
+   "output_tokens": 112,
+   "tool_choice": "tool",
+   "request_id": "424c0e9b-51b4-4be0-8721-4307b625bce5",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 0,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.95,
+    "reasoning": "The separation gate failed with a value of 1.45, short of the required 1.5. Both the standard and separation-targeted processes have been tried, and the retry budget is now spent. The honest exit is to reshoot, with guidance to avoid wearing the stage and to ensure the subject is separated by about 3x from the background."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1239,
+   "input_tokens": 4692,
+   "output_tokens": 108,
+   "tool_choice": "tool",
+   "request_id": "7fe71f69-2c88-478b-9d6f-4b28b366bba5",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 1,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "fix",
+    "strategy": "fix.reframe",
+    "cites": [
+     "subject_size",
+     "separation"
+    ],
+    "confidence": 0.8,
+    "reasoning": "The latest verification shows that the 'separation' gate has failed with a value of 1.45, which is short of the 1.5 threshold by 0.05. The 'fix.reframe' strategy can address the 'subject_size' and 'separation' gates. This is the first attempt at reframing, so it is within the allowed bounds. If this action fails, the exit is to reshoot, as the retry budget is spent and no allowed strategy can address the failing 'separation' gate."
+   },
+   "action_ok": false,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": false,
+   "latency_ms": 1535,
+   "input_tokens": 4692,
+   "output_tokens": 149,
+   "tool_choice": "tool",
+   "request_id": "f31ac4cb-024b-4654-8962-57841659c7f0",
+   "error": null
+  },
+  {
+   "clip": "zach",
+   "ordinal": 3,
+   "rep": 2,
+   "expected": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation",
+     "matte_extent",
+     "head_spread",
+     "frame_count",
+     "audio_md5"
+    ]
+   },
+   "relevant": [
+    "separation"
+   ],
+   "got": {
+    "action": "reshoot",
+    "strategy": null,
+    "cites": [
+     "separation"
+    ],
+    "confidence": 0.9,
+    "reasoning": "The current recording fails the 'separation' gate with a value of 1.45, which is below the required threshold of 1.5. Despite trying two different processing strategies, neither has been able to bring the separation up to the required level. The retry budget is also spent, leaving no further options for processing. Therefore, a reshoot is necessary. The reshoot guidance suggests avoiding wearing the stage and ensuring proper separation from the background."
+   },
+   "action_ok": true,
+   "strategy_ok": true,
+   "cites_ok": true,
+   "cites_all_known": true,
+   "schema_ok": true,
+   "schema_problems": [],
+   "pass": true,
+   "latency_ms": 1331,
+   "input_tokens": 4692,
+   "output_tokens": 120,
+   "tool_choice": "tool",
+   "request_id": "a08311d6-0b78-4f91-b068-4354cc666941",
+   "error": null
+  }
+ ]
+}

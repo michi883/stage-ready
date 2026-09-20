@@ -206,7 +206,8 @@ class AWS:
         items = plan(archive_root, [clip.id])
         wd_rel = clip.archive["workdir"]; src_rel = clip.archive["source"]
         videos = {spec["video"]: name for name, spec in clip.archive.get("artifacts", {}).items() if spec.get("video")}
-        n_up = n_skip = 0; total = 0
+        from concurrent.futures import ThreadPoolExecutor
+        todo = []
         for src, rel in items:
             if rel.startswith("demo-media/"):
                 continue
@@ -218,14 +219,31 @@ class AWS:
                 key = f"{work_prefix(sha)}/{rel[len(wd_rel) + 1:]}"
             else:
                 continue
-            total += src.stat().st_size
-            if self.upload(src, key):
-                n_up += 1
-            else:
-                n_skip += 1
-            if progress and (n_up + n_skip) % 200 == 0:
-                progress(n_up + n_skip, len(items))
-        return {"sha256": sha, "uploaded": n_up, "skipped": n_skip, "bytes": total}
+            todo.append((src, key))
+        total = sum(src.stat().st_size for src, _ in todo)
+        # thousands of small mattes: what is already there (same size) is skipped, the rest goes up in parallel
+        present = {}
+        token = None
+        while True:
+            kw = {"Bucket": self.bucket, "Prefix": f"work/{sha}/"}
+            if token:
+                kw["ContinuationToken"] = token
+            r = self.s3().list_objects_v2(**kw)
+            for o in r.get("Contents", []):
+                present[o["Key"]] = o["Size"]
+            if not r.get("IsTruncated"):
+                break
+            token = r.get("NextContinuationToken")
+        need = [(src, key) for src, key in todo if present.get(key) != src.stat().st_size and not (not key.startswith("work/") and (self.head(key) or {}).get("ContentLength") == src.stat().st_size)]
+        done = [0]
+        def up(item):
+            self.s3().upload_file(str(item[0]), self.bucket, item[1])
+            done[0] += 1
+            if progress and done[0] % 500 == 0:
+                progress(done[0], len(need))
+        with ThreadPoolExecutor(max_workers=32) as ex:
+            list(ex.map(up, need))
+        return {"sha256": sha, "uploaded": len(need), "skipped": len(todo) - len(need), "bytes": total}
 
     def sync_model(self, name: str = "u2net_human_seg") -> str:
         from .vision.segment import MODELS, MODELS_DIR, fetch

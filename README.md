@@ -269,12 +269,20 @@ The minimal shape, built and run on 2026-09-19 (`stage_ready/aws.py`, `stage_rea
 | **INSPECT, VERIFY** — Lambda `stage-ready-measure` | AWS | Python 3.12 on arm64, 3 GB, on the `stage-ready-opencv5` layer (opencv-python-headless 5.0.0.93, numpy 2.4.6, a static ffmpeg). Mirrors `work/<sha>/` to `/tmp`, fetches the U²-Net weights, runs `ArchiveMeasurer` exactly as on the laptop — the DNN as the `matte_extent` second opinion — and writes the record to `measurements/<sha>/`. |
 | **DECIDE** — Bedrock Converse | AWS | one tool, `decide`, whose input schema is `models.DECISION_TOOL_SCHEMA`; the prompt carries the profile (gates, strategies with what they address and their bounds, retry budget, reshoot guidance), the current findings, the latest verification, the attempts so far, prior decisions and the budget. `global.anthropic.claude-sonnet-4-6` (Opus 5 and Sonnet 5 are listed for the account but not enabled). The loop's guards in `loop.py` still refuse what the profile does not allow. |
 | **PROCESS** | laptop | `BodyTrack` (Apple Vision), MatAnyone (MPS) and `Composite` (CoreImage) are macOS. Attempt 1 is a cache hit on the source hash — the archived run; attempt 2 reuses the matte and tracking and re-composites at the strategy's bounds if that render is not already on disk. The delivery goes to `artifacts/<sha>/`. |
-| **FIX** | — | not wired (Sandy's reframe): `LiveNotWired`. |
+| **FIX** — Lambda | AWS | `fix.reframe` is deterministic OpenCV: `detect_band` for the crop, the size-capped dry solve for the head target (`ArchiveMeasurer.fix`); the loop then re-inspects the fixed picture on the Lambda. |
 
 AWS access goes through boto3's default credential chain; nothing in this repo reads, prints, logs
 or stores a credential. What is logged is the run's **trace** — every request id, latency, OpenCV
 number and Bedrock decision (`.stage_ready/runs/<run_id>.jsonl` and `runs/<sha>/<run_id>/trace.jsonl`
 in the bucket; the server streams it as a final `trace` event). No performer media is logged.
+
+**All three, through `?demo=0`, 2026-09-20** (the server's SSE stream; traces in `demo/eval/live/`):
+Sandy — inspect ✗ (picture area, size) → Bedrock *fix.reframe* → Lambda fix (head 0.334 → 0.413) →
+Lambda re-inspect: clean → Bedrock *process* → cache hit → Lambda verify ✗ head spread 2.9 %,
+drift 5.3 px → Bedrock *reshoot*, citing the walk-in first; 5 min 21 s, ≈ $0.07. Zach — inspect
+(warns) → *process* → verify ✗ **1.00×** → *separation-targeted* → verify ✗ **1.45×** → *reshoot*,
+one retry unused; 4 min 20 s, ≈ $0.07. Ethel — as below, again, delivered on the 1.52× pass;
+5 min 55 s, ≈ $0.07. Every live outcome is the trusted measured path.
 
 **Ethel's first live run** (`python3 -m stage_ready run ethel --live`, run id `20260919T220947-528236`):
 INSPECT on the Lambda (61 s, every finding the fixture has) → Bedrock: *process, standard* (6.8 s,
@@ -296,11 +304,13 @@ tokens (`demo/eval/agent_*.json`, 2026-09-20):
 |---|---|---|---|---|---|
 | **Claude Sonnet 4.6** (default) | **9/9**, twice | 9/9 · 9/9 | 7.3 s | 4.7k in / 450 out | — |
 | Amazon Nova 2 Lite | 6/9 (18/27 over three repeats, the same three wrong every time) | 27/27 · 27/27 | 1.3 s | 4.4k in / 180 out | Sandy #3: *inspect* instead of *reshoot* after the head gates failed with no strategy for them; Zach #1: the separation-targeted retry as the *first* attempt, reasoning from the over-lit warning; Zach #3: a second retry at the same bounds instead of stopping — "the budget still allows another attempt" |
+| Amazon Nova Pro | 21/27 over three repeats — and **unstable**: three states answered differently across repeats | 27/27 · 27/27 | 1.3 s | 4.1k in / 110 out | Sandy #2: *deliver* before anything was verified (2 of 3); Sandy #3: the separation-targeted *retry* for head-height gates it does not address (2 of 3), *inspect* once; Zach #3: a *reframe fix* for a wardrobe problem (1 of 3) |
 
-Nova is five times faster and about a tenth of the cost, and it gets every routine state right;
-what it misses are the three stopping decisions and one strategy choice — the judgement the loop
-exists for. So Sonnet 4.6 stays the agent; the model is one environment variable
-(`STAGE_READY_BEDROCK_MODEL`), and the eval is how a replacement earns the job.
+Both Novas are five times faster and a tenth of the cost, and both get every routine state right;
+what they miss are the stopping decisions and the strategy choices — the judgement the loop exists
+for — and Nova Pro does not even miss them consistently. So Sonnet 4.6 stays the agent; the model
+is one environment variable (`STAGE_READY_BEDROCK_MODEL`), and the eval is how a replacement earns
+the job. (Nova Premier was not tested: Bedrock lists it as legacy.)
 
 `CachedBackend` answers each call from a file keyed on what a live run would cache on, so a hybrid
 — cached matte, live agent — is the same interface with a different mix behind it:

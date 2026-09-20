@@ -240,6 +240,48 @@ class ArchiveMeasurer:
         worst = min(rows, key=lambda r: r[1] / r[2])
         return MatteQC(median=float(np.median(ratios)), frames=len(ratios), worst_frame=worst[0], worst_matte_px=worst[1], worst_opinion_px=worst[2], ratios=[float(r) for r in ratios])
 
+    # ---- FIX: the reframe, deterministic ------------------------------------------------------
+    def fix(self, clip: Clip, strategy: str, profile: Profile):
+        """`fix.reframe`: crop to the measured picture area, and hold the performer's size by letting
+        the solve push the head down the canvas — the two one-sided moves the archive's pipeline
+        makes at demux (`detect_band`) and in `track_frame` (SIZE_CAP / HEAD_TARGET_MAX). Both are
+        measured here with OpenCV; the reframed frames themselves are the workdir's warp of the
+        capped solve. Nothing is invented: a crop and a smaller performer."""
+        from .models import FixResult, Stage
+        from .vision import detect_band, probe
+        from .vision.track import dry_solve
+        if strategy != "fix.reframe":
+            raise ValueError(f"no live fixer for {strategy!r}")
+        t0 = time.time()
+        wd, src = self.workdir(clip), self.source(clip)
+        fr = profile.data["framing"]
+        canvas = (int(profile.data["canvas"]["w"]), int(profile.data["canvas"]["h"]))
+        band = detect_band(str(src))
+        fps = probe(str(src)).fps or 30.0
+        d = dry_solve(str(self._pick(wd, "matte_ext", "matte")), self.pose(wd, ext=True), canvas, fps,
+                      head_target=fr["head_target"], stab_sec=fr["stab_sec"], size_cap=fr["size_cap"], head_target_max=fr["head_target_max"])
+        capped = d.head_target_used > d.head_target + 1e-9
+        stages = [
+            Stage(id="band", label="Crop to picture area", tool="vision.detect_band → crop", duration_ms=int((time.time() - t0) * 1000),
+                  summary=(f"crop={band.w}:{band.h}:{band.x}:{band.y} — the {band.file_w - band.w} dead columns and {band.file_h - band.h} dead rows are gone; the picture bottom is now the frame bottom."
+                           if not band.fills_file else "The picture already fills the file — nothing to crop."),
+                  params={"crop": [band.w, band.h, band.x, band.y]}),
+            Stage(id="size_cap", label="Size-capped reframe solve", tool="vision.track.dry_solve (SIZE_CAP, HEAD_TARGET_MAX)", duration_ms=0,
+                  summary=(f"Performer reaches {_pct(d.widest)} of canvas width at head_target {d.head_target:.3f} (cap {_pct(fr['size_cap'])}) — "
+                           f"holding their size by moving the head down to {d.head_target_used:.3f} of frame height. One value for the whole clip; one-sided."
+                           if capped else f"Performer reaches {_pct(d.widest)} of canvas width at head_target {d.head_target:.3f} — under the {_pct(fr['size_cap'])} cap; the floor stands."),
+                  params={"head_target_floor": d.head_target, "head_target": round(d.head_target_used, 3), "head_target_max": fr["head_target_max"], "size_cap": fr["size_cap"]}),
+        ]
+        changes = {
+            "picture": {"before": f"{band.w}×{band.h} at +{band.x}+{band.y} in a {band.file_w}×{band.file_h} file", "after": f"{band.w}×{band.h}, the whole picture"},
+            "head_target": {"before": d.head_target, "after": round(d.head_target_used, 3)},
+            "shoulder_span_p50": {"before": round(d.span_p50, 3), "after": round(d.span_p50_used, 3)},
+            "shoulder_span_p95": {"before": round(d.span_p95, 3), "after": round(d.span_p95_used, 3)},
+            "pixels_invented": 0,
+        }
+        return FixResult(strategy=strategy, artifact="fixed", stages=stages, changes=changes, duration_ms=int((time.time() - t0) * 1000), cached=False,
+                         provenance=f"measured: OpenCV 5 over {wd.relative_to(self.root)} and {src.name} — detect_band for the crop, the size-capped dry solve for the head target")
+
     # ---- VERIFY -------------------------------------------------------------------------------
     def verify(self, clip: Clip, artifact: str, profile: Profile) -> VerifyResult:
         from .vision import matte_extent, pose_qc, probe, separation

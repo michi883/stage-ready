@@ -96,6 +96,9 @@ def handler(event, context):
     elif op == "verify":
         rec = to_dict(m.verify(clip, event["artifact"], profile))
         key = f"measurements/{sha}/verify.{event['artifact']}.json"
+    elif op == "fix":
+        rec = to_dict(m.fix(clip, event["strategy"], profile))
+        key = f"measurements/{sha}/fix.{event['strategy']}.json"
     else:
         raise ValueError(f"unknown op {op!r}")
     t_meas = time.time()

@@ -13,7 +13,9 @@ request id, latency, OpenCV number and Bedrock decision (`stage_ready/aws.py`).
                 attempt 1 is the archived run for the source, attempt 2 re-composites at the bounds
     verify    — AWS Lambda: matte_extent (U²-Net second opinion on cv2.dnn), separation, head
                 spread and drift, frame count, audio MD5 — over work/<sha>/ and artifacts/<sha>/
-    fix       — not wired (Sandy's reframe); LiveNotWired
+    fix       — AWS Lambda: `fix.reframe` measured with OpenCV (detect_band for the crop, the
+                size-capped dry solve for the head target); the re-inspection of the fixed picture
+                follows on the Lambda
 
 `STAGE_READY_LIVE_LOCAL=1` runs inspect/verify on the laptop's measurer instead of the Lambda and
 skips Bedrock — for tests and for a machine without AWS. `?demo=1` never touches this module.
@@ -257,8 +259,16 @@ class LiveBackend:
             pr.provenance += f"; uploaded to s3://{self.aws().bucket}/{artifact_key(sha, pr.artifact)}"
         return pr
 
+    # ---- FIX: the reframe, on the Lambda (deterministic OpenCV) ----------------------------------
     def fix(self, clip, strategy, profile, state):
-        raise LiveNotWired(_msg(f"fixer {strategy}"))
+        from ..models import FixResult, Stage
+        if strategy != "fix.reframe":
+            raise LiveNotWired(_msg(f"fixer {strategy}"))
+        if self.local:
+            return self.measurer().fix(clip, strategy, profile)
+        rec = self.aws().invoke_measure("fix", self.s3_clip(clip), profile.data, strategy=strategy, opinion=self.opinion)
+        return FixResult(strategy=rec["strategy"], artifact=rec["artifact"], stages=[Stage(**st) for st in rec["stages"]], changes=rec.get("changes", {}),
+                         duration_ms=rec.get("lambda_ms", rec.get("duration_ms", 0)), cached=False, provenance=rec.get("provenance", ""))
 
     # ---- the run's record ------------------------------------------------------------------
     def flush(self) -> dict[str, Any]:
