@@ -108,7 +108,7 @@
         <p id="payoff-empty" class="muted">Make a recording Stage Ready — the delivered numbers appear here.</p>
         <h3>How the demo stays honest</h3>
         <ul class="honest">
-          <li>Every measurement is replayed from the archived fixtures under <code>demo/clips/</code> — no model calls, no OpenCV, no AWS at demo time. The same numbers are recomputed from the archived files with OpenCV 5 by <code>python3 -m stage_ready measure</code>.</li>
+          <li>Every measurement is replayed from the archived fixtures under <code>demo/clips/</code> — no model calls and no OpenCV measurement at demo time (the page and its replay are served by an AWS Lambda; nothing is measured or decided). The same numbers are recomputed from the archived files with OpenCV 5 by <code>python3 -m stage_ready measure</code>.</li>
           <li>An upload is recognised by its SHA-256 — the same key the live matte cache uses — and never leaves the browser.</li>
           <li>The loop enforces what the agent may not skip: every process is verified, every fix re-inspected, delivery refused unless the latest verification passed.</li>
           <li>Every number is measured, on the recording it belongs to — Brian's padded input's fix and first-pass render, Ethel's second attempt (1.52×, measured 2026-09-19), Zach's first pass (2.37×). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is, and none borrows another recording's numbers.</li>

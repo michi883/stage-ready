@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1060" viewBox="0 0 1560 1060" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#333"/></marker>
+    <marker id="arrb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9a7b1a"/></marker>
+  </defs>
+  <style>
+    .h { font-weight: 700; font-size: 15px; fill: #111; }
+    .s { font-size: 12px; fill: #333; }
+    .m { font-family: Menlo, Consolas, monospace; font-size: 11.5px; fill: #333; }
+    .lbl { font-size: 11.5px; fill: #666; font-style: italic; }
+    .tag { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; }
+    .box { fill: #fff; stroke: #333; stroke-width: 1.4; rx: 8; }
+    .aws { fill: #fff6e3; stroke: #d9822b; stroke-width: 2; rx: 8; }
+    .local { fill: #f1f1f1; stroke: #555; stroke-width: 2; stroke-dasharray: 7 4; rx: 8; }
+    .browser { fill: #edf4ff; stroke: #2f6fd6; stroke-width: 2; rx: 8; }
+    .exit { fill: #fff; stroke: #333; stroke-width: 1.6; rx: 22; }
+    .flow { stroke: #333; stroke-width: 1.8; fill: none; marker-end: url(#arr); }
+    .side { stroke: #9a7b1a; stroke-width: 1.3; fill: none; stroke-dasharray: 5 4; marker-end: url(#arrb); }
+  </style>
+
+  <text x="30" y="34" class="h" font-size="21">Stage Ready — architecture, as built (2026-09-20)</text>
+  <text x="30" y="54" class="s">OpenCV 5 does the seeing, an agent decides, the loop enforces. Colour says where a thing runs:</text>
+  <rect x="30" y="61" width="14" height="14" class="aws"/><text x="50" y="72" class="s">on AWS (us-east-1)</text>
+  <rect x="180" y="61" width="14" height="14" class="local"/><text x="200" y="72" class="s">on the laptop (macOS), cache-backed on S3 — not on AWS</text>
+  <rect x="530" y="61" width="14" height="14" class="browser"/><text x="550" y="72" class="s">browser</text>
+  <line x1="620" y1="68" x2="660" y2="68" class="flow"/><text x="668" y="72" class="s">the loop</text>
+  <line x1="740" y1="68" x2="780" y2="68" class="side"/><text x="788" y="72" class="s">S3 read / write, keyed by source SHA-256</text>
+
+  <!-- ===== column 1: the loop ===== -->
+  <!-- browser -->
+  <rect x="30" y="80" width="480" height="104" class="browser"/>
+  <text x="42" y="100" class="h">Browser — public endpoint (CloudFront)</text>
+  <text x="42" y="118" class="s">https://d4nh99blf9f5j.cloudfront.net/ · drop a recording: fingerprinted (SHA-256) in the browser</text>
+  <text x="42" y="134" class="s">?demo=1 (default) cached replay: fixtures recorded from measurement; no model, no OpenCV</text>
+  <text x="42" y="150" class="s">?demo=0 the live hybrid below, streamed over SSE (keepalives) · Trace and Details drawers</text>
+  <text x="42" y="166" class="s">UI and stills from S3 public/ through an origin access control; video with range requests</text>
+
+  <!-- API lambda -->
+  <rect x="30" y="212" width="480" height="82" class="aws"/>
+  <text x="42" y="232" class="h">API Lambda — stage-ready-web</text>
+  <text x="42" y="250" class="s">Python + Lambda Web Adapter, response streaming, IAM-only URL behind a CloudFront OAC.</text>
+  <text x="42" y="266" class="s">Serves the UI, /api/clips, /api/recognize, /api/run/&lt;id&gt; (SSE) — and runs the loop with</text>
+  <text x="42" y="282" class="s">the cached backend (?demo=1) or the live backend (?demo=0).</text>
+
+  <!-- INSPECT -->
+  <rect x="30" y="322" width="480" height="132" class="aws"/>
+  <text x="42" y="342" class="h">INSPECT — OpenCV 5 on Lambda (stage-ready-measure)</text>
+  <text x="42" y="360" class="s">arm64, opencv-python-headless 5.0.0.93 as a layer; the workdir mirrored from S3 work/&lt;sha&gt;/</text>
+  <text x="42" y="378" class="s">• picture-area detection (dead rows and columns)  • pose coverage, one subject, steadiness</text>
+  <text x="42" y="394" class="s">• framing dry solve: head target and size cap on one shared ruler  • face exposure, key side</text>
+  <text x="42" y="410" class="s">• OpenCV 5 DNN U²-Net subject opinion (cv2.dnn) — the matte's second opinion</text>
+  <text x="42" y="426" class="s">• evidence-sufficiency: a recorded crown on ≥ 50 % of frames, or the head metrics are untrusted</text>
+  <text x="42" y="444" class="lbl">live on every lineup recording (2026-09-19/20); the same code recomputes every fixture: 0 disagreements</text>
+
+  <!-- DECIDE -->
+  <rect x="30" y="482" width="480" height="118" class="aws"/>
+  <text x="42" y="502" class="h">DECIDE — Amazon Bedrock, Claude Sonnet 4.6</text>
+  <text x="42" y="520" class="s">Converse with a forced `decide` tool: action ∈ {inspect, fix, process, deliver, reshoot}, a strategy</text>
+  <text x="42" y="536" class="s">from the profile's allowed list, reasoning with the numbers, cited finding and gate ids.</text>
+  <text x="42" y="554" class="s">Guardrails in code, not in the prompt: every process is verified, every fix re-inspected, deliver</text>
+  <text x="42" y="570" class="s">refused unless the latest verification passed, retry budget 2; a refused decision is recorded</text>
+  <text x="42" y="586" class="s">and falls through to the reshoot exit. The model is one environment variable.</text>
+
+  <!-- FIX -->
+  <rect x="30" y="628" width="480" height="70" class="aws"/>
+  <text x="42" y="648" class="h">FIX — fix.reframe, deterministic OpenCV on the Lambda</text>
+  <text x="42" y="666" class="s">crop to the measured picture area; size-capped reframe solve (head pushed down, never up);</text>
+  <text x="42" y="682" class="s">0 pixels invented; always re-inspected — a fix that creates a new defect is rejected</text>
+
+  <!-- PROCESS (laptop) -->
+  <rect x="30" y="726" width="480" height="90" class="local"/>
+  <text x="42" y="746" class="h">PROCESS — the Red Curtain render, on the laptop (cache-backed, not on AWS)</text>
+  <text x="42" y="764" class="s">BodyTrack (Apple Vision pose) · MatAnyone 2 (PyTorch, MPS) · crown completion · track_frame ·</text>
+  <text x="42" y="780" class="s">Composite (CoreImage) · ffmpeg. process.standard = a cache hit on the archived run; the</text>
+  <text x="42" y="796" class="s">separation-targeted retry re-composites at the strategy's bounds and uploads to artifacts/&lt;sha&gt;/.</text>
+  <text x="42" y="811" class="lbl">details in the right column · a fresh upload has no workdir yet, and the loop says so</text>
+
+  <!-- VERIFY -->
+  <rect x="30" y="844" width="480" height="130" class="aws"/>
+  <text x="42" y="864" class="h">VERIFY — OpenCV 5 on Lambda, against the profile's 9 gates</text>
+  <text x="42" y="882" class="s">on the composite frames and the delivered file, mirrored from S3:</text>
+  <text x="42" y="900" class="s">• separation: edge luma inside / outside ≥ 1.5×   • matte extent vs the DNN opinion ≥ 0.9</text>
+  <text x="42" y="916" class="s">• head stability: spread ≤ 2 %, drift ≤ 4 px   • crown evidence ≥ 50 %   • pose, one subject</text>
+  <text x="42" y="932" class="s">• frame count = source   • audio MD5 = source (audio identity)</text>
+  <text x="42" y="950" class="lbl">not measured: frozen / repeated-frame motion continuity — a stated limitation</text>
+  <text x="42" y="966" class="lbl">every record written to measurements/&lt;sha&gt;/ on S3</text>
+
+  <!-- ===== column 2: exits, S3, trace, modes ===== -->
+  <!-- input -->
+  <rect x="560" y="80" width="470" height="104" class="box"/>
+  <text x="572" y="100" class="h">Input video  +  Target Output Profile</text>
+  <text x="572" y="118" class="s">profiles/midtown_red_curtain.json — 1080×1920 canvas, the framing rule, 9 gates, the allowed</text>
+  <text x="572" y="134" class="s">strategies with their bounds, retry budget 2, reshoot guidance per finding. A second destination</text>
+  <text x="572" y="150" class="s">would be a second profile file; only this one exists today.</text>
+  <text x="572" y="168" class="s">A recording is recognised by its SHA-256 (sources/&lt;sha&gt;/); an unknown upload is told so.</text>
+
+  <!-- S3 -->
+  <rect x="560" y="212" width="470" height="176" class="aws"/>
+  <text x="572" y="232" class="h">S3 — stage-ready-videos (private; public access blocked)</text>
+  <text x="572" y="252" class="m">sources/&lt;sha256&gt;/source.mp4         the recording, keyed by its own hash</text>
+  <text x="572" y="268" class="m">work/&lt;sha256&gt;/…                     pose track, seed, matte, composite frames, logs</text>
+  <text x="572" y="284" class="m">artifacts/&lt;sha256&gt;/attempt_N.mp4     the deliveries</text>
+  <text x="572" y="300" class="m">measurements/&lt;sha256&gt;/*.json        every INSPECT / VERIFY record</text>
+  <text x="572" y="316" class="m">runs/&lt;sha256&gt;/&lt;run_id&gt;/trace.jsonl    the run's trace</text>
+  <text x="572" y="332" class="m">models/u2net_human_seg.onnx         the DNN weights, hash-checked</text>
+  <text x="572" y="348" class="m">public/                             UI + stills, read by CloudFront through an OAC</text>
+  <text x="572" y="368" class="s">Provenance: every derived input carries its original's and its own SHA-256 and the</text>
+  <text x="572" y="382" class="s">exact command (demo/derived.json); a controlled input says so on the page.</text>
+
+  <!-- trace -->
+  <rect x="560" y="416" width="470" height="118" class="aws"/>
+  <text x="572" y="436" class="h">Trace / observability</text>
+  <text x="572" y="454" class="s">Every Lambda invocation and Bedrock call: request id, latency, tokens, model, stop reason;</text>
+  <text x="572" y="470" class="s">every finding, decision (reasoning + citations), fix, stage, gate and error → trace.jsonl on</text>
+  <text x="572" y="486" class="s">S3 and .stage_ready/runs/ locally; streamed live into the UI's Trace drawer. No credentials,</text>
+  <text x="572" y="502" class="s">no performer media in any log. A live run costs ≈ $0.07 (Lambda + Bedrock).</text>
+  <text x="572" y="522" class="s">Evaluation: 19 labelled items, blind; agent vs rule table vs the linear pipeline (evaluate).</text>
+
+  <!-- modes -->
+  <rect x="560" y="562" width="470" height="136" class="box"/>
+  <text x="572" y="582" class="h">Cached demo (?demo=1)  vs  live hybrid (?demo=0) — same loop, same interface</text>
+  <text x="572" y="600" class="s">Cached: demo/clips/&lt;id&gt;/*.json — the inspect, fix, process and verify records written by</text>
+  <text x="572" y="616" class="s">`record` from the live OpenCV 5 measurement; the agent's decisions cached in its own words;</text>
+  <text x="572" y="632" class="s">replayed deterministically by the API Lambda. Three sample cases in the picker.</text>
+  <text x="572" y="652" class="s">Live: INSPECT / FIX / VERIFY on the measurement Lambda, DECIDE on Bedrock, PROCESS a cache</text>
+  <text x="572" y="668" class="s">hit from S3 keyed on the source hash — 3 to 6 minutes per recording, every step traced.</text>
+  <text x="572" y="686" class="lbl">`python3 -m stage_ready measure` prints every fixture number beside its recomputation</text>
+
+  <!-- exits -->
+  <rect x="560" y="860" width="130" height="46" class="exit"/>
+  <text x="625" y="888" text-anchor="middle" class="h">DELIVER</text>
+  <rect x="712" y="860" width="150" height="46" class="exit"/>
+  <text x="787" y="881" text-anchor="middle" class="h">RETRY</text>
+  <text x="787" y="897" text-anchor="middle" class="s">separation-targeted, in budget</text>
+  <rect x="884" y="860" width="146" height="46" class="exit"/>
+  <text x="957" y="881" text-anchor="middle" class="h">RESHOOT</text>
+  <text x="957" y="897" text-anchor="middle" class="s">cited causes + guidance</text>
+  <text x="560" y="932" class="s">Only the loop owns the exits: deliver needs a passing verification; a reshoot request leads with the</text>
+  <text x="560" y="948" class="s">findings the agent cited as the cause, each with the profile's guidance for the next recording.</text>
+  <text x="560" y="964" class="s">The retry re-processes with the one strategy that addresses the failing gate, then verifies again.</text>
+
+  <!-- ===== column 3: the laptop ===== -->
+  <rect x="1080" y="80" width="450" height="330" class="local"/>
+  <text x="1092" y="100" class="h">The Red Curtain pipeline — macOS, cache-backed on S3</text>
+  <text x="1092" y="118" class="s">Runs on the laptop; its outputs are what the Lambda measures. Not on AWS today.</text>
+  <text x="1092" y="140" class="s">1. picture area (OpenCV) → band frames</text>
+  <text x="1092" y="156" class="s">2. BodyTrack — Apple Vision body pose → pose track</text>
+  <text x="1092" y="172" class="s">3. pose QC — coverage, one subject, steadiness (refused below 60 % coverage)</text>
+  <text x="1092" y="188" class="s">4. seed — Apple Vision person matte on a picked frame, cleaned (or U²-Net)</text>
+  <text x="1092" y="204" class="s">5. MatAnyone 2 (PyTorch, MPS) — the video matte, keyed on source+seed hash</text>
+  <text x="1092" y="220" class="s">6. crown completion from the performer's own uncut frames (carve if none)</text>
+  <text x="1092" y="236" class="s">7. track_frame — the reframe solve on the shared ruler (head target, size cap)</text>
+  <text x="1092" y="252" class="s">8. auto-grade + Composite (CoreImage) — the graded stage render, plate untouched</text>
+  <text x="1092" y="268" class="s">9. ffmpeg — H.264, source audio copied; frame count and audio MD5 checked</text>
+  <text x="1092" y="292" class="s">process.standard: the archived run, a cache hit. separation_targeted: the same</text>
+  <text x="1092" y="308" class="s">matte and tracking, re-composited at the bounds (rim 0.45, wrap 0.70, lift +0.04).</text>
+  <text x="1092" y="332" class="s">Synced to S3 by hash: `aws sync &lt;clip&gt;` — work/, sources/, artifacts/.</text>
+  <text x="1092" y="356" class="lbl">Planned, not built: producing a workdir for a fresh upload (README milestone 9).</text>
+  <text x="1092" y="372" class="lbl">Planned, not built: this stage on AWS compute — the three tools are macOS.</text>
+  <text x="1092" y="396" class="lbl">Second Target Output Profile: planned, not built (PLAN step 7).</text>
+
+  <rect x="1080" y="440" width="450" height="130" class="local"/>
+  <text x="1092" y="460" class="h">Tooling on the laptop</text>
+  <text x="1092" y="480" class="s">`record` — a clip's fixtures from the measurement, not by hand</text>
+  <text x="1092" y="496" class="s">`measure` — every fixture number recomputed with OpenCV 5, side by side</text>
+  <text x="1092" y="512" class="s">`evaluate` — the labelled set through the real loop, both agents, the report</text>
+  <text x="1092" y="528" class="s">`aws sync | deploy | web-deploy` — S3 by hash, the two Lambdas, CloudFront</text>
+  <text x="1092" y="544" class="s">`demo/derive.sh`, `demo/eval/derive_eval.sh` — derived inputs with provenance</text>
+  <text x="1092" y="560" class="s">`bundle` — the judge archive for what the repo does not ship (performer media)</text>
+
+  <rect x="1080" y="600" width="450" height="98" class="local"/>
+  <text x="1092" y="620" class="h">Red Curtain archive (~/mts)</text>
+  <text x="1092" y="640" class="s">The show's pipeline and its measured workdirs. Everything the demo replays was</text>
+  <text x="1092" y="656" class="s">measured here first, then again on the Lambda — the numbers agree (README,</text>
+  <text x="1092" y="672" class="s">"What is measured"). Media lives here and on S3, never in the repository.</text>
+  <text x="1092" y="690" class="lbl">judge access: the private bundle, to be arranged at submission</text>
+
+  <!-- ===== the loop's arrows ===== -->
+  <path class="flow" d="M270 184 L270 212"/>
+  <path class="flow" d="M795 184 L795 198 L390 198 L390 212"/>
+  <path class="flow" d="M270 294 L270 322"/>
+  <path class="flow" d="M270 454 L270 482"/>
+  <path class="flow" d="M270 600 L270 628"/>
+  <path class="flow" d="M270 698 L270 726"/>
+  <path class="flow" d="M270 816 L270 844"/>
+  <path class="flow" d="M510 900 L560 884"/>
+  <path class="flow" d="M510 910 L712 884"/>
+  <path class="flow" d="M510 920 L884 884"/>
+  <!-- retry loop: RETRY → back up to PROCESS -->
+  <path class="flow" d="M787 906 L787 992 L540 992 L540 771 L512 771"/>
+  <text x="600" y="1008" class="lbl">retry → PROCESS with the strategy that addresses the failing gate → VERIFY again (budget 2)</text>
+  <!-- process ↔ its details -->
+  <path class="side" d="M510 750 L540 750 L540 720 L1050 720 L1050 300 L1080 300" stroke-dasharray="2 3"/>
+  <text x="1060" y="712" class="lbl" text-anchor="end">what PROCESS runs →</text>
+
+  <!-- S3: a bus in the gutter; stubs from the stages that read or write it -->
+  <path d="M535 240 L535 960" stroke="#9a7b1a" stroke-width="1.3" stroke-dasharray="5 4" fill="none"/>
+  <path class="side" d="M535 300 L560 300"/>
+  <path class="side" d="M535 470 L560 470"/>
+  <path class="side" d="M510 253 L535 253"/>
+  <path class="side" d="M510 388 L535 388"/>
+  <path class="side" d="M510 541 L535 541"/>
+  <path class="side" d="M510 909 L535 909"/>
+  <path class="side" d="M1080 330 L1030 330"/>
+  <text x="522" y="975" class="lbl" text-anchor="middle">S3</text>
+
+  <text x="1080" y="1040" class="lbl">docs/architecture.svg · OpenCV AI Competition 2026 · every claim here is measured or marked planned</text>
+</svg>

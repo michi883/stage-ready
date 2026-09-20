@@ -271,7 +271,7 @@ async function useFile(file) {
   if (!r.clip) {
     drop.classList.remove("busy");
     dropStatus(`${head}<div class="st-line bad">No cached run for this recording${hash ? ` — <code>${shortHash(hash)}</code>` : ""}.</div>
-      <div class="st-line">Demo mode replays cached runs only; live processing is not wired yet. Drop one of the sample recordings, or pick one above.</div>`);
+      <div class="st-line">This recording is not one the archive holds, so there is nothing to replay and nothing to render: producing a matte and a render for a new upload is not built yet. Pick a sample case above, or drop one of its files.</div>`);
     URL.revokeObjectURL(url);
     return;
   }

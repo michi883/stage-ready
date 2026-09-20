@@ -12,6 +12,11 @@ performers on a real stage: the [Midtown Show](https://midtownshow.com/2040) Red
 
 > *Different inputs. One output standard.*
 
+What is built today, in one line: measurement and verification with OpenCV 5 on AWS Lambda, the
+agent on Amazon Bedrock, the loop's guarantees in code, a public endpoint, a labelled evaluation —
+on the recordings the Red Curtain archive holds. A brand-new upload is recognised or told it is
+unknown; producing its matte and render is the one milestone still open ([What is real today](#what-is-real-today-and-what-is-not)).
+
 ## The problem
 
 Shows, courses and brands run on video that other people record: phones, bedrooms, kitchens,
@@ -52,8 +57,9 @@ the agent makes is made against it.
 | Allowed strategies (3) | crop + size-capped reframe (a fix) · standard composite · separation-targeted composite — in cost order, each with its bounds, and a retry budget of 2 |
 | Reshoot guidance | the capture rule behind each gate, from the show's `RECORDING_REQUIREMENTS.md` |
 
-A second profile — another show's plate, a 16:9 talking head, a clean-up-only delivery — changes
-this table and nothing in the loop. Thresholds inform the agent; they do not replace it.
+A second profile — another show's plate, a 16:9 talking head, a clean-up-only delivery — would
+change this table and nothing in the loop; that is the design, and it is untested: only this
+profile exists today (PLAN step 7). Thresholds inform the agent; they do not replace it.
 
 ## The loop
 
@@ -109,8 +115,9 @@ that followed.
 - **No per-recording settings.** Three recordings that could not be more different go through the
   same loop with the same profile and come out the same size, the same head height, the same look,
   each with its number.
-- **General-purpose by design.** The profile is the product surface; the loop is the engine. A
-  second destination is a second JSON file.
+- **General-purpose by design — one profile so far.** The profile is the product surface; the
+  loop is the engine; nothing in the loop or the agent names the Red Curtain. A second destination
+  would be a second JSON file, and none has been written yet (PLAN step 7).
 - **Real, not synthetic.** The thresholds, techniques and every measurement in the demo come from a
   production pipeline (`~/mts`) that has delivered five real performer recordings to the Midtown
   Show stage — including the failures that taught it.
@@ -125,10 +132,11 @@ that followed.
 - **Reshoot guidance is specific and actionable** — the defect, the number, the capture change.
 - **Reproducible, bounded, traceable** — same recording and profile, same result; retries capped;
   every decision replayable from the findings that drove it.
-- **Honest by construction** — a fixer may reframe, regrade, clean or reprocess recorded content;
-  it never invents content that was not captured.
+- **Honest by construction** — a fixer may reframe or regrade recorded content (the two that exist:
+  the crop-and-size-cap reframe, the separation-targeted grade); it never invents content that was
+  not captured.
 - **No per-recording tuning** — the samples run with the profile alone.
-- **General-purpose** — a second profile changes the data, not the loop.
+- **General-purpose** — a second profile would change the data, not the loop (not yet demonstrated).
 
 ## See it in two minutes
 
@@ -232,7 +240,7 @@ numbers side by side and where each one comes from. Both stay closed until asked
 
 Judges should know exactly what they are looking at:
 
-- **The demo is fully cached and deterministic** — no model calls, no OpenCV, no AWS at demo time.
+- **The demo is fully cached and deterministic** — no model calls and no OpenCV measurement at demo time (the page and its replay are served by the API Lambda; nothing is measured or decided).
   Every measurement is replayed from `demo/clips/<id>/*.json`, and every fixture carries a
   `provenance` line naming the archived run and file it was measured from. A dropped file is
   recognised by fingerprint and its cached run replayed; an unknown file is told so, not guessed at.
@@ -318,9 +326,41 @@ What the set found, beyond the numbers:
   motion continuity.** Thirty frozen frames pass every gate — the one silently wrong delivery on the set, counted as one and left
   in the set as such.
 
+## Claim audit
+
+Every substantive claim on this page, in the UI and in the architecture text, classified (audited
+2026-09-20; the rule: nothing is claimed ahead of what is measured):
+
+| claim | status | evidence |
+|---|---|---|
+| OpenCV 5 does the seeing: picture area, pose QC, framing solve, crown, exposure, key, matte extent, separation, head stability, frame count, audio MD5 | **live and demonstrated** | `stage_ready/vision/` on `opencv-python-headless 5.0.0.93`; `python3 -m stage_ready measure` recomputes every fixture (0 disagreements); the measurement Lambda runs the same code |
+| OpenCV 5 DNN segmentation (U²-Net on `cv2.dnn`) | **live and demonstrated — for the seed and the matte's second opinion**; *not* the separation edge (measured 0.14× off; stays on the pipeline's matte) | `segcheck`, `measure --opinion dnn`, the Lambda's `matte_extent` |
+| INSPECT / FIX / VERIFY run on AWS (Lambda `stage-ready-measure`) | **live and demonstrated** | live runs of every lineup recording; traces in `demo/eval/live/`; `?demo=0` on the public URL |
+| The agent decides on Amazon Bedrock (Claude Sonnet 4.6) with constrained actions, a retry budget and code guardrails | **live and demonstrated** | the same live runs; `agent-eval`; the blind evaluation (30 Bedrock calls) |
+| Automatic fixing | **live and demonstrated for one fixer** — `fix.reframe` (crop to the measured picture, size-capped solve); the only other change to a recording is the separation-targeted *grade* (a process strategy). No other fixer exists | Brian padded, Zach padded, sta (evaluation), Sandy (before the crown rule) |
+| Verification against the profile's gates, on every render, before any delivery | **live and demonstrated** | every live run; the gate tests in the evaluation (frame drop and audio re-encode rejected) |
+| The public demo (`?demo=1`) | **cached / replayed but measured** — fixtures written by `record` from the live measurement; the agent's decisions cached in its own words; deterministic | `demo/clips/`, `measure`, `tests/test_demo.py` |
+| PROCESS: BodyTrack, MatAnyone, Composite | **local, cache-backed on S3 — not on AWS**; live runs use the archived render (a cache hit by source hash) or re-composite the retry on the laptop | `process_local.py`, `process_s3.py`, the diagram |
+| A fresh upload gets a matte and a render | **planned / not implemented** (milestone 9) — an unknown upload is recognised as unknown and told so | `LiveNotWired` in `process_s3.py`; the UI's message |
+| The render on AWS compute | **planned / not implemented** — the three tools are macOS | PLAN step 3's note; the diagram |
+| Frozen / repeated-frame detection | **not implemented, stated** — "Stage Ready currently verifies frame count and visual quality but does not yet detect frozen/repeated-frame motion continuity" | `gate_frozen_frames`, the one silently wrong delivery in the evaluation |
+| General-purpose: a second destination is a second profile | **planned / not demonstrated** — the loop and the agent name nothing show-specific, but only `midtown_red_curtain.json` exists | PLAN step 7 |
+| The evaluation: 19 labelled items, silently wrong deliveries, per-gate precision/recall, agent vs rule table vs the linear pipeline | **evaluation-only, measured** | `demo/eval/EVALUATION.md`, regenerated by `evaluate --report` |
+| Three sample behaviours on the public page | **cached / replayed but measured**, and each reproduced live | the picker; the live traces |
+| Human control: approval before delivery, an operator override recorded as an override | **planned / not implemented** (PLAN step 8) | — |
+| Behaviour on junk or enormous uploads | **partly implemented** — an unknown file is refused with a message; size and format limits are not enforced (PLAN step 8) | `app.js` intake |
+| COOL on Graviton | **not started** (P2) | — |
+
 ## Under the hood
 
 ### Architecture
+
+![Stage Ready architecture, as built](docs/architecture.svg)
+
+[`docs/architecture.svg`](docs/architecture.svg) — one page, colour-coded by where a thing runs: orange on AWS (the API Lambda,
+INSPECT / FIX / VERIFY on the measurement Lambda with OpenCV 5, DECIDE on Bedrock, S3, the trace), grey dashed on the laptop and
+cache-backed on S3 (PROCESS: BodyTrack, MatAnyone, Composite — not on AWS today), blue the browser. It marks what is planned and not
+built: a workdir for a fresh upload, the render on AWS compute, a second profile.
 
 | layer | responsibility | where |
 |---|---|---|
@@ -331,7 +371,7 @@ What the set found, beyond the numbers:
 | **Fixers / processors** | small, one-sided, composable; each declares what it addresses and what it costs | `fix.*.json`, `process.*.json` |
 | **Verification (OpenCV 5)** | re-inspects the result against the profile's gates and diffs it against the pre-fix findings | live: `stage_ready/vision/` via `stage_ready/measure.py`; demo: `verify.*.json` |
 | **Loop** | inspect → decide → fix \| process → verify → deliver \| reshoot, with the guarantees above; a generator of plain events | `stage_ready/loop.py` |
-| **Backends** | `cached` (the demo) and `live` (measured INSPECT/VERIFY; the rest the shape) behind one interface; the loop never learns which it has | `stage_ready/backends/` |
+| **Backends** | `cached` (the demo) and `live` (INSPECT / FIX / VERIFY on the Lambda, DECIDE on Bedrock, PROCESS a cache hit from S3) behind one interface; the loop never learns which it has | `stage_ready/backends/` |
 | **Reporter** | decision trace, delivery report with its numbers, reshoot guidance in capture terms | Trace / Details in `web/` |
 | **Server** | static UI, `/api/recognize`, the run as server-sent events, byte-range media | `stage_ready/server.py` |
 
@@ -513,20 +553,20 @@ live in the Red Curtain profile.
 
 Each milestone advances the demo; nothing is built that the screen does not show. The loop, the
 profile, the three paths, the other exit and the workspace exist today, replayed from cached
-measurements. What is left is the ground truth for one number and the live wiring.
+measurements and reproduced live. What is left is a fresh upload's render and a second profile.
 
 | # | milestone | status |
 |---|---|---|
 | 0 | **Ground truth.** Run the separation-targeted composite on Ethel's cached matte and measure it | **done 2026-09-19** — 1.52× with the grade at its bounds (`work/midtown_ethel_chadwick_v2/separation.log`); the projection of 1.58× was wrong by 0.06×, in the flattering direction |
 | 1 | **Profile + inspect.** The profile as a data file; inspection emits findings against it | done — the profile is data; INSPECT is measured live with OpenCV 5 (`stage_ready/vision`, 2026-09-19) |
-| 2 | **Process + verify.** Processing toward the profile, verification against its gates, the report | verification measured live with OpenCV 5 (2026-09-19); processing live pending |
-| 3 | **Agent loop.** An agent choosing inspect / fix / process / verify / stop, every decision traced, the loop's guardrails around it | loop and guardrails live in `loop.py` (tested); the Bedrock agent pending |
+| 2 | **Process + verify.** Processing toward the profile, verification against its gates, the report | verification measured live with OpenCV 5 on the Lambda (2026-09-19); processing runs on the laptop, cache-backed on S3 by source hash — not on AWS, and not for a fresh upload (milestone 9) |
+| 3 | **Agent loop.** An agent choosing inspect / fix / process / verify / stop, every decision traced, the loop's guardrails around it | done — loop and guardrails in `loop.py` (tested); the agent on Bedrock (Claude Sonnet 4.6) since 2026-09-19, every decision traced with its request id |
 | 4 | **Reframe fixer.** Crop to the measured picture area + size-capped reframe, re-inspected | done, live on the Lambda — the controlled repair case (Brian's recording padded: inspect ✗ → crop → re-inspect ✓ → verified 2.90×); on Sandy's recording the fix is not even reached: the crown-evidence rule stops it at INSPECT (`?clip=sandy`) |
 | 5 | **Verification-driven retry.** The separation gate fails, the agent switches strategy, reprocesses, passes | done in the demo (Ethel); the pass is measured (milestone 0) |
 | 6 | **The other exit.** A failed verification with no allowed strategy left ends in a reshoot request that leads with the cause | done (Sandy — `?clip=sandy`, and live; `&budget=0` shows the spent-budget variant on Ethel in the picker) |
 | 7 | **The screen.** One recording at a time, the session view, Trace and Details | done |
 | 8 | **OpenCV 5 DNN segmentation / QC.** `SubjectSegmenter`, measured against the samples | live for the seed and the second opinion (U²-Net on `cv2.dnn`, 2026-09-19); the separation edge stays on the matte, by measurement |
-| 9 | **Live wiring.** OpenCV inspection and verification on AWS compute, the matte cache on S3 by source hash, Bedrock for the agent | the hybrid ran on Ethel 2026-09-19: Lambda INSPECT/VERIFY, Bedrock DECIDE, S3 by source hash, the rendering on the laptop; the fixer and a fresh upload's workdir pending |
+| 9 | **Live wiring.** OpenCV inspection and verification on AWS compute, the matte cache on S3 by source hash, Bedrock for the agent | the hybrid runs on every lineup recording (first on Ethel 2026-09-19): Lambda INSPECT / FIX / VERIFY, Bedrock DECIDE, S3 by source hash, the rendering on the laptop. **Open:** a fresh upload's workdir (BodyTrack, MatAnyone, Composite are macOS; nothing renders it yet) and the render on AWS compute |
 
 **Risk, named once — and settled.** Ethel's pass depended on the second strategy clearing the gate
 within honest bounds; the archived shadow lift only partly closed it (1.13× → 1.37×). Milestone 0
@@ -548,8 +588,8 @@ stage_ready/models.py               Finding, Decision, Stage, Gate, … — the 
 stage_ready/loop.py                 inspect → decide → fix | process → verify → deliver | reshoot
 stage_ready/backends/cached.py      demo backend: every call answered from a fixture; recognises an upload
                                     by SHA-256 (or name alias) from clip.json
-stage_ready/backends/live.py        live backend: INSPECT and VERIFY measured (OpenCV 5); S3, Bedrock, fixers and
-                                    processors are the shape, not wired; the planned OpenCV 5 DNN seam (SubjectSegmenter)
+stage_ready/backends/live.py        live backend: INSPECT / FIX / VERIFY on the measurement Lambda (OpenCV 5), DECIDE on
+                                    Bedrock, PROCESS on the laptop or an S3 cache hit; STAGE_READY_LIVE_LOCAL=1 measures here
 stage_ready/vision/                 OpenCV 5 measurements: band, pose, track (dry solve, head height), matte, silhouette,
                                     grade, media — the Red Curtain scripts, ported to the digit
 stage_ready/vision/segment.py       SubjectSegmenter — OpenCV 5 DNN person segmentation (U²-Net / PP-HumanSeg), the seed and
@@ -589,8 +629,7 @@ python3 -m venv .venv && .venv/bin/pip install -e '.[live]'    # OpenCV 5 + nump
 .venv/bin/python -m stage_ready aws sync ethel                 # the workdir, source and deliveries under sources/work/artifacts/<sha256>/
 .venv/bin/python -m stage_ready aws deploy --layer <dir>       # role, layer (OpenCV 5 + ffmpeg, arm64), function
 .venv/bin/python -m stage_ready run ethel --live               # the hybrid: Lambda measures, Bedrock decides, the laptop renders
-.venv/bin/python -m stage_ready run ethel --live               # measured INSPECT, then stops at DECIDE (Bedrock not wired)
-.venv/bin/python -m unittest discover -s tests                 # 25 tests
+.venv/bin/python -m unittest discover -s tests                 # 34 tests (5 need OpenCV 5 + the archive + the model)
 ```
 
 `measure` and `--live` read the Red Curtain archive's workdirs — `--archive <dir>` or
