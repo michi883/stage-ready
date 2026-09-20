@@ -21,16 +21,28 @@ import mimetypes
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from .backends import get_backend
-from .backends.cached import FixtureMissing
+from .backends.cached import FixtureMissing, lineup
 from .loop import run
 from .profile import Profile
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
 CLIPS = ROOT / "demo" / "clips"
+
+
+def _expected(clip) -> dict[str, Any] | None:
+    """The cached run's end event for a clip — the picker's behaviour label is computed from it with
+    the same `verdict()` the finished run uses. None when the clip has no fixtures."""
+    from .backends.cached import CachedBackend, FixtureMissing
+    try:
+        end = list(run(CachedBackend().clip(clip.id), Profile.load(), CachedBackend()))[-1]
+    except (FixtureMissing, FileNotFoundError, KeyError):
+        return None
+    return end if end.get("type") == "run.end" else None
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -106,9 +118,12 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(Profile.load().data)
 
         if path == "/api/clips":
+            # The sample picker: the polished lineup (demo/lineup.json), each with what its cached run
+            # does — the path and outcome come from replaying the fixtures, not from a typed label.
             try:
                 backend = get_backend(self._demo(q))
-                return self._json([json.loads(json.dumps(c.__dict__)) for c in backend.clips()])
+                cases = {e["id"]: e.get("case", "") for e in lineup()}
+                return self._json([json.loads(json.dumps(c.__dict__)) | {"expected": _expected(c), "case": cases.get(c.id, "")} for c in backend.clips(lineup=True)])
             except NotImplementedError as e:
                 return self._json({"error": str(e)}, HTTPStatus.NOT_IMPLEMENTED)
 

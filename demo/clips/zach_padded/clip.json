@@ -70,5 +70,6 @@
     "room": "#a53436",
     "room_accent": "#dac9b5",
     "key_side": "left"
-  }
+  },
+  "provenance": "Controlled demo input derived from real performer footage by adding padding. Performer pixels and motion were not altered."
 }

@@ -1,0 +1,11 @@
+{
+  "note": "The polished demo's lineup: which recordings the sample picker offers, in this order. Three behaviours, not three performers — each is the cached run's own path (demo/clips/<id>/), replayed by ?demo=1 and reproduced live by ?demo=0. Every other clip under demo/clips/ stays replayable by id (python3 -m stage_ready run <id>) and stays in the evaluation corpus; it is not offered on the public page. `order` in clip.json is the show's billing; this file is the demo's.",
+  "lineup": [
+    {"id": "zach_padded", "case": "controlled repair", "expect": "inspect ✗ picture_area → fix.reframe → inspect ✓ → process → verify ✓ → deliver"},
+    {"id": "ethel", "case": "adaptive recovery", "expect": "inspect → process → verify ✗ → change strategy → reprocess → verify ✓ → deliver"},
+    {"id": "zach", "case": "straightforward success", "expect": "inspect → process → verify ✓ → deliver"}
+  ],
+  "evaluation_only": {
+    "sandy": "the natural reshoot case — fix holds, verify fails on head height, reshoot. Fixtures, measurements and traces unchanged (demo/clips/sandy/, demo/eval/); not in the picker since 2026-09-20."
+  }
+}

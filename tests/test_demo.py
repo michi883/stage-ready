@@ -127,10 +127,22 @@ class DemoPaths(unittest.TestCase):
 
 class Recognition(unittest.TestCase):
     """An upload is matched to a known clip the way the live matte cache is keyed: by SHA-256."""
+    EXPECTED_PATHS = {cid: path for cid, (_, path) in DemoPaths.EXPECTED.items()}
 
     def test_lineup_order_and_fingerprints(self):
         clips = get_backend(demo=True).clips()
-        self.assertEqual([c.id for c in clips], ["sandy", "ethel", "zach", "zach_padded"])   # midtownshow.com/2040 + the controlled input (lineup placement pending)
+        self.assertEqual([c.id for c in clips], ["sandy", "ethel", "zach", "zach_padded"])   # everything replayable, in billing order
+        # the polished demo (demo/lineup.json): three behaviours, in this order; Sandy stays replayable, not offered
+        lineup = get_backend(demo=True).clips(lineup=True)
+        self.assertEqual([c.id for c in lineup], ["zach_padded", "ethel", "zach"])
+        self.assertEqual([self.EXPECTED_PATHS[c.id] for c in lineup],
+                         [["inspect", "fix", "inspect", "process", "verify ✓", "deliver"],
+                          ["inspect", "process", "verify ✗", "reprocess", "verify ✓", "deliver"],
+                          ["inspect", "process", "verify ✓", "deliver"]])
+        self.assertEqual(trace("sandy")[-1]["outcome"], "reshoot")                          # the natural failure case, unchanged
+        for c in lineup:
+            self.assertTrue(c.provenance, c.id)                                                # every offered input says where it comes from
+        self.assertIn("Controlled demo input", get_backend(demo=True).clip("zach_padded").provenance)
         for c in clips:
             hashes = c.recognize.get("sha256")
             for x in ([hashes] if isinstance(hashes, str) else hashes):

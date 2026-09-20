@@ -92,6 +92,8 @@ def _web_zip() -> bytes:
                 add(p, str(p.relative_to(ROOT)))
         for p in sorted(CLIPS.rglob("*.json")):              # fixtures only — never the stills
             add(p, str(p.relative_to(ROOT)))
+        for p in sorted(CLIPS.parent.glob("*.json")):         # demo/lineup.json, demo/derived.json
+            add(p, str(p.relative_to(ROOT)))
         run_sh = "#!/bin/bash\n# Lambda Web Adapter starts this; the server listens on $PORT.\nexec python3 -m stage_ready serve --host 0.0.0.0 --port \"${PORT:-8080}\"\n"
         info = zipfile.ZipInfo("run.sh"); info.date_time = (2026, 1, 1, 0, 0, 0); info.external_attr = 0o755 << 16
         z.writestr(info, run_sh)

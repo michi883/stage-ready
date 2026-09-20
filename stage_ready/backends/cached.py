@@ -28,6 +28,15 @@ from ..profile import Profile
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CLIPS = ROOT / "demo" / "clips"
+LINEUP = ROOT / "demo" / "lineup.json"
+
+
+def lineup() -> list[dict[str, Any]]:
+    """The polished demo's lineup (demo/lineup.json): the clips the sample picker offers, in order.
+    Every clip under demo/clips/ stays replayable by id; the lineup is what the public page shows."""
+    if not LINEUP.exists():
+        return []
+    return json.loads(LINEUP.read_text()).get("lineup", [])
 
 
 class FixtureMissing(LookupError):
@@ -58,12 +67,18 @@ class CachedBackend:
     name = "cached"
     CLIPS_DIR = CLIPS
 
-    def clips(self) -> list[Clip]:
+    def clips(self, lineup: bool = False) -> list[Clip]:
+        """Every clip with fixtures, in the show's billing order — or, with `lineup`, only the polished
+        demo's three, in the lineup's order (demo/lineup.json)."""
         out = []
         for d in sorted(CLIPS.iterdir()):
             if (d / "clip.json").exists():
                 out.append(self.clip(d.name))
-        return sorted(out, key=lambda c: (c.order, c.id))   # the lineup, not the directory listing
+        out = sorted(out, key=lambda c: (c.order, c.id))   # the billing, not the directory listing
+        if not lineup:
+            return out
+        by_id = {c.id: c for c in out}
+        return [by_id[e["id"]] for e in globals()["lineup"]() if e["id"] in by_id]
 
     def clip(self, clip_id: str) -> Clip:
         return Clip(**_load(clip_id, "clip"))

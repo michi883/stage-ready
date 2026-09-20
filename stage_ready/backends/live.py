@@ -101,11 +101,11 @@ class LiveBackend:
         return d
 
     # ---- the catalogue ---------------------------------------------------------------------
-    def clips(self) -> list[Clip]:
+    def clips(self, lineup: bool = False) -> list[Clip]:
         from .cached import CachedBackend
         from ..measure import ArchiveMissing
         out = []
-        for c in CachedBackend().clips():
+        for c in CachedBackend().clips(lineup=lineup):
             if not c.archive.get("workdir"):
                 continue
             if self.local:

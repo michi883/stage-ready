@@ -13,7 +13,7 @@
 const qs = new URLSearchParams(location.search);
 const DEMO = qs.get("demo") !== "0";                  // no query = the demo (cached, deterministic); ?demo=0 = the live AWS hybrid
 const INSTANT = qs.get("instant") === "1";
-const PICK = qs.get("clip");                        // ?clip=sandy puts a sample recording on the bench at once
+const PICK = qs.get("clip");                        // ?clip=ethel puts one of the sample cases on the bench at once
 const BUDGET = qs.get("budget");                    // ?budget=0 shows the other exit: a reshoot request
 const CADENCE = INSTANT ? 0 : (Number(qs.get("cadence")) || 750);   // ms per beat; one recording takes ≈15–25 s
 const STEP = qs.get("step") === "1";                // ?step=1: Space / → advances one event at a time
@@ -218,7 +218,7 @@ function verdict(ev) {
   const d = ev.delivery;
   if (d.attempts > 1) return { key: "amber", word: "ADAPTED · RECOVERED", line: "The first attempt failed a gate; the strategy changed; the second attempt verified." };
   if (d.fixes.length) return { key: "green", word: "FIXED · VERIFIED", line: "The framing was fixed, re-inspected, and the render verified." };
-  return { key: "green", word: "VERIFIED", line: "Verified on the first pass — nothing to change." };
+  return { key: "green", word: "VERIFIED · FIRST PASS", line: "Verified on the first pass — nothing to change." };
 }
 const verdictBadge = (v, big = false) => v ? `<span class="verdict ${v.key}${big ? " big" : ""}">${v.word}</span>` : "";
 const doneRuns = () => RUNS.filter(r => r.end);
@@ -342,6 +342,7 @@ function mountBench(run) {
   addCard(run, "src", `${label(run)} <b>${esc(clip.name)}</b>`,
     `${ident}<div class="brief">${esc(clip.brief)}</div>
      <div class="facts-row"><span class="k">measured on</span><span>${esc(facts.picture || `${facts.width}×${facts.height}`)}</span><span>${facts.fps} fps</span><span>${facts.duration_s} s · ${facts.frames} frames</span><span>${esc(facts.wardrobe)}</span><span>${esc(facts.framing)}</span><span>${esc(facts.room)}</span></div>
+     ${clip.provenance ? `<div class="brief prov">provenance — ${esc(clip.provenance)}</div>` : ""}
      ${clip.fixture ? `<div class="brief">numbers from <i>${esc(clip.fixture)}</i></div>` : ""}`);
   buttons();
   header();
@@ -701,6 +702,7 @@ function updateNumbers() {
     row("outcome", r => verdictBadge(verdict(r))),
     row("file", (r, run) => esc(run.file.name)),
     row("source", (r, run) => esc(run.clip.brief.split(" — ")[0])),
+    row("provenance", (r, run) => run.clip.provenance ? esc(run.clip.provenance) : "archived recording, untouched"),
     row("decision path", r => esc(r.path.join(" → "))),
     row("fixes / attempts", r => r.delivery ? `${r.delivery.fixes.length} / ${r.delivery.attempts}` : "reshoot"),
     row("head height", r => m(r) ? m(r).head_target.toFixed(3) : "—"),
@@ -851,7 +853,7 @@ async function boot() {
     mode.innerHTML = `live · AWS<span class="more"> · OpenCV 5 on Lambda, Claude on Bedrock</span>`; mode.classList.add("live");
     mode.title = "INSPECT and VERIFY run on AWS Lambda (OpenCV 5, the U²-Net second opinion); DECIDE on Amazon Bedrock; the render is a cache hit by source hash. 4–6 minutes per recording.";
     const n = $("#notice"); n.hidden = false;
-    n.innerHTML = `<b>Live mode.</b> Measurements run on AWS Lambda with OpenCV 5 and the agent decides on Amazon Bedrock — <b>4–6 minutes per recording</b>, streamed as it happens. The three sample recordings are known sources (their mattes are cached by hash); an unknown upload is told so. <a href="/?demo=1" style="color:var(--decide)">The cached demo →</a> replays the same measured runs instantly.`;
+    n.innerHTML = `<b>Live mode.</b> Measurements run on AWS Lambda with OpenCV 5 and the agent decides on Amazon Bedrock — <b>4–6 minutes per recording</b>, streamed as it happens. The three sample cases are known sources (their mattes are cached by hash); an unknown upload is told so. <a href="/?demo=1" style="color:var(--decide)">The cached demo →</a> replays the same measured runs instantly.`;
   } else {
     mode.innerHTML = `demo · cached<span class="more"> · replays measured runs · no live model calls</span>`; mode.classList.add("demo");
     mode.title = "Every measurement and decision is replayed from demo/clips/<id>/*.json — the archived, measured runs; deterministic, no OpenCV, no AWS at demo time. ?demo=0 runs the live AWS hybrid.";
@@ -872,7 +874,9 @@ async function boot() {
   document.addEventListener("dragover", e => e.preventDefault());
   document.addEventListener("drop", e => e.preventDefault());
   const samples = $("#samples");
-  samples.innerHTML = CLIPS.map(c => `<button class="sample" data-clip="${c.id}"><b>${esc(c.name)}</b><span>${esc((c.recognize && c.recognize.names || [c.id])[0])}</span></button>`).join("");
+  // Three behaviours, not three performers: the badge is verdict() over the cached run's own end
+  // event (the server replays the fixtures for /api/clips), the same function the finished run uses.
+  samples.innerHTML = CLIPS.map(c => { const v = verdict(c.expected); return `<button class="sample ${v ? v.key : ""}" data-clip="${c.id}">${verdictBadge(v)}<b>${esc(c.case || c.brief.split(" — ")[0])}</b><span>${esc(c.name)} · ${esc((c.recognize && c.recognize.names || [c.id])[0])}</span>${c.provenance ? `<i>${esc(c.provenance.split(". ")[0].replace(/\.$/, ""))}.</i>` : ""}</button>`; }).join("");
   $$("#samples .sample").forEach(b => b.onclick = () => { const c = CLIPS.find(c => c.id === b.dataset.clip); if (c) useSample(c); });
   $("#samples-toggle").onclick = () => { samples.hidden = !samples.hidden; };
 

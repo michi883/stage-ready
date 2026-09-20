@@ -142,6 +142,8 @@ class Clip:
     recognize: dict[str, Any] = field(default_factory=dict) # how an upload is matched to this clip:
                                                             # {"sha256": hex | [hex…], "names": […]} — the
                                                             # same SHA-256 the live matte cache is keyed on
+    provenance: str = ""          # one sentence on where the input comes from, shown on the source card and in
+                                  # Details: untouched, a trimmed excerpt, or a controlled demo input
     archive: dict[str, Any] = field(default_factory=dict)   # where the archived run's files are, relative to
                                                             # the Red Curtain archive root: {"workdir", "source",
                                                             # "artifacts": {id: {"video", "composite"}}} — what

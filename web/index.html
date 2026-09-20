@@ -32,7 +32,7 @@
         <h1>Drop a recording</h1>
         <p class="lead">One video at a time. It comes back ready for <b id="drop-profile">Midtown Show · Red Curtain</b> — measured, corrected where that is honest, and verified — or with a reshoot request.</p>
         <button id="choose" class="primary big">Choose a file</button>
-        <p class="alt"><button id="samples-toggle" class="linkish">or try a sample recording</button></p>
+        <p class="alt"><button id="samples-toggle" class="linkish">or try one of the three sample cases</button></p>
         <div id="samples" class="samples" hidden></div>
       </div>
       <div id="drop-status" class="drop-status" hidden></div>
@@ -111,7 +111,8 @@
           <li>Every measurement is replayed from the archived fixtures under <code>demo/clips/</code> — no model calls, no OpenCV, no AWS at demo time. The same numbers are recomputed from the archived files with OpenCV 5 by <code>python3 -m stage_ready measure</code>.</li>
           <li>An upload is recognised by its SHA-256 — the same key the live matte cache uses — and never leaves the browser.</li>
           <li>The loop enforces what the agent may not skip: every process is verified, every fix re-inspected, delivery refused unless the latest verification passed.</li>
-          <li>Every number is measured, on the recording it belongs to — Ethel's second attempt (1.52×, measured 2026-09-19), Sandy's render (the archive's own, which fails on head height), Zach's two attempts (1.00×, then 1.45× at the strategy's bounds — rendered and measured). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is, and none borrows another recording's numbers.</li>
+          <li>Every number is measured, on the recording it belongs to — the padded input's fix and first-pass render (2.36×), Ethel's second attempt (1.52×, measured 2026-09-19), Zach's first pass (2.37×). A fixture that were projected would say so and be tagged <span class="chip proj">projected</span>; none is, and none borrows another recording's numbers.</li>
+          <li>One of the three sample cases is a <b>controlled demo input</b>: real performer footage with padding added on purpose, so the repair path can be shown on a recording that verifies — the source card and the table above say so. Nothing inside the picture was scaled, moved or retimed. The natural failure case (a recording whose defect no allowed action can honestly fix) stays in the evaluation corpus, replayable from the repository but not offered here.</li>
           <li>OpenCV 5 DNN subject segmentation (U²-Net on <code>cv2.dnn</code>) is live for the seed and the matte's second opinion — measured against the archive's Apple Vision opinions on all three recordings (<code>segcheck</code>). It does not run in the demo, which replays measurements.</li>
         </ul>
         <details id="provenance"><summary>Where the numbers come from</summary><ul></ul></details>
