@@ -120,10 +120,12 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/clips":
             # The sample picker: the polished lineup (demo/lineup.json), each with what its cached run
             # does — the path and outcome come from replaying the fixtures, not from a typed label.
+            # `all=1` lists every replayable clip, the evaluation corpus included (the ?clip= deep link).
             try:
                 backend = get_backend(self._demo(q))
                 cases = {e["id"]: e.get("case", "") for e in lineup()}
-                return self._json([json.loads(json.dumps(c.__dict__)) | {"expected": _expected(c), "case": cases.get(c.id, "")} for c in backend.clips(lineup=True)])
+                every = q.get("all", ["0"])[0] in ("1", "true", "yes")
+                return self._json([json.loads(json.dumps(c.__dict__)) | {"expected": _expected(c), "case": cases.get(c.id, "")} for c in backend.clips(lineup=not every)])
             except NotImplementedError as e:
                 return self._json({"error": str(e)}, HTTPStatus.NOT_IMPLEMENTED)
 

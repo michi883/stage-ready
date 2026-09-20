@@ -13,7 +13,7 @@
 const qs = new URLSearchParams(location.search);
 const DEMO = qs.get("demo") !== "0";                  // no query = the demo (cached, deterministic); ?demo=0 = the live AWS hybrid
 const INSTANT = qs.get("instant") === "1";
-const PICK = qs.get("clip");                        // ?clip=ethel puts one of the sample cases on the bench at once
+const PICK = qs.get("clip");                        // ?clip=ethel puts a case on the bench at once; ?clip=sandy reaches the corpus's reshoot case
 const BUDGET = qs.get("budget");                    // ?budget=0 shows the other exit: a reshoot request
 const CADENCE = INSTANT ? 0 : (Number(qs.get("cadence")) || 750);   // ms per beat; one recording takes ≈15–25 s
 const STEP = qs.get("step") === "1";                // ?step=1: Space / → advances one event at a time
@@ -907,6 +907,10 @@ async function boot() {
     }
   });
   buttons(); header();
-  if (PICK) { const c = CLIPS.find(c => c.id === PICK); if (c) useSample(c); }
+  if (PICK) {                                        // ?clip=<id>: a lineup case, or an evaluation-corpus clip by id (not in the picker)
+    let c = CLIPS.find(c => c.id === PICK);
+    if (!c) { try { c = (await (await fetch("/api/clips?demo=1&all=1")).json()).find(c => c.id === PICK); } catch (e) { c = null; } }
+    if (c) useSample(c);
+  }
 }
 boot();
