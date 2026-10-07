@@ -5,3 +5,16 @@ __pycache__/
 demo/clips/*/stills/
 models/*.onnx
 .stage_ready/
+build/
+dist/
+.env
+.env.*
+!.env.example
+.aws/
+*.pem
+*.key
+.DS_Store
+.pytest_cache/
+.coverage
+htmlcov/
+judge-bundle*/

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import mimetypes
+import re
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -29,7 +30,7 @@ from .backends.cached import FixtureMissing, lineup
 from .loop import run
 from .profile import Profile
 
-ROOT = Path(__file__).resolve().parent.parent
+from .paths import ROOT
 WEB = ROOT / "web"
 CLIPS = ROOT / "demo" / "clips"
 
@@ -72,7 +73,10 @@ class Handler(BaseHTTPRequestHandler):
         rng = self.headers.get("Range", "")
         partial = rng.startswith("bytes=") and size > 0
         if partial:                                  # one range, "bytes=a-b" | "bytes=a-" | "bytes=-n"
-            a, _, b = rng[6:].partition("-")
+            match = re.fullmatch(r"bytes=([0-9]*)-([0-9]*)", rng)
+            if match is None or not any(match.groups()) or any(len(x) > 20 for x in match.groups()):
+                return self._json({"error": "invalid byte range"}, HTTPStatus.BAD_REQUEST)
+            a, b = match.groups()
             if a:
                 start, end = int(a), (int(b) if b else size - 1)
             else:
@@ -140,8 +144,18 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"clip": json.loads(json.dumps(clip.__dict__)), "matched_by": clip.recognize.get("matched_by")})
 
         if path.startswith("/api/run/"):
+            clip_id = path.removeprefix("/api/run/")
+            if not re.fullmatch(r"[a-z0-9_]+", clip_id):
+                return self._json({"error": "invalid clip id"}, HTTPStatus.BAD_REQUEST)
             budget = q.get("budget", [None])[0]
-            return self._run(path.split("/")[3], self._demo(q), int(budget) if budget is not None else None)
+            if budget is not None:
+                try:
+                    budget = int(budget)
+                except ValueError:
+                    return self._json({"error": "budget must be an integer"}, HTTPStatus.BAD_REQUEST)
+                if not 0 <= budget <= Profile.load().retry_budget:
+                    return self._json({"error": "budget must be between zero and the profile retry budget"}, HTTPStatus.BAD_REQUEST)
+            return self._run(clip_id, self._demo(q), budget)
 
         if path.startswith("/stills/"):
             parts = path.split("/")
@@ -165,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
         except FixtureMissing as e:
             return self._json({"error": str(e)}, HTTPStatus.NOT_FOUND)
         profile = Profile.load()
-        if budget is not None:                      # demo lever: the other exit (README, roadmap milestone 6)
+        if budget is not None:                      # allow a smaller retry budget to demonstrate the reshoot exit
             profile.data["retry_budget"] = budget
 
         self.send_response(HTTPStatus.OK)
@@ -223,4 +237,6 @@ def serve(host: str = "127.0.0.1", port: int = 8765) -> int:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
+    finally:
+        httpd.server_close()
     return 0

@@ -19,14 +19,14 @@ Every fixture carries a `provenance` line saying where its numbers come from.
 from __future__ import annotations
 
 import json
-from pathlib import Path
+import re
 from typing import Any
 
 from ..models import (Clip, Decision, Finding, FixResult, Gate, InspectResult, ProcessResult,
                       Stage, VerifyResult)
 from ..profile import Profile
 
-ROOT = Path(__file__).resolve().parent.parent.parent
+from ..paths import ROOT
 CLIPS = ROOT / "demo" / "clips"
 LINEUP = ROOT / "demo" / "lineup.json"
 
@@ -44,6 +44,8 @@ class FixtureMissing(LookupError):
 
 
 def _load(clip_id: str, key: str) -> dict[str, Any]:
+    if not re.fullmatch(r"[a-z0-9_]+", clip_id):
+        raise FixtureMissing("invalid clip id")
     path = CLIPS / clip_id / f"{key}.json"
     if not path.exists():
         raise FixtureMissing(f"demo fixture missing: {path.relative_to(ROOT)} — the demo does not "

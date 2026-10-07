@@ -1,7 +1,7 @@
 """Replay the trusted decision states through a Bedrock model and score its answers.
 
 The demo's cached decisions are the trusted record of what the agent should do at each DECIDE:
-nine states over Sandy, Ethel and Zach (three each). This drives the loop along those exact paths
+the decision states of the selected current fixtures. This drives the loop along those exact paths
 with the cached backend, and at every DECIDE snapshots the prompt the live backend would send —
 `LiveBackend.SYSTEM` and `LiveBackend._prompt`, unchanged — plus the expected decision. Then a
 candidate model (Nova 2 Lite, Claude Sonnet 4.6, …) answers each state through the same

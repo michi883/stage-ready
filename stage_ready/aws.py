@@ -300,12 +300,17 @@ class AWS:
                     info = zipfile.ZipInfo(str(Path(arcroot) / p.relative_to(root)) if arcroot else str(p.relative_to(root)))
                     info.date_time = (2026, 1, 1, 0, 0, 0)          # reproducible zips
                     info.external_attr = (0o755 if os.access(p, os.X_OK) else 0o644) << 16
+                    info.compress_type = zipfile.ZIP_DEFLATED
                     z.writestr(info, p.read_bytes())
         return buf.getvalue()
 
     def deploy_layer(self, layer_dir: Path) -> str:
         """Publish the OpenCV 5 + numpy + ffmpeg layer from an assembled directory (python/, bin/).
         Uploaded through S3 (the zip is larger than the direct-upload limit)."""
+        required = ("python/cv2/__init__.py", "python/numpy/__init__.py", "python/boto3/__init__.py", "bin/ffmpeg")
+        missing = [name for name in required if not (layer_dir / name).is_file()]
+        if missing:
+            raise ValueError(f"Incomplete Lambda layer: {missing}. Build it with scripts/build_lambda.py --ffmpeg <binary>")
         data = self._zip_dir(layer_dir)
         key = f"deploy/{LAYER}-{hashlib.sha256(data).hexdigest()[:12]}.zip"
         self.s3().put_object(Bucket=self.bucket, Key=key, Body=data)

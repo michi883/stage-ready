@@ -36,7 +36,7 @@ from .backends.cached import CLIPS
 
 WEB_FUNCTION = os.environ.get("STAGE_READY_WEB_LAMBDA", "stage-ready-web")
 WEB_ROLE = "stage-ready-web-role"
-LWA_LAYER = "arn:aws:lambda:us-east-1:753240598075:layer:LambdaAdapterLayerArm64:27"   # AWS Lambda Web Adapter, public
+LWA_LAYER = os.environ.get("STAGE_READY_LWA_LAYER", "arn:aws:lambda:us-east-1:753240598075:layer:LambdaAdapterLayerArm64:27")
 PUBLIC = "public"
 STATE = ROOT / ".stage_ready" / "deploy.json"
 CACHE = {".html": "no-cache", ".js": "public, max-age=300", ".css": "public, max-age=300", ".json": "no-cache",
@@ -82,11 +82,18 @@ def publish_static(aws: AWS) -> dict[str, int]:
 
 # ---- the API Lambda ------------------------------------------------------------------------------
 def _web_zip() -> bytes:
+    sdk = Path(os.environ.get("STAGE_READY_SDK_DIR", ROOT / "build" / "lambda-sdk"))
+    if not (sdk / "boto3" / "__init__.py").is_file():
+        raise FileNotFoundError("Pinned AWS SDK missing: run python scripts/build_lambda.py before web-deploy")
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         def add(p: Path, arc: str, mode: int = 0o644):
             info = zipfile.ZipInfo(arc); info.date_time = (2026, 1, 1, 0, 0, 0); info.external_attr = mode << 16
+            info.compress_type = zipfile.ZIP_DEFLATED
             z.writestr(info, p.read_bytes())
+        for p in sorted(sdk.rglob("*")):
+            if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc":
+                add(p, str(p.relative_to(sdk)))
         for p in sorted((ROOT / "stage_ready").rglob("*")):
             if p.is_file() and "__pycache__" not in p.parts and not p.name.endswith(".pyc"):
                 add(p, str(p.relative_to(ROOT)))
@@ -133,7 +140,8 @@ def deploy_web_lambda(aws: AWS, role_arn: str) -> dict[str, str]:
     lam = aws.lam()
     code = _web_zip()
     env = {"Variables": {"PORT": "8080", "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bootstrap", "AWS_LWA_INVOKE_MODE": "response_stream",
-                         "STAGE_READY_BUCKET": aws.bucket, "STAGE_READY_LAMBDA": FUNCTION, "STAGE_READY_PROCESS": "s3",
+                         "STAGE_READY_BUCKET": aws.bucket, "STAGE_READY_AWS_REGION": aws.region,
+                         "STAGE_READY_LAMBDA": FUNCTION, "STAGE_READY_PROCESS": "s3",
                          "STAGE_READY_BEDROCK_MODEL": BEDROCK_MODEL, "STAGE_READY_RUNS_DIR": "/tmp/runs", "PYTHONUNBUFFERED": "1"}}
     cfg = dict(Runtime="python3.12", Role=role_arn, Handler="run.sh", Timeout=900, MemorySize=1024, Architectures=["arm64"],
                Layers=[LWA_LAYER], Environment=env, Description="Stage Ready: the workspace and its API (stage_ready.server behind the Lambda Web Adapter)")
@@ -174,6 +182,7 @@ def _wait(lam, timeout: float = 180):
         if c.get("LastUpdateStatus", "Successful") == "Successful" and c.get("State", "Active") == "Active":
             return
         time.sleep(2)
+    raise TimeoutError(f"{WEB_FUNCTION} did not become active within {timeout} seconds")
 
 
 # ---- CloudFront ----------------------------------------------------------------------------------
@@ -284,6 +293,10 @@ def invalidate(aws: AWS, dist_id: str, paths: list[str] | None = None) -> str:
 
 
 def deploy(aws: AWS, wait: bool = True) -> dict[str, Any]:
+    # Check local prerequisites before creating or publishing cloud resources.
+    _web_zip()
+    if LWA_LAYER.split(":")[3] != aws.region:
+        raise ValueError("Set STAGE_READY_LWA_LAYER to a Lambda Web Adapter layer in the deployment region")
     out: dict[str, Any] = {}
     out["static"] = publish_static(aws)
     role = ensure_web_role(aws); out["role"] = role

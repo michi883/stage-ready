@@ -1,0 +1,13 @@
+include LICENSE README.md TECHNICAL_REPORT.md THIRD_PARTY_NOTICES.md setup.py
+recursive-include .github *.yml
+recursive-include profiles *.json
+recursive-include web *.html *.css *.js
+include demo/*.json
+recursive-include demo/clips *.json
+recursive-include demo/eval *.json *.md *.jsonl *.sh
+recursive-include docs *.md *.svg
+recursive-include requirements *.txt
+recursive-include scripts *.py
+recursive-include tests *.py
+prune demo/clips/*/stills
+global-exclude *.onnx *.mp4 *.mov *.pyc .DS_Store

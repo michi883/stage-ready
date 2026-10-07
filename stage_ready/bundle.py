@@ -30,7 +30,7 @@ from .backends.cached import CLIPS, CachedBackend
 from .measure import archive_root
 
 WORKDIR_FILES = ("source.key", "matte.key", "params.txt", "params_sep.txt", "track.log", "crown.log",
-                 "seed_pick.log", "seed_frame.txt", "separation.log", "pose.csv", "pose_ext.csv", "affine.csv")
+                 "seed_pick.log", "seed_frame.txt", "seed_mask.png", "separation.log", "pose.csv", "pose_ext.csv", "affine.csv")
 WHOLE_DIRS = ("seed", "matte", "matte_ext", "mt")      # every frame is read
 BAND_SAMPLES, COMP_SAMPLES = 48, 24                    # grade_qc and separation read a spread
 

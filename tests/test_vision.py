@@ -1,4 +1,4 @@
-"""The OpenCV 5 port reproduces the archived measurements (PLAN.md step 2a's accept test).
+"""The OpenCV 5 measurements reproduce the archived fixtures.
 
 Needs OpenCV 5 (`pip install -e '.[live]'`) and the Red Curtain archive ($STAGE_READY_ARCHIVE,
 default ~/mts). Without either it skips — the demo suite in test_demo.py never needs them.
@@ -20,7 +20,16 @@ except Exception:                                   # ImportError or OpenCVMissi
     HAVE_CV2 = False
 
 ARCHIVE = Path(os.path.expanduser(os.environ.get("STAGE_READY_ARCHIVE", "~/mts")))
-HAVE_ARCHIVE = (ARCHIVE / "work" / "midtown_ethel_chadwick_v2" / "affine.csv").exists()
+HAVE_WORKDIR = (ARCHIVE / "work" / "midtown_ethel_chadwick_v2" / "affine.csv").exists()
+_ethel = CachedBackend().clip("ethel").archive
+_required_media = [_ethel["source"]] + [a["video"] for a in _ethel["artifacts"].values() if a.get("video")]
+HAVE_ARCHIVE = HAVE_WORKDIR and all((ARCHIVE / p).is_file() for p in _required_media)
+
+
+class ExplicitArchive(unittest.TestCase):
+    @unittest.skipUnless(os.environ.get("STAGE_READY_ARCHIVE"), "no explicit measurement archive requested")
+    def test_requested_archive_is_complete(self):
+        self.assertTrue(HAVE_ARCHIVE, f"Incomplete STAGE_READY_ARCHIVE={ARCHIVE}; install the judge bundle before measurement tests")
 
 
 @unittest.skipUnless(HAVE_CV2, "OpenCV 5 not installed (pip install -e '.[live]')")
@@ -95,7 +104,7 @@ from stage_ready.vision.segment import MODELS, MODELS_DIR
 HAVE_U2NET = (MODELS_DIR / MODELS["u2net_human_seg"]["file"]).is_file()
 
 
-@unittest.skipUnless(HAVE_CV2 and HAVE_ARCHIVE and HAVE_U2NET, "needs OpenCV 5, the archive and models/u2net_human_seg.onnx (python3 -m stage_ready models fetch)")
+@unittest.skipUnless(HAVE_CV2 and HAVE_WORKDIR and HAVE_U2NET, "needs OpenCV 5, the workdir and models/u2net_human_seg.onnx (python3 -m stage_ready models fetch)")
 class DNNSecondOpinion(unittest.TestCase):
     """The OpenCV 5 DNN segmenter stands in for Apple Vision on the matte_extent gate — measured,
     on the archive's own frames (`python3 -m stage_ready segcheck` for all three clips)."""

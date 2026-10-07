@@ -23,7 +23,7 @@
                                     the OpenCV 5 DNN SubjectSegmenter against the archive's Apple
                                     Vision opinions: seed, matte-extent second opinion, separation
     python -m stage_ready agent-eval [--model ID] [--repeat N] [--clips …] [--json]
-                                    replay the nine trusted DECIDE states through a Bedrock model and
+                                    replay the current fixture DECIDE states through a Bedrock model and
                                     score action, strategy, citations, schema, latency and tokens
     python -m stage_ready models [list | fetch <name>]
                                     the DNN segmentation models: registered names, sources, hashes;
@@ -94,7 +94,7 @@ def _text(ev: dict) -> str:
 
 
 def _measure(ids: list[str], archive: str | None, as_json: bool, opinion: str = "vision") -> int:
-    """The accept test for the OpenCV 5 port (PLAN.md step 2a): the live measurer's numbers
+    """The fixture comparison for the OpenCV 5 measurements: the live measurer's numbers
     beside the fixture's, for every finding and gate, with the disagreements marked."""
     from .backends.cached import CachedBackend, FixtureMissing
     from .measure import ArchiveMeasurer, ArchiveMissing

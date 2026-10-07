@@ -12,4 +12,4 @@ The DNN segmentation weights `stage_ready/vision/segment.py::SubjectSegmenter` l
 | `u2net_human_seg` (default) | `u2net_human_seg.onnx` | 320×320 | Apache-2.0 | U²-Net (xuebinqin/U-2-Net) human-segmentation weights, ONNX export hosted by rembg |
 | `pphumanseg` | `human_segmentation_pphumanseg_2023mar.onnx` | 192×192 | Apache-2.0 | OpenCV Zoo, ported from PaddleHub |
 
-Which one and why: `python3 -m stage_ready segcheck --model <name>` and README, "Why OpenCV 5".
+Which one and why: `python3 -m stage_ready segcheck --model <name>` and [technical report](../TECHNICAL_REPORT.md#why-opencv-5).

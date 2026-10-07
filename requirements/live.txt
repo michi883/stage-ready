@@ -1,0 +1,3 @@
+# Desktop measurement. Use headless.txt instead on CI/servers; do not install both.
+opencv-python==5.0.0.93
+numpy==2.4.6

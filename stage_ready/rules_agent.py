@@ -1,4 +1,4 @@
-"""The agent replaced by a rule table — the ablation's control (PLAN step 6).
+"""The agent replaced by a rule table — the ablation's control.
 
 One fixed policy, no model: fix what a fixer addresses, process with the standard strategy first,
 retry with the one strategy that addresses the failing gate while the budget allows, deliver on a

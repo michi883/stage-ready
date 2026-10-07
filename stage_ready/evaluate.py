@@ -1,4 +1,4 @@
-"""The evaluation: N labelled inputs through the real loop, scored against the labels (PLAN step 5).
+"""The evaluation: N labelled inputs through the real loop, scored against the labels.
 
     python3 -m stage_ready evaluate [--agent bedrock|rules] [--items id…] [--prepare] [--report]
 

@@ -119,7 +119,7 @@ def write_report() -> Path:
     if len(agents) == 2:
         sb, ib = sums["bedrock"]; sr, ir = sums["rules"]
         diff = [i for i in ib if i in ir and (ib[i]["outcome"] != ir[i]["outcome"] or ib[i]["path"] != ir[i]["path"])]
-        L.append("## Agent vs rule table (the ablation, PLAN step 6)\n")
+        L.append("## Agent vs rule table (ablation)\n")
         L.append(f"Same set, same measurements, same loop and guards; only the chooser differs. Outcomes as labelled: Bedrock {sb['outcome_ok']}/{sb['n']}, "
                  f"rules {sr['outcome_ok']}/{sr['n']}; silently wrong: {len(sb['silently_wrong'])} vs {len(sr['silently_wrong'])}. "
                  + ("**They tie on this set.** " if sb["outcome_ok"] == sr["outcome_ok"] and len(sb["silently_wrong"]) == len(sr["silently_wrong"]) else "")
@@ -127,65 +127,6 @@ def write_report() -> Path:
         for i in diff:
             L.append(f"- `{i}`: Bedrock {ib[i]['outcome']} ({' → '.join(ib[i]['path'])}); rules {ir[i]['outcome']} ({' → '.join(ir[i]['path'])}).")
         L.append("")
-    # what changed since the previous run, when a snapshot exists (results/previous/<agent>/)
-    prev_dir = RESULTS / "previous"
-    if prev_dir.is_dir():
-        L.append("## What changed since the previous run\n")
-        L.append("The previous results are kept under `results/previous/` (the run before the two corrections of 2026-09-20: one ruler for "
-                 "the size cap and the size gate; the crown-evidence rule for the head metrics). Every verified item gained the `crown_visible` "
-                 "gate (pass on each one verified; the profile now has 9 gates), and every `subject_size` number moved to the shared ruler — "
-                 "listed per item where it moved. Outcome, path and finding-status changes, agent by agent:\n")
-        for a in agents:
-            pd = prev_dir / a
-            if not pd.is_dir():
-                continue
-            prev = {p.stem: json.loads(p.read_text()) for p in pd.glob("*.json") if p.stem != "summary"}
-            _, cur = sums[a]
-            psum = json.loads((pd / "summary.json").read_text()) if (pd / "summary.json").exists() else None
-            sm, _ = sums[a]
-            L.append(f"**{a}** — outcomes as labelled {psum['outcome_ok'] if psum else '?'}/{psum['n'] if psum else '?'} → **{sm['outcome_ok']}/{sm['n']}**; "
-                     f"silently wrong {len(psum['silently_wrong']) if psum else '?'} → **{len(sm['silently_wrong'])}**.\n")
-            changed = 0
-            for it in s["items"]:
-                i = it["id"]
-                if i not in prev or i not in cur:
-                    continue
-                o, n = prev[i], cur[i]
-                bits = []
-                if o["outcome"] != n["outcome"]:
-                    bits.append(f"outcome {o['outcome']} → **{n['outcome']}**")
-                if o["path"] != n["path"]:
-                    bits.append(f"path {' → '.join(o['path'])} ⇒ {' → '.join(n['path'])}")
-                og = {g["id"]: g["status"] for v in o.get("verify", [])[:1] for g in v["gates"]}
-                ng = {g["id"]: g["status"] for v in n.get("verify", [])[:1] for g in v["gates"]}
-                if og and ng:
-                    for gid in sorted(set(og) & set(ng)):
-                        if og[gid] != ng[gid]:
-                            bits.append(f"gate {gid}: {og[gid]} → {ng[gid]}")
-                    for gid in sorted(set(ng) - set(og)):
-                        if gid != "crown_visible":
-                            bits.append(f"new gate {gid}: {ng[gid]}")
-                elif og and not ng:
-                    bits.append("no verification this time — the loop stopped earlier")
-                of = {f["id"]: f["status"] for v in o.get("inspect", [])[:1] for f in v["findings"]}
-                nf = {f["id"]: f["status"] for v in n.get("inspect", [])[:1] for f in v["findings"]}
-                for fid in sorted(set(of) | set(nf)):
-                    if of.get(fid) != nf.get(fid):
-                        bits.append(f"finding {fid}: {of.get(fid, '—')} → {nf.get(fid, '—')}")
-                # the size gate's number, where it moved
-                for k, recs in (("inspect", "findings"),):
-                    ov = next((f["value"] for v in o.get("inspect", [])[:1] for f in v["findings"] if f["id"] == "subject_size"), None)
-                    nv = next((f["value"] for v in n.get("inspect", [])[:1] for f in v["findings"] if f["id"] == "subject_size"), None)
-                    if ov and nv and (ov.get("p95") != nv.get("p95")):
-                        bits.append(f"subject_size p95 {ov.get('p95')} → {nv.get('p95')}")
-                if o["score"]["outcome_ok"] != n["score"]["outcome_ok"]:
-                    bits.append(f"as labelled: {o['score']['outcome_ok']} → **{n['score']['outcome_ok']}**")
-                if bits:
-                    changed += 1
-                    L.append(f"- `{i}`: " + "; ".join(bits))
-            if not changed:
-                L.append("- no item changed")
-            L.append("")
     # the linear pipeline as the baseline: it ships the standard render whenever its prep succeeds, warning in a log
     a0 = agents[0]
     _, items0 = sums[a0]

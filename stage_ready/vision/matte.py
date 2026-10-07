@@ -6,7 +6,7 @@ performer's hair missing — the matte was complete, stamped, self-consistent, a
 
 This measures the matte against a second opinion: an independent silhouette on a handful of
 frames spread through the clip (Apple Vision's `PersonMatte` in the archive; the OpenCV 5 DNN
-`SubjectSegmenter` is what replaces it — README, roadmap milestone 8). The opinion is coarser
+`SubjectSegmenter` is what replaces it — TECHNICAL_REPORT.md, Why OpenCV 5). The opinion is coarser
 than the matte at an edge, but it is independent, and it is very hard for both to lose the same
 100 px of hair. Only the head band is compared: hands and clothing move between two models'
 ideas of the subject; the top of the head is where a shrink-wrapped matte shows itself.

@@ -79,44 +79,10 @@ Positives are the items labelled with the defect the finding measures (`defect_m
 - `tehila_45s`: expected **deliver**, got **reshoot** — seated at one distance, crown inside, a black-and-white striped dress on a beige wall; nothing visibly wrong. Refused: pose QC failed (above) — the framing anchor would be on the wrong subject for part of this clip.
 - `gate_frozen_frames`: expected **reject**, got **deliver** — Brian's delivery with frames 600–629 replaced by frame 600 — the count and the audio are intact; no gate measures motion continuity, so this is expected to pass every gate: a known limitation, counted as a silently wrong delivery if it does.
 
-## Agent vs rule table (the ablation, PLAN step 6)
+## Agent vs rule table (ablation)
 
 Same set, same measurements, same loop and guards; only the chooser differs. Outcomes as labelled: Bedrock 17/19, rules 17/19; silently wrong: 1 vs 1. **They tie on this set.** They differ on: `sandy`.
 - `sandy`: Bedrock reshoot (inspect → reshoot); rules reshoot (inspect → fix → inspect → reshoot).
-
-## What changed since the previous run
-
-The previous results are kept under `results/previous/` (the run before the two corrections of 2026-09-20: one ruler for the size cap and the size gate; the crown-evidence rule for the head metrics). Every verified item gained the `crown_visible` gate (pass on each one verified; the profile now has 9 gates), and every `subject_size` number moved to the shared ruler — listed per item where it moved. Outcome, path and finding-status changes, agent by agent:
-
-**bedrock** — outcomes as labelled 17/19 → **17/19**; silently wrong 1 → **1**.
-
-- `brian`: subject_size p95 0.358 → 0.356
-- `ethel`: subject_size p95 0.35 → 0.348
-- `sandy`: path inspect → fix → inspect → process → verify ✗ → reshoot ⇒ inspect → reshoot; no verification this time — the loop stopped earlier; finding headroom: warn → fail; subject_size p95 0.622 → 0.624
-- `zach_v2`: path inspect → process → verify ✗ → reprocess → verify ✗ → reshoot ⇒ inspect → reshoot; no verification this time — the loop stopped earlier; finding headroom: warn → fail; subject_size p95 0.345 → 0.343
-- `zach`: subject_size p95 0.344 → 0.342
-- `michi`: subject_size p95 0.348 → 0.347
-- `sta_30s`: subject_size p95 0.583 → 0.754
-- `brian_padded`: subject_size p95 0.359 → 0.356
-- `zach_padded`: subject_size p95 0.344 → 0.342
-- `brian_zoomed`: subject_size p95 0.71 → 0.706
-- `brian_crown_cut`: outcome delivered → **reshoot**; path inspect → process → verify ✓ → deliver ⇒ inspect → reshoot; no verification this time — the loop stopped earlier; finding headroom: warn → fail; subject_size p95 0.373 → 0.37
-- `brian_underlit`: subject_size p95 0.356 → 0.354
-
-**rules** — outcomes as labelled 16/19 → **17/19**; silently wrong 1 → **1**.
-
-- `brian`: subject_size p95 0.358 → 0.356
-- `ethel`: subject_size p95 0.35 → 0.348
-- `sandy`: path inspect → fix → inspect → process → verify ✗ → reshoot ⇒ inspect → fix → inspect → reshoot; no verification this time — the loop stopped earlier; finding headroom: warn → fail; subject_size p95 0.622 → 0.624
-- `zach_v2`: path inspect → process → verify ✗ → reprocess → verify ✗ → reshoot ⇒ inspect → reshoot; no verification this time — the loop stopped earlier; finding headroom: warn → fail; subject_size p95 0.345 → 0.343
-- `zach`: subject_size p95 0.344 → 0.342
-- `michi`: subject_size p95 0.348 → 0.347
-- `sta_30s`: subject_size p95 0.583 → 0.754
-- `brian_padded`: subject_size p95 0.359 → 0.356
-- `zach_padded`: subject_size p95 0.344 → 0.342
-- `brian_zoomed`: outcome reshoot → **delivered**; path inspect → fix → inspect → reshoot ⇒ inspect → fix → inspect → process → verify ✓ → deliver; subject_size p95 0.71 → 0.706; as labelled: False → **True**
-- `brian_crown_cut`: outcome delivered → **reshoot**; path inspect → process → verify ✓ → deliver ⇒ inspect → reshoot; no verification this time — the loop stopped earlier; finding headroom: warn → fail; subject_size p95 0.373 → 0.37
-- `brian_underlit`: subject_size p95 0.356 → 0.354
 
 ## The linear pipeline as the baseline
 

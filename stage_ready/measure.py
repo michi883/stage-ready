@@ -4,7 +4,7 @@
 (`InspectResult`, `VerifyResult`) for a clip whose intermediate files exist in a Red Curtain
 workdir: the source, the pose track, the matte, the solved transform, the composite. That is
 what every archived clip has (`demo/clips/<id>/clip.json` → `archive`), and it is what a live
-run leaves behind on S3 keyed by source hash (README, milestone 9) — so the same measurer serves
+run leaves behind on S3 keyed by source hash (see docs/DEPLOYMENT.md) — so the same measurer serves
 the live backend today over the archive, and later over a workdir that AWS compute produced.
 
 What is *not* here: producing those files. The pose track, the matte and the solve are the

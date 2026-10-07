@@ -155,9 +155,9 @@
   <text x="1092" y="292" class="s">process.standard: the archived run, a cache hit. separation_targeted: the same</text>
   <text x="1092" y="308" class="s">matte and tracking, re-composited at the bounds (rim 0.45, wrap 0.70, lift +0.04).</text>
   <text x="1092" y="332" class="s">Synced to S3 by hash: `aws sync &lt;clip&gt;` — work/, sources/, artifacts/.</text>
-  <text x="1092" y="356" class="lbl">Planned, not built: producing a workdir for a fresh upload (README milestone 9).</text>
+  <text x="1092" y="356" class="lbl">Planned: fresh-upload workdirs and cloud rendering (README roadmap).</text>
   <text x="1092" y="372" class="lbl">Planned, not built: this stage on AWS compute — the three tools are macOS.</text>
-  <text x="1092" y="396" class="lbl">Second Target Output Profile: planned, not built (PLAN step 7).</text>
+  <text x="1092" y="396" class="lbl">Second Target Output Profile: planned, not yet validated.</text>
 
   <rect x="1080" y="440" width="450" height="130" class="local"/>
   <text x="1092" y="460" class="h">Tooling on the laptop</text>
